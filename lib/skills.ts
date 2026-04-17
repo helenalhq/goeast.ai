@@ -32,7 +32,11 @@ export function getSkillBySlug(slug: string): Skill | null {
     source_url: data.source_url || "",
     skill_url: data.skill_url || "",
     featured: data.featured || false,
-    updated_at: data.updated_at ? String(data.updated_at) : "",
+    updated_at: data.updated_at
+      ? (data.updated_at instanceof Date
+          ? data.updated_at.toISOString().slice(0, 10)
+          : String(data.updated_at))
+      : "",
     content,
   };
 }
