@@ -19,12 +19,17 @@ Complete relocation guide for expats, international students, and digital nomads
 
 面向外籍人士、国际留学生和数字游民的中国搬迁完整指南。涵盖城市选择标准（生活成本、网络访问、国际社区、空气质量）、签证类型和申请流程、住房搜索策略（短租和长租）、外国人友好型社区推荐，以及必备安顿事项（银行账户、手机卡、交通卡）。
 
+## Install
+
+```bash
+npx skills add https://skillsllm.com/
+```
+
 ## How to Use
 
-1. Install the skill from SkillsLLM
-2. Describe your situation — purpose (work, study, nomad), budget, preferences
-3. Get personalized city recommendations with pros and cons
-4. Receive step-by-step relocation guidance from visa to housing
+1. Describe your situation — purpose (work, study, nomad), budget, preferences
+2. Get personalized city recommendations with pros and cons
+3. Receive step-by-step relocation guidance from visa to housing
 
 ## 适用场景
 

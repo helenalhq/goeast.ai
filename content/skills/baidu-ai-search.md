@@ -19,12 +19,17 @@ Access Baidu's AI-powered search for real-time Chinese web information. Get inte
 
 访问百度 AI 搜索获取实时中国网络信息。从中国互联网获取智能化的摘要答案，包括新闻、本地服务、商业信息和文化内容。与传统搜索不同，百度 AI 搜索提供上下文理解和综合回答，适合快速了解中国网络上的复杂话题。
 
+## Install
+
+```bash
+clawhub install ide-rea/baidu-ai-search
+```
+
 ## How to Use
 
-1. Install the skill from ClawHub (79.2k+ downloads)
-2. Ask your question in Chinese or English
-3. Get AI-synthesized answers from Baidu's search index
-4. Follow up with related queries for deeper exploration
+1. Ask your question in Chinese or English
+2. Get AI-synthesized answers from Baidu's search index
+3. Follow up with related queries for deeper exploration
 
 ## 适用场景
 

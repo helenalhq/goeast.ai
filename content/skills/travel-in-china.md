@@ -19,12 +19,17 @@ Bilingual (Chinese/English) inbound travel requirements collector with Feishu (L
 
 中英双语的来华旅行需求收集器，集成飞书协作功能。帮助旅行社和服务提供商高效收集和整理旅客需求，支持签证申请、住宿偏好、交通需求和行程规划的结构化数据收集，输出结果集成飞书便于团队协作。
 
+## Install
+
+```bash
+clawhub install lijingxu007/tcly
+```
+
 ## How to Use
 
-1. Install the skill from ClawHub
-2. Configure your Feishu integration if needed
-3. Start collecting traveler requirements in Chinese or English
-4. Data is automatically organized and shared with your team
+1. Configure your Feishu integration (set `FEISHU_BASE_TOKEN` and `FEISHU_TABLE_ID`)
+2. Start collecting traveler requirements in Chinese or English
+3. Data is automatically organized and shared with your team
 
 ## 适用场景
 

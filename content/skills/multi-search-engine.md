@@ -19,12 +19,17 @@ Search across 16 engines simultaneously — 7 Chinese engines (Baidu, Sogou, 360
 
 同时搜索 16 个引擎 — 7 个中文引擎（百度、搜狗、360搜索、今日头条、知乎、B站、小红书）和 9 个全球引擎（Google、Bing、DuckDuckGo、Yahoo、Yandex 等）。适合研究中国服务、产品和商业信息。返回中外网络的综合结果，提供单一引擎无法实现的全面覆盖。
 
+## Install
+
+```bash
+clawhub install gpyangyoujun/multi-search-engine
+```
+
 ## How to Use
 
-1. Install the skill from ClawHub (120k+ downloads)
-2. Enter your search query in any language
-3. Results are aggregated from 16 search engines
-4. Compare and analyze results across Chinese and global sources
+1. Enter your search query in any language
+2. Results are aggregated from 16 search engines
+3. Compare and analyze results across Chinese and global sources
 
 ## 适用场景
 

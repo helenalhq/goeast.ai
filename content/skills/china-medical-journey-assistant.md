@@ -19,12 +19,17 @@ Comprehensive assistant for international patients seeking medical care in China
 
 为国际患者在中国寻求医疗服务提供全面协助。根据专科和病情进行医院筛选，将患者引导至正确的科室，并提供医疗旅行的签证/入境要求指导。覆盖北京、上海、广州等一线城市顶级医院，提供肿瘤科、心内科、骨科、中医等专科推荐。
 
+## Install
+
+```bash
+npx skills add helenalhq/chinamed-skills --skill china-medical-journey-assistant
+```
+
 ## How to Use
 
-1. Install the skill from GitHub
-2. Describe your medical condition and preferred destination city
-3. Get a shortlist of recommended hospitals with specialty rankings
-4. Receive guidance on visa requirements and medical travel logistics
+1. Describe your medical condition and preferred destination city
+2. Get a shortlist of recommended hospitals with specialty rankings
+3. Receive guidance on visa requirements and medical travel logistics
 
 ## 适用场景
 

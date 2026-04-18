@@ -19,12 +19,17 @@ AI-powered travel agent that helps you find, book, and change flights via email.
 
 AI 驱动的旅行代理，通过邮件帮助你查找、预订和更改航班。搜索航空公司和预订平台，为你的出行日期和偏好找到最佳选择。通过自动化邮件交互处理航班变更、取消和重新预订。支持国际和国内航班，包括往返中国及中国国内的航线。
 
+## Install
+
+```bash
+clawhub install clawhub/travel-agent
+```
+
 ## How to Use
 
-1. Install the skill from FindSkills
-2. Describe your travel needs — origin, destination, dates, preferences
-3. The agent searches flights and presents options via email
-4. Confirm your choice and receive booking confirmation
+1. Describe your travel needs — origin, destination, dates, preferences
+2. The agent searches flights and presents options via email
+3. Confirm your choice and receive booking confirmation
 
 ## 适用场景
 

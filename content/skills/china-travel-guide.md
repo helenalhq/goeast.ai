@@ -19,12 +19,17 @@ Comprehensive China travel guide covering everything you need for a smooth trip.
 
 全面的中国旅行指南，涵盖顺利出行所需的一切信息。获取北京、上海、成都、西安、广州等主要目的地的详细城市攻略，包括当地美食推荐、交通方式（高铁、地铁、滴滴）、移动支付（支付宝、微信支付）、签证要求、文化礼仪和紧急联系方式。
 
+## Install
+
+```bash
+clawhub install ivangdavila/china
+```
+
 ## How to Use
 
-1. Install the skill from ClawHub: visit the skill page and follow the install instructions
-2. Open your AI assistant (Claude, etc.)
-3. Ask about any China travel topic — cities, food, transport, payments, visas
-4. Get detailed, practical advice tailored to your needs
+1. Open your AI assistant (Claude, etc.)
+2. Ask about any China travel topic — cities, food, transport, payments, visas
+3. Get detailed, practical advice tailored to your needs
 
 ## 适用场景
 
