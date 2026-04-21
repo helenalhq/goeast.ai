@@ -27,6 +27,12 @@ export default function Header() {
             About
           </Link>
           <Link
+            href="/contact"
+            className="text-warm hover:text-china-red transition-colors"
+          >
+            Contact
+          </Link>
+          <Link
             href="/submit"
             className="bg-china-red text-white px-4 py-1.5 rounded-lg text-sm hover:bg-china-red/90 transition-colors"
           >

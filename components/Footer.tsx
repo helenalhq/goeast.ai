@@ -13,6 +13,7 @@ export default function Footer() {
           <Link href="/llms.txt" className="hover:text-china-red transition-colors">For Agents</Link>
           <Link href="/api/skills" className="hover:text-china-red transition-colors">API</Link>
           <Link href="/about" className="hover:text-china-red transition-colors">About</Link>
+          <Link href="/contact" className="hover:text-china-red transition-colors">Contact</Link>
         </div>
       </div>
     </footer>
