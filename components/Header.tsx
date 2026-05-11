@@ -15,6 +15,12 @@ export default function Header() {
             Skills
           </Link>
           <Link
+            href="/sophies-journey"
+            className="text-warm hover:text-china-red transition-colors"
+          >
+            Journey
+          </Link>
+          <Link
             href="/categories/travel"
             className="text-warm hover:text-china-red transition-colors"
           >
