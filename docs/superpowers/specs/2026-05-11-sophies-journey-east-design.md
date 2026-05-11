@@ -107,6 +107,8 @@ content/journeys/
 
 ### Frontmatter Schema
 
+Prologue and epilogue use the same schema. For the epilogue, `philosopher` and `school` fields are omitted; `chapter` is 11.
+
 ```yaml
 slug: laozi              # URL slug
 chapter: 1               # Chapter number (0 = prologue, 11 = epilogue)
@@ -118,7 +120,7 @@ era: "6th century BCE"
 school: "Daoism"
 school_zh: "道家"
 location: "Silk Road"
-color: "#2d5016"          # School color for visual theming
+color: "#2d5016"          # School color — used for timeline dots, school badges, and quote borders
 quote: "The Tao that can be told is not the eternal Tao."
 quote_source: "Tao Te Ching, Chapter 1"
 quote_zh: "道可道，非常道。"
