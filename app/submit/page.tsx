@@ -19,7 +19,7 @@ export default function SubmitPage() {
           <li>
             Open a GitHub Issue on our{" "}
             <a
-              href="https://github.com/goeast-ai/skills/issues/new"
+              href="https://github.com/helenalhq/goeast.ai/issues/new"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -53,7 +53,7 @@ export default function SubmitPage() {
         </p>
       </div>
       <a
-        href="https://github.com/goeast-ai/skills/issues/new"
+        href="https://github.com/helenalhq/goeast.ai/issues/new"
         target="_blank"
         rel="noopener noreferrer"
         className="inline-block mt-8 bg-china-red text-white px-6 py-3 rounded-lg font-medium hover:bg-china-red/90 transition-colors"
