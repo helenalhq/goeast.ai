@@ -50,6 +50,7 @@ export interface JourneyMeta {
 
 export interface Journey extends JourneyMeta {
   content: string;
+  content_zh?: string;
 }
 
 export interface SchoolInfo {

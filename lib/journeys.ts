@@ -38,6 +38,7 @@ export function getJourneyBySlug(slug: string): Journey | null {
     quote_source: data.quote_source,
     quote_zh: data.quote_zh,
     content,
+    content_zh: data.content_zh,
   };
 }
 
@@ -46,7 +47,10 @@ export async function getJourneyWithHtml(slug: string): Promise<Journey | null> 
   if (!journey) return null;
 
   const processed = await remark().use(html).process(journey.content);
-  return { ...journey, content: processed.toString() };
+  const content_zh_html = journey.content_zh
+    ? (await remark().use(html).process(journey.content_zh)).toString()
+    : undefined;
+  return { ...journey, content: processed.toString(), content_zh: content_zh_html };
 }
 
 export function getAllJourneys(): JourneyMeta[] {

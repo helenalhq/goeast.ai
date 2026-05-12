@@ -92,8 +92,11 @@ export default async function JourneyStoryPage({
 
       <JourneyReader
         contentHtml={journey.content}
+        contentZhHtml={journey.content_zh}
         title={journey.title}
         title_zh={journey.title_zh}
+        philosopher={journey.philosopher}
+        philosopher_zh={journey.philosopher_zh}
         quote={journey.quote}
         quote_zh={journey.quote_zh}
         quote_source={journey.quote_source}
