@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getJourneyWithHtml, getJourneySlugs, getAllJourneys } from "@/lib/journeys";
+import JourneyReader from "@/components/JourneyReader";
 import type { Metadata } from "next";
 
 export async function generateStaticParams() {
@@ -89,27 +90,15 @@ export default async function JourneyStoryPage({
         )}
       </header>
 
-      <div
-        className="prose prose-warm max-w-none prose-headings:text-ink prose-headings:font-semibold prose-a:text-china-red prose-a:no-underline hover:prose-a:underline prose-p:text-ink/90 prose-p:leading-relaxed"
-        dangerouslySetInnerHTML={{ __html: journey.content }}
+      <JourneyReader
+        contentHtml={journey.content}
+        title={journey.title}
+        title_zh={journey.title_zh}
+        quote={journey.quote}
+        quote_zh={journey.quote_zh}
+        quote_source={journey.quote_source}
+        color={journey.color}
       />
-
-      {journey.quote && (
-        <blockquote
-          className="my-10 border-l-4 pl-6 py-2"
-          style={{ borderColor: journey.color }}
-        >
-          <p className="text-lg italic text-ink">{journey.quote}</p>
-          {journey.quote_zh && (
-            <p className="text-base text-warm mt-2">{journey.quote_zh}</p>
-          )}
-          {journey.quote_source && (
-            <cite className="text-sm text-warm/70 mt-2 block not-italic">
-              — {journey.quote_source}
-            </cite>
-          )}
-        </blockquote>
-      )}
 
       <nav className="mt-12 pt-6 border-t border-sand flex justify-between">
         {prev ? (
