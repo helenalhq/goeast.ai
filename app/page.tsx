@@ -1,6 +1,7 @@
 import Hero from "@/components/Hero";
 import CategoryGrid from "@/components/CategoryGrid";
 import SkillCard from "@/components/SkillCard";
+import JourneyBanner from "@/components/JourneyBanner";
 import { getFeaturedSkills, getAllSkills } from "@/lib/skills";
 import { CATEGORIES } from "@/lib/types";
 
@@ -11,6 +12,8 @@ export default function HomePage() {
   return (
     <>
       <Hero />
+
+      <JourneyBanner />
 
       <CategoryGrid />
 
