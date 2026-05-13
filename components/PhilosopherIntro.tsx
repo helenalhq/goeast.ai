@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import OracleOverlay from "./OracleOverlay";
+import { getOracleScenarios } from "@/lib/oracle-scenarios";
 
 interface PhilosopherIntroProps {
   slug: string;
@@ -34,7 +35,6 @@ export default function PhilosopherIntro({
     if (introOpen) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setTyping(true);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDisplayed("");
       let i = 0;
       const type = () => {
@@ -73,9 +73,11 @@ export default function PhilosopherIntro({
           className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-full text-white text-[11px] font-medium backdrop-blur-sm transition-all hover:scale-105 active:scale-95 shadow-lg bg-white/25 hover:bg-white/35"
         >
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            <circle cx="12" cy="12" r="10" />
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
           </svg>
-          Consult
+          {getOracleScenarios(slug)?.consultLabel || "Consult"}
         </button>
       </div>
 

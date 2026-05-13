@@ -6,6 +6,8 @@ export type OracleScenario = {
 export type PhilosopherScenarioConfig = {
   specialty: string;
   specialtyZh: string;
+  consultLabel: string;
+  ritualText: string;
   scenarios: OracleScenario[];
 };
 
@@ -13,6 +15,8 @@ const ORACLE_SCENARIOS: Record<string, PhilosopherScenarioConfig> = {
   "prologue-zhougong": {
     specialty: "I Ching Divination",
     specialtyZh: "周易卜卦",
+    consultLabel: "Cast the Oracle",
+    ritualText: "The yarrow stalks fall...",
     scenarios: [
       { label: "Oracle Reading", question: "What does the oracle say about my path?" },
       { label: "Cast a Hexagram", question: "Cast a hexagram for my situation" },
@@ -22,6 +26,8 @@ const ORACLE_SCENARIOS: Record<string, PhilosopherScenarioConfig> = {
   "ch01-laozi": {
     specialty: "The Way of Water",
     specialtyZh: "上善若水",
+    consultLabel: "Seek the Way",
+    ritualText: "Water finds its course...",
     scenarios: [
       { label: "Finding Flow", question: "I feel stuck. How do I find flow?" },
       { label: "Letting Go", question: "Help me see what I'm forcing" },
@@ -31,6 +37,8 @@ const ORACLE_SCENARIOS: Record<string, PhilosopherScenarioConfig> = {
   "ch02-confucius": {
     specialty: "The Right Action",
     specialtyZh: "礼仪仁智",
+    consultLabel: "Ask the Teacher",
+    ritualText: "The bamboo scroll unfurls...",
     scenarios: [
       { label: "Right Action", question: "What is the right thing to do?" },
       { label: "Relationships", question: "How should I handle this relationship?" },
@@ -40,6 +48,8 @@ const ORACLE_SCENARIOS: Record<string, PhilosopherScenarioConfig> = {
   "ch03-sunzi": {
     specialty: "Strategic Mind",
     specialtyZh: "知己知彼",
+    consultLabel: "Plan Strategy",
+    ritualText: "The stone is placed on the board...",
     scenarios: [
       { label: "Competition", question: "Analyze my competition" },
       { label: "Best Move", question: "What is my best move right now?" },
@@ -49,6 +59,8 @@ const ORACLE_SCENARIOS: Record<string, PhilosopherScenarioConfig> = {
   "ch04-zhuangzi": {
     specialty: "Dream Reading",
     specialtyZh: "蝴蝶之梦",
+    consultLabel: "Interpret Dreams",
+    ritualText: "The butterfly opens its wings...",
     scenarios: [
       { label: "Dream Interpretation", question: "Interpret my dream" },
       { label: "New Perspective", question: "Help me see from a different perspective" },
@@ -58,6 +70,8 @@ const ORACLE_SCENARIOS: Record<string, PhilosopherScenarioConfig> = {
   "ch05-mencius": {
     specialty: "The Heart's Compass",
     specialtyZh: "恻隐之心",
+    consultLabel: "Follow the Heart",
+    ritualText: "The sprouts of goodness grow...",
     scenarios: [
       { label: "Compassion", question: "I saw someone suffer and couldn't act. Why?" },
       { label: "Human Nature", question: "Is human nature really good?" },
@@ -67,6 +81,8 @@ const ORACLE_SCENARIOS: Record<string, PhilosopherScenarioConfig> = {
   "ch06-mozi": {
     specialty: "The Builder's Logic",
     specialtyZh: "兼爱非攻",
+    consultLabel: "Build Solutions",
+    ritualText: "The compass draws its circle...",
     scenarios: [
       { label: "Conflict Resolution", question: "How do I resolve this conflict fairly?" },
       { label: "Universal Care", question: "Why should I care about strangers?" },
@@ -76,6 +92,8 @@ const ORACLE_SCENARIOS: Record<string, PhilosopherScenarioConfig> = {
   "ch07-zhuxi": {
     specialty: "The Principle Seeker",
     specialtyZh: "格物致知",
+    consultLabel: "Seek Principle",
+    ritualText: "The pattern reveals itself...",
     scenarios: [
       { label: "Understanding", question: "Help me understand what's really going on" },
       { label: "Investigation", question: "Investigate this situation for me" },
@@ -85,6 +103,8 @@ const ORACLE_SCENARIOS: Record<string, PhilosopherScenarioConfig> = {
   "ch08-zhangzai": {
     specialty: "The Great Purpose",
     specialtyZh: "为天地立心",
+    consultLabel: "Find Purpose",
+    ritualText: "Heaven and earth align...",
     scenarios: [
       { label: "Life's Purpose", question: "What should I dedicate my life to?" },
       { label: "Alignment", question: "Am I aligned with heaven and earth?" },
@@ -94,6 +114,8 @@ const ORACLE_SCENARIOS: Record<string, PhilosopherScenarioConfig> = {
   "ch09-huineng": {
     specialty: "The Clear Mind",
     specialtyZh: "本来无一物",
+    consultLabel: "Clear the Mind",
+    ritualText: "The ink circle is drawn...",
     scenarios: [
       { label: "Stillness", question: "My mind is too noisy. Help me find stillness" },
       { label: "Letting Go", question: "What am I clinging to?" },
@@ -103,6 +125,8 @@ const ORACLE_SCENARIOS: Record<string, PhilosopherScenarioConfig> = {
   "ch10-wangyangming": {
     specialty: "Knowledge in Action",
     specialtyZh: "知行合一",
+    consultLabel: "Ignite Action",
+    ritualText: "The flame of knowing-kindling ignites...",
     scenarios: [
       { label: "Knowing vs Doing", question: "I know what's right but I can't act. Why?" },
       { label: "Close the Gap", question: "Close the gap between knowing and doing" },
