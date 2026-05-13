@@ -4,7 +4,10 @@ import { getOraclePrompt } from "@/lib/oracle-prompts";
 import { checkFreeLimit, checkPaidRateLimit } from "@/lib/rate-limit";
 import { getSubscriptionStatus } from "@/lib/creem";
 
-const openai = new OpenAI();
+const openai = new OpenAI({
+  apiKey: process.env.AZURE_OPENAI_API_KEY,
+  baseURL: process.env.AZURE_OPENAI_ENDPOINT,
+});
 
 const VALID_SLUGS = [
   "prologue-zhougong",
@@ -63,10 +66,12 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  // Call OpenAI
+  const MODEL = process.env.AZURE_OPENAI_MODEL || "gpt-5.4-mini";
+
+// Call OpenAI
   try {
     const completion = await openai.chat.completions.create({
-      model: "gpt-5.4-mini",
+      model: MODEL,
       messages: [
         { role: "system", content: promptConfig.system },
         { role: "user", content: question.trim() },
@@ -80,7 +85,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       reading,
       philosopher,
-      model: "gpt-5.4-mini",
+      model: MODEL,
     });
   } catch (error) {
     console.error("Oracle API error:", error);
