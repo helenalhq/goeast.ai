@@ -30,7 +30,7 @@ export interface CreemWebhookEvent {
       id: string;
       email?: string;
     };
-    [key: string]: any;
+    [key: string]: unknown;
   };
   created_at: string;
   signature?: string;

@@ -32,7 +32,9 @@ export default function PhilosopherIntro({
 
   useEffect(() => {
     if (introOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setTyping(true);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDisplayed("");
       let i = 0;
       const type = () => {
@@ -50,8 +52,6 @@ export default function PhilosopherIntro({
       setTyping(false);
     }
   }, [introOpen, intro]);
-
-  const anyOpen = introOpen || consultOpen;
 
   return (
     <>
