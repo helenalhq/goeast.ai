@@ -1,5 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
-import { JourneyMeta } from "@/lib/types";
+import { JourneyMeta, getPhilosopherImage } from "@/lib/types";
 
 export default function JourneyTimeline({ journeys }: { journeys: JourneyMeta[] }) {
   return (
@@ -8,6 +9,7 @@ export default function JourneyTimeline({ journeys }: { journeys: JourneyMeta[] 
       <div className="space-y-8">
         {journeys.map((journey) => {
           const isLeft = journey.chapter % 2 === 0;
+          const imagePath = getPhilosopherImage(journey.slug);
           return (
             <div
               key={journey.slug}
@@ -21,26 +23,66 @@ export default function JourneyTimeline({ journeys }: { journeys: JourneyMeta[] 
               />
               <div className={`ml-12 md:ml-0 ${isLeft ? "md:mr-auto md:pr-12" : "md:ml-auto md:pl-12"} md:w-1/2`}>
                 <Link href={`/sophies-journey/${journey.slug}`} className="block group">
-                  <div className="bg-white rounded-xl border border-sand p-5 hover:border-china-red/30 hover:shadow-sm transition-all">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span
-                        className="text-xs font-medium px-2 py-0.5 rounded-full text-white"
-                        style={{ backgroundColor: journey.color }}
-                      >
-                        {journey.chapter === 0 ? "Prologue" : journey.chapter === 11 ? "Epilogue" : `Chapter ${journey.chapter}`}
-                      </span>
-                      {journey.school && (
-                        <span className="text-xs text-warm">{journey.school}</span>
-                      )}
-                    </div>
-                    <h3 className="font-semibold text-ink group-hover:text-china-red transition-colors">
-                      {journey.title}
-                    </h3>
-                    <p className="text-sm text-warm mt-1">{journey.title_zh}</p>
-                    {journey.philosopher && (
-                      <p className="text-xs text-warm/70 mt-2">
-                        {journey.philosopher} {journey.philosopher_zh} · {journey.era}
-                      </p>
+                  <div className="bg-white rounded-xl border border-sand overflow-hidden hover:border-china-red/30 hover:shadow-sm transition-all">
+                    {imagePath ? (
+                      <div className="flex">
+                        {/* Portrait thumbnail */}
+                        <div className="relative w-20 sm:w-24 flex-shrink-0">
+                          <Image
+                            src={imagePath}
+                            alt={`${journey.philosopher} portrait`}
+                            width={96}
+                            height={144}
+                            className="object-cover object-top h-full group-hover:scale-105 transition-transform duration-500"
+                          />
+                        </div>
+                        {/* Text content */}
+                        <div className="flex-1 p-3 min-w-0">
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <span
+                              className="text-[10px] font-medium px-1.5 py-0.5 rounded text-white"
+                              style={{ backgroundColor: journey.color }}
+                            >
+                              {journey.chapter === 0 ? "Prologue" : journey.chapter === 11 ? "Epilogue" : `Ch.${journey.chapter}`}
+                            </span>
+                            {journey.school && (
+                              <span className="text-[10px] text-warm">{journey.school_zh}</span>
+                            )}
+                          </div>
+                          <h3 className="font-semibold text-ink group-hover:text-china-red transition-colors text-sm leading-tight">
+                            {journey.title}
+                          </h3>
+                          <p className="text-xs text-warm mt-0.5 truncate">{journey.title_zh}</p>
+                          {journey.philosopher && (
+                            <p className="text-[11px] text-warm/70 mt-1.5">
+                              {journey.philosopher} · {journey.era}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span
+                            className="text-xs font-medium px-2 py-0.5 rounded-full text-white"
+                            style={{ backgroundColor: journey.color }}
+                          >
+                            {journey.chapter === 0 ? "Prologue" : journey.chapter === 11 ? "Epilogue" : `Chapter ${journey.chapter}`}
+                          </span>
+                          {journey.school && (
+                            <span className="text-xs text-warm">{journey.school}</span>
+                          )}
+                        </div>
+                        <h3 className="font-semibold text-ink group-hover:text-china-red transition-colors">
+                          {journey.title}
+                        </h3>
+                        <p className="text-sm text-warm mt-1">{journey.title_zh}</p>
+                        {journey.philosopher && (
+                          <p className="text-xs text-warm/70 mt-2">
+                            {journey.philosopher} {journey.philosopher_zh} · {journey.era}
+                          </p>
+                        )}
+                      </div>
                     )}
                   </div>
                 </Link>
