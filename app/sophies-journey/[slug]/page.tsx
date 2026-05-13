@@ -118,9 +118,6 @@ export default async function JourneyStoryPage({
                     intro={introText}
                     name={journey.philosopher}
                     nameZh={journey.philosopher_zh}
-                    era={journey.era || ""}
-                    school={journey.school || ""}
-                    schoolZh={journey.school_zh || ""}
                     color={journey.color}
                   />
                 )}

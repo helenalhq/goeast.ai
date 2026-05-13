@@ -1,16 +1,13 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import AskPhilosopher from "./AskPhilosopher";
+import OracleOverlay from "./OracleOverlay";
 
 interface PhilosopherIntroProps {
   slug: string;
   intro: string;
   name: string;
   nameZh: string;
-  era: string;
-  school: string;
-  schoolZh: string;
   color: string;
 }
 
@@ -19,13 +16,10 @@ export default function PhilosopherIntro({
   intro,
   name,
   nameZh,
-  era,
-  school,
-  schoolZh,
   color,
 }: PhilosopherIntroProps) {
   const [introOpen, setIntroOpen] = useState(false);
-  const [askOpen, setAskOpen] = useState(false);
+  const [consultOpen, setConsultOpen] = useState(false);
   const [displayed, setDisplayed] = useState("");
   const [typing, setTyping] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -57,14 +51,14 @@ export default function PhilosopherIntro({
     }
   }, [introOpen, intro]);
 
-  const anyOpen = introOpen || askOpen;
+  const anyOpen = introOpen || consultOpen;
 
   return (
     <>
       {/* Floating buttons on the portrait */}
       <div className="absolute bottom-3 left-3 right-3 z-10 flex gap-2">
         <button
-          onClick={() => { setIntroOpen(true); setAskOpen(false); }}
+          onClick={() => { setIntroOpen(true); setConsultOpen(false); }}
           className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-full text-white text-[11px] font-medium backdrop-blur-sm transition-all hover:scale-105 active:scale-95 shadow-lg"
           style={{ backgroundColor: color }}
         >
@@ -75,15 +69,13 @@ export default function PhilosopherIntro({
           Meet
         </button>
         <button
-          onClick={() => { setAskOpen(true); setIntroOpen(false); }}
+          onClick={() => { setConsultOpen(true); setIntroOpen(false); }}
           className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-full text-white text-[11px] font-medium backdrop-blur-sm transition-all hover:scale-105 active:scale-95 shadow-lg bg-white/25 hover:bg-white/35"
         >
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10" />
-            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-            <line x1="12" y1="17" x2="12.01" y2="17" />
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
           </svg>
-          Ask
+          Consult
         </button>
       </div>
 
@@ -124,17 +116,14 @@ export default function PhilosopherIntro({
         </div>
       )}
 
-      {/* Ask overlay */}
-      {askOpen && (
-        <AskPhilosopher
+      {/* Consult overlay */}
+      {consultOpen && (
+        <OracleOverlay
           slug={slug}
           name={name}
           nameZh={nameZh}
-          era={era}
-          school={school}
-          schoolZh={schoolZh}
           color={color}
-          onClose={() => setAskOpen(false)}
+          onClose={() => setConsultOpen(false)}
         />
       )}
     </>
