@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
 import { getSkillSlugs } from "@/lib/skills";
+import { getJourneySlugs } from "@/lib/journeys";
 import { CATEGORIES } from "@/lib/types";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -19,6 +20,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
+  const journeyPages = getJourneySlugs().map((slug) => ({
+    url: `${baseUrl}/sophies-journey/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.8,
+  }));
+
   return [
     {
       url: baseUrl,
@@ -27,11 +35,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
+      url: `${baseUrl}/sophies-journey`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
       url: `${baseUrl}/skills`,
       lastModified: new Date(),
       changeFrequency: "daily",
-      priority: 0.9,
+      priority: 0.8,
     },
+    ...journeyPages,
     ...skillPages,
     ...categoryPages,
     {

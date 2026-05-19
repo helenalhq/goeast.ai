@@ -1,29 +1,49 @@
 /**
- * Creem payment integration helpers
+ * Creem payment integration — Supabase-backed
  * https://docs.creem.io
  */
 
+import type { SupabaseClient } from "@supabase/supabase-js";
+
 // Environment variables
-const CREEM_API_KEY = process.env.CREEM_API_KEY || '';
-const CREEM_WEBHOOK_SECRET = process.env.CREEM_WEBHOOK_SECRET || '';
+const CREEM_API_KEY = process.env.CREEM_API_KEY || "";
+const CREEM_WEBHOOK_SECRET = process.env.CREEM_WEBHOOK_SECRET || "";
 
 // Types
-export type SubscriptionStatus = "active" | "cancelled" | "expired";
+export type SubscriptionStatus =
+  | "inactive"
+  | "active"
+  | "scheduled_cancel"
+  | "cancelled"
+  | "expired"
+  | "past_due";
 
 export interface Subscription {
   id: string;
+  user_id: string;
+  creem_subscription_id: string | null;
+  creem_customer_id: string | null;
+  customer_email: string | null;
   status: SubscriptionStatus;
-  expiresAt: Date;
-  activatedAt: Date;
+  activated_at: string | null;
+  expires_at: string | null;
 }
 
 export interface CreemWebhookEvent {
   id: string;
-  type: string;
+  event_type: string;
   data: {
+    object?: {
+      id?: string;
+      current_period_end?: string;
+      customer?: {
+        id?: string;
+        email?: string;
+      };
+    };
     subscription?: {
       id: string;
-      status?: SubscriptionStatus;
+      status?: string;
       expires_at?: string;
     };
     customer?: {
@@ -36,147 +56,117 @@ export interface CreemWebhookEvent {
   signature?: string;
 }
 
-// In-memory subscription store (MVP - no database)
-const subscriptions = new Map<string, Subscription>();
-
 /**
- * Create a Creem checkout URL for a given price ID
- * @param priceId - The Creem price ID
- * @param successUrl - URL to redirect to after successful payment
- * @returns The checkout URL
+ * Verify a webhook signature from Creem using HMAC-SHA256
  */
-export function createCheckoutUrl(priceId: string, successUrl: string): string {
-  const baseUrl = 'https://checkout.creem.io';
-  const params = new URLSearchParams({
-    price_id: priceId,
-    success_url: successUrl,
-    cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/checkout/cancel`,
-  });
-
-  return `${baseUrl}?${params.toString()}`;
-}
-
-/**
- * Verify a webhook signature from Creem
- * MVP version: simple secret comparison
- * @param body - The raw webhook body as string
- * @param signature - The signature from the X-Creem-Signature header
- * @returns true if signature is valid, false otherwise
- */
-export function verifyWebhookSignature(body: string, signature: string): boolean {
-  // MVP: Simple secret comparison
-  // In production, you should use HMAC SHA256 verification
-  // as documented in https://docs.creem.io/webhooks
+export function verifyWebhookSignature(
+  body: string,
+  signature: string,
+): boolean {
   if (!CREEM_WEBHOOK_SECRET) {
-    console.warn('CREEM_WEBHOOK_SECRET not set');
+    console.warn("CREEM_WEBHOOK_SECRET not set");
     return false;
   }
-
-  // Basic check: signature should contain the secret
-  // This is a simplified MVP implementation
-  return signature.includes(CREEM_WEBHOOK_SECRET);
-}
-
-/**
- * Activate a subscription in the store
- * @param subscriptionId - The subscription ID
- * @param expiresAt - When the subscription expires
- */
-export function activateSubscription(subscriptionId: string, expiresAt: Date): void {
-  const now = new Date();
-
-  subscriptions.set(subscriptionId, {
-    id: subscriptionId,
-    status: 'active',
-    expiresAt,
-    activatedAt: now,
-  });
-}
-
-/**
- * Cancel a subscription in the store
- * @param subscriptionId - The subscription ID to cancel
- */
-export function cancelSubscription(subscriptionId: string): void {
-  const subscription = subscriptions.get(subscriptionId);
-
-  if (subscription) {
-    subscription.status = 'cancelled';
-    subscriptions.set(subscriptionId, subscription);
-  }
-}
-
-/**
- * Get the status of a subscription
- * @param subscriptionId - The subscription ID
- * @returns The subscription status or null if not found
- */
-export function getSubscriptionStatus(subscriptionId: string): SubscriptionStatus | null {
-  const subscription = subscriptions.get(subscriptionId);
-
-  if (!subscription) {
-    return null;
-  }
-
-  // Check if subscription has expired
-  if (subscription.status === 'active' && subscription.expiresAt < new Date()) {
-    subscription.status = 'expired';
-    subscriptions.set(subscriptionId, subscription);
-  }
-
-  return subscription.status;
-}
-
-/**
- * Get all subscriptions from the store
- * @returns Map of subscription ID to Subscription
- */
-export function getAllSubscriptions(): Map<string, Subscription> {
-  // Update expired subscriptions before returning
-  const now = new Date();
-
-  for (const [id, subscription] of subscriptions.entries()) {
-    if (subscription.status === 'active' && subscription.expiresAt < now) {
-      subscription.status = 'expired';
-      subscriptions.set(id, subscription);
-    }
-  }
-
-  return new Map(subscriptions);
-}
-
-/**
- * Get a single subscription by ID
- * @param subscriptionId - The subscription ID
- * @returns The subscription or null if not found
- */
-export function getSubscription(subscriptionId: string): Subscription | null {
-  const subscription = subscriptions.get(subscriptionId);
-
-  if (!subscription) {
-    return null;
-  }
-
-  // Update status if expired
-  if (subscription.status === 'active' && subscription.expiresAt < new Date()) {
-    subscription.status = 'expired';
-    subscriptions.set(subscriptionId, subscription);
-  }
-
-  return subscription;
-}
-
-/**
- * Clear all subscriptions (useful for testing)
- */
-export function clearAllSubscriptions(): void {
-  subscriptions.clear();
+  const crypto = require("crypto");
+  const computed = crypto
+    .createHmac("sha256", CREEM_WEBHOOK_SECRET)
+    .update(body)
+    .digest("hex");
+  return computed === signature;
 }
 
 /**
  * Check if API key is configured
- * @returns true if CREEM_API_KEY is set
  */
 export function isConfigured(): boolean {
   return !!CREEM_API_KEY && !!CREEM_WEBHOOK_SECRET;
+}
+
+/**
+ * Activate a subscription in Supabase, linking to user
+ */
+export async function activateSubscription(
+  supabase: SupabaseClient,
+  subscriptionId: string,
+  customerId: string | undefined,
+  customerEmail: string | undefined,
+  expiresAt: Date,
+  knownUserId?: string,
+): Promise<void> {
+  // Use the userId from checkout metadata if available (most reliable)
+  let userId: string | null = knownUserId ?? null;
+
+  // Fallback: find user by email in profiles
+  if (!userId && customerEmail) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("email", customerEmail)
+      .maybeSingle();
+    userId = profile?.id ?? null;
+  }
+
+  // Fallback: find user by email in auth.users
+  if (!userId && customerEmail) {
+    const { data } = await supabase
+      .from("subscriptions")
+      .select("user_id")
+      .eq("customer_email", customerEmail)
+      .not("user_id", "is", null)
+      .limit(1)
+      .maybeSingle();
+    userId = data?.user_id ?? null;
+  }
+
+  const result = await supabase.from("subscriptions").upsert(
+    {
+      user_id: userId,
+      creem_subscription_id: subscriptionId,
+      creem_customer_id: customerId ?? null,
+      customer_email: customerEmail ?? null,
+      status: "active",
+      activated_at: new Date().toISOString(),
+      expires_at: expiresAt.toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "creem_subscription_id" },
+  );
+  if (result.error) {
+    console.error("[creem] upsert error:", result.error.message);
+  }
+}
+
+/**
+ * Cancel / expire a subscription in Supabase
+ */
+export async function cancelSubscription(
+  supabase: SupabaseClient,
+  subscriptionId: string,
+  newStatus: "cancelled" | "expired" = "cancelled",
+): Promise<void> {
+  await supabase
+    .from("subscriptions")
+    .update({
+      status: newStatus,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("creem_subscription_id", subscriptionId);
+}
+
+/**
+ * Get a user's subscription by user ID
+ */
+export async function getSubscriptionByUserId(
+  supabase: SupabaseClient,
+  userId: string,
+): Promise<Subscription | null> {
+  const { data } = await supabase
+    .from("subscriptions")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  return data as Subscription | null;
 }

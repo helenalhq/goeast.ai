@@ -79,6 +79,10 @@ export function getPhilosopherImage(slug: string): string | null {
   return PHILOSOPHER_IMAGES[slug] ? `/images/${PHILOSOPHER_IMAGES[slug]}.png` : null;
 }
 
+export function getOraclePortrait(slug: string): string | null {
+  return PHILOSOPHER_IMAGES[slug] ? `/images/oracle/${PHILOSOPHER_IMAGES[slug]}.png` : null;
+}
+
 const PHILOSOPHER_INTROS: Record<string, string> = {
   "prologue-zhougong":
     "I am the Duke of Zhou. In the 11th century BCE, I helped establish the rites and music that would become the foundation of Chinese civilization for three thousand years. I am known as the interpreter of dreams, but what I truly read is the language of change itself. The I Ching, the Book of Changes, encodes every transformation in the universe within its broken and unbroken lines. You have come a long way, Sophie. Let me cast the yarrow stalks and see what the oracle says about your journey.",

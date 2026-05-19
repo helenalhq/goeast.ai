@@ -8,14 +8,14 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "GoEast.ai — Curated AI Skills for China",
+  title: "GoEast.ai — Sophie's Journey East | AI Skills for China",
   description:
-    "Discover curated AI skills for traveling, living, and doing business in China. Built for humans and AI agents.",
+    "Follow Sophie's Journey East through 3,000 years of Chinese philosophy. Plus curated AI skills for traveling and living in China.",
   metadataBase: new URL("https://goeast.ai"),
   openGraph: {
-    title: "GoEast.ai — Curated AI Skills for China",
+    title: "GoEast.ai — Sophie's Journey East | AI Skills for China",
     description:
-      "Discover curated AI skills for traveling, living, and doing business in China.",
+      "Follow Sophie's Journey East through 3,000 years of Chinese philosophy. Plus curated AI skills for traveling and living in China.",
     url: "https://goeast.ai",
     siteName: "GoEast.ai",
     type: "website",

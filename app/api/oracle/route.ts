@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import OpenAI from "openai";
 import { getOraclePrompt } from "@/lib/oracle-prompts";
-import { checkFreeLimit, checkPaidRateLimit } from "@/lib/rate-limit";
-import { getSubscriptionStatus } from "@/lib/creem";
+import { checkFreeLimit, checkAuthUserRateLimit } from "@/lib/rate-limit";
+import { getSubscriptionByUserId } from "@/lib/creem";
+import { createClient } from "@/lib/supabase/server";
 
 const openai = new OpenAI({
   apiKey: process.env.AZURE_OPENAI_API_KEY,
@@ -21,56 +22,82 @@ export async function POST(request: NextRequest) {
   const { philosopher, question } = body;
 
   if (!philosopher || !question || typeof question !== "string" || question.trim().length === 0) {
-    return NextResponse.json({ error: "philosopher and question are required" }, { status: 400 });
+    return new Response(JSON.stringify({ error: "philosopher and question are required" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   if (!VALID_SLUGS.includes(philosopher)) {
-    return NextResponse.json({ error: "Invalid philosopher" }, { status: 400 });
+    return new Response(JSON.stringify({ error: "Invalid philosopher" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   if (question.length > 500) {
-    return NextResponse.json({ error: "Question too long (max 500 characters)" }, { status: 400 });
+    return new Response(JSON.stringify({ error: "Question too long (max 500 characters)" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   const promptConfig = getOraclePrompt(philosopher);
   if (!promptConfig) {
-    return NextResponse.json({ error: "Philosopher not available for consultation" }, { status: 404 });
+    return new Response(JSON.stringify({ error: "Philosopher not available for consultation" }), {
+      status: 404,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
-  // Check authorization — paid or free
-  const authToken = request.headers.get("authorization")?.replace("Bearer ", "");
+  // Check authorization via Supabase session
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
   let isPaid = false;
 
-  if (authToken) {
-    const status = getSubscriptionStatus(authToken);
-    if (status === "active") {
-      if (!checkPaidRateLimit(authToken)) {
-        return NextResponse.json({ error: "Please wait 30 seconds between consultations" }, { status: 429 });
+  if (user) {
+    const subscription = await getSubscriptionByUserId(supabase, user.id);
+    if (subscription?.status === "active" || subscription?.status === "scheduled_cancel") {
+      const { allowed, remaining } = checkAuthUserRateLimit(user.id);
+      if (!allowed) {
+        return new Response(JSON.stringify({
+          error: "Daily consultation limit reached (10/day)",
+          code: "LIMIT_REACHED",
+          remaining: 0,
+        }), {
+          status: 429,
+          headers: { "Content-Type": "application/json" },
+        });
       }
       isPaid = true;
     }
   }
 
-  if (!isPaid) {
+  // Free tier (anonymous or unsubscribed)
+  const isDev = process.env.NODE_ENV === "development";
+
+  if (!isPaid && !isDev) {
     const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown";
     const ua = request.headers.get("user-agent") || "";
     const lang = request.headers.get("accept-language") || "";
     const { allowed } = checkFreeLimit(ip, ua, lang);
 
     if (!allowed) {
-      return NextResponse.json({
+      return new Response(JSON.stringify({
         error: "Daily free consultation limit reached",
         code: "LIMIT_REACHED",
         remaining: 0,
-      }, { status: 429 });
+      }), {
+        status: 429,
+        headers: { "Content-Type": "application/json" },
+      });
     }
   }
 
   const MODEL = process.env.AZURE_OPENAI_MODEL || "gpt-5.4-mini";
 
-// Call OpenAI
   try {
-    const completion = await openai.chat.completions.create({
+    const stream = await openai.chat.completions.create({
       model: MODEL,
       messages: [
         { role: "system", content: promptConfig.system },
@@ -78,17 +105,40 @@ export async function POST(request: NextRequest) {
       ],
       max_completion_tokens: Math.round(promptConfig.maxWords * 1.5),
       temperature: 0.8,
+      stream: true,
     });
 
-    const reading = completion.choices[0]?.message?.content || "The oracle is silent. Please try again.";
+    const encoder = new TextEncoder();
+    const readable = new ReadableStream({
+      async start(controller) {
+        try {
+          for await (const chunk of stream) {
+            const content = chunk.choices[0]?.delta?.content;
+            if (content) {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content })}\n\n`));
+            }
+          }
+          controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+          controller.close();
+        } catch (err) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: String(err) })}\n\n`));
+          controller.close();
+        }
+      },
+    });
 
-    return NextResponse.json({
-      reading,
-      philosopher,
-      model: MODEL,
+    return new Response(readable, {
+      headers: {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        Connection: "keep-alive",
+      },
     });
   } catch (error) {
     console.error("Oracle API error:", error);
-    return NextResponse.json({ error: "The oracle could not be reached. Please try again." }, { status: 500 });
+    return new Response(JSON.stringify({ error: "The oracle could not be reached. Please try again." }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }
