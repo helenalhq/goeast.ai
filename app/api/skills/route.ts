@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAllSkills } from "@/lib/skills";
-import { Category } from "@/lib/types";
+import { getAllSkills, getSkillBySlug } from "@/lib/skills";
+import { Category, CATEGORIES } from "@/lib/types";
 
 const PER_PAGE = 20;
 
@@ -13,6 +13,7 @@ export async function GET(request: NextRequest) {
   );
   const category = searchParams.get("category") as Category | null;
   const q = searchParams.get("q")?.toLowerCase() || "";
+  const full = searchParams.get("full") === "true";
 
   let skills = getAllSkills();
 
@@ -32,5 +33,29 @@ export async function GET(request: NextRequest) {
   const total = skills.length;
   const paged = skills.slice((page - 1) * perPage, page * perPage);
 
-  return NextResponse.json({ total, page, per_page: perPage, skills: paged });
+  const enriched = paged.map((s) => {
+    const catInfo = CATEGORIES.find((c) => c.id === s.category);
+    const result: Record<string, unknown> = {
+      ...s,
+      category_name: catInfo?.name || s.category,
+      category_name_zh: catInfo?.name_zh || "",
+      url: `https://goeast.ai/skills/${s.slug}`,
+    };
+    if (full) {
+      const fullSkill = getSkillBySlug(s.slug);
+      if (fullSkill) {
+        result.full_description = fullSkill.content;
+      }
+    }
+    return result;
+  });
+
+  return NextResponse.json(
+    { total, page, per_page: perPage, skills: enriched },
+    {
+      headers: {
+        Link: '<https://goeast.ai/llms.txt>; rel="service-desc", <https://goeast.ai/llms-full.txt>; rel="alternate"',
+      },
+    }
+  );
 }
