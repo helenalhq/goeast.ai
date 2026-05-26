@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Contact — GoEast.ai",
   description: "Get in touch with the GoEast.ai team",
+  alternates: { canonical: "/contact" },
 };
 
 export default function ContactPage() {

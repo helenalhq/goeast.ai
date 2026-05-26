@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Sophie's Journey East — GoEast.ai",
   description:
     "Having escaped the pages of a book, Sophie travels East and encounters China's greatest philosophers. A narrative exploration of Chinese thought.",
+  alternates: { canonical: "/sophies-journey" },
   openGraph: {
     title: "Sophie's Journey East — GoEast.ai",
     description:

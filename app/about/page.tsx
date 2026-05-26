@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: "About — GoEast.ai",
   description:
     "About GoEast.ai — curated AI skills for foreigners in China",
+  alternates: { canonical: "/about" },
 };
 
 export default function AboutPage() {

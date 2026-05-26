@@ -12,6 +12,13 @@ export const metadata: Metadata = {
   description:
     "Follow Sophie's Journey East through 3,000 years of Chinese philosophy. Plus curated AI skills for traveling and living in China.",
   metadataBase: new URL("https://goeast.ai"),
+  alternates: {
+    canonical: "/",
+    languages: {
+      en: "/",
+      zh: "/",
+    },
+  },
   openGraph: {
     title: "GoEast.ai — Sophie's Journey East | AI Skills for China",
     description:
@@ -19,6 +26,12 @@ export const metadata: Metadata = {
     url: "https://goeast.ai",
     siteName: "GoEast.ai",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "GoEast.ai — AI Skills for China",
+    description:
+      "Curated AI skills for navigating life in China. Travel, medical, shopping, accommodation — powered by AI.",
   },
 };
 

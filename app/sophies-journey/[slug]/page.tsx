@@ -25,6 +25,7 @@ export async function generateMetadata({
     description: meta.quote
       ? `${meta.quote} — ${meta.quote_source}`
       : `${meta.title} - ${meta.title_zh}`,
+    alternates: { canonical: `/sophies-journey/${slug}` },
     openGraph: {
       title: `${meta.title} — Sophie's Journey`,
       description: meta.quote || `${meta.title} - ${meta.title_zh}`,

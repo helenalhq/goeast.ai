@@ -4,7 +4,9 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "All Skills — GoEast.ai",
-  description: "Browse all curated AI skills for foreigners in China.",
+  description:
+    "Browse all curated AI skills for foreigners in China. 浏览精选的面向外国人的 AI 技能",
+  alternates: { canonical: "/skills" },
 };
 
 export default function SkillsPage() {

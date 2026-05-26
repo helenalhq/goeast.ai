@@ -19,6 +19,7 @@ export async function generateMetadata({
   return {
     title: `${catInfo.name} Skills — GoEast.ai`,
     description: `Curated AI skills for ${catInfo.name.toLowerCase()} in China`,
+    alternates: { canonical: `/categories/${category}` },
   };
 }
 

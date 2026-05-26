@@ -22,6 +22,7 @@ export async function generateMetadata({
   return {
     title: `${meta.title} — GoEast.ai`,
     description: `${meta.title} - ${meta.title_zh}. ${meta.tags.join(", ")}`,
+    alternates: { canonical: `/skills/${slug}` },
     openGraph: {
       title: `${meta.title} — GoEast.ai`,
       description: `${meta.title} - ${meta.title_zh}`,

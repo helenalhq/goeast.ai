@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Submit a Skill — GoEast.ai",
   description: "Submit an AI skill to the GoEast.ai directory",
+  alternates: { canonical: "/submit" },
 };
 
 export default function SubmitPage() {
