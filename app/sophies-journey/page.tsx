@@ -1,6 +1,7 @@
 import { getAllJourneys } from "@/lib/journeys";
 import JourneyTimeline from "@/components/JourneyTimeline";
 import PhilosopherCard from "@/components/PhilosopherCard";
+import JsonLd from "@/components/JsonLd";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -22,6 +23,16 @@ export default function JourneyLandingPage() {
   return (
     <>
       <section className="relative overflow-hidden">
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            name: "Sophie's Journey East — GoEast.ai",
+            description:
+              "A narrative exploration of Chinese philosophy through Sophie's encounters with China's greatest thinkers",
+            url: "https://goeast.ai/sophies-journey",
+          }}
+        />
         <div className="absolute inset-0 bg-gradient-to-br from-ink via-ink/90 to-gold/20" />
         <div className="relative max-w-4xl mx-auto px-4 py-20 text-center text-white">
           <p className="text-sm tracking-[0.3em] opacity-70 mb-4">苏菲的东方之旅</p>

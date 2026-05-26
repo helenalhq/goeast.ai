@@ -54,6 +54,32 @@ export default async function SkillDetailPage({
   return (
     <>
       <JsonLd data={jsonLd} />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: "https://goeast.ai",
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Skills",
+              item: "https://goeast.ai/skills",
+            },
+            {
+              "@type": "ListItem",
+              position: 3,
+              name: skill.title,
+              item: `https://goeast.ai/skills/${skill.slug}`,
+            },
+          ],
+        }}
+      />
       <article className="max-w-3xl mx-auto px-4 py-12">
         <nav className="text-sm text-warm mb-6 flex items-center gap-2">
           <Link

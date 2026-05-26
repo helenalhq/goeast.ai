@@ -4,6 +4,7 @@ import SkillCard from "@/components/SkillCard";
 import JourneyTimeline from "@/components/JourneyTimeline";
 import PhilosopherCard from "@/components/PhilosopherCard";
 import OracleCta from "@/components/OracleCta";
+import JsonLd from "@/components/JsonLd";
 import { getFeaturedSkills, getAllSkills, getSkillsByCategory } from "@/lib/skills";
 import { getAllJourneys } from "@/lib/journeys";
 import { CATEGORIES, type Category } from "@/lib/types";
@@ -15,6 +16,34 @@ export default function HomePage() {
 
   return (
     <>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "GoEast.ai",
+          url: "https://goeast.ai",
+          description:
+            "Curated AI skills for navigating life in China — travel, medical, shopping, accommodation.",
+          potentialAction: {
+            "@type": "SearchAction",
+            target: {
+              "@type": "EntryPoint",
+              urlTemplate: "https://goeast.ai/api/skills?q={search_term_string}",
+            },
+            "query-input": "required name=search_term_string",
+          },
+        }}
+      />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "GoEast.ai",
+          url: "https://goeast.ai",
+          logo: "https://goeast.ai/images/logo.png",
+          sameAs: ["https://github.com/helenalhq/goeast.ai"],
+        }}
+      />
       <Hero />
 
       {/* Journey Timeline */}

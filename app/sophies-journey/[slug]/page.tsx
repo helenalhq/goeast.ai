@@ -5,6 +5,7 @@ import { getJourneyWithHtml, getJourneySlugs, getAllJourneys } from "@/lib/journ
 import { getPhilosopherImage, getPhilosopherIntro } from "@/lib/types";
 import JourneyReader from "@/components/JourneyReader";
 import PhilosopherIntro from "@/components/PhilosopherIntro";
+import JsonLd from "@/components/JsonLd";
 import type { Metadata } from "next";
 
 export async function generateStaticParams() {
@@ -53,6 +54,58 @@ export default async function JourneyStoryPage({
 
   return (
     <article>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: journey.title,
+          description: journey.quote
+            ? `${journey.quote} — ${journey.quote_source}`
+            : `${journey.title} - ${journey.title_zh}`,
+          url: `https://goeast.ai/sophies-journey/${journey.slug}`,
+          ...(journey.philosopher && {
+            author: {
+              "@type": "Person",
+              name: journey.philosopher,
+            },
+          }),
+          publisher: {
+            "@type": "Organization",
+            name: "GoEast.ai",
+            url: "https://goeast.ai",
+            logo: {
+              "@type": "ImageObject",
+              url: "https://goeast.ai/images/logo.png",
+            },
+          },
+        }}
+      />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: "https://goeast.ai",
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Sophie's Journey",
+              item: "https://goeast.ai/sophies-journey",
+            },
+            {
+              "@type": "ListItem",
+              position: 3,
+              name: journey.title,
+              item: `https://goeast.ai/sophies-journey/${journey.slug}`,
+            },
+          ],
+        }}
+      />
       {/* Hero: side-by-side layout with portrait */}
       {heroImage && (
         <section className="relative w-full bg-[#faf5ef]">
