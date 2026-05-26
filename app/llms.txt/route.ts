@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
-import { getAllSkills, getFeaturedSkills } from "@/lib/skills";
+import { getAllSkills } from "@/lib/skills";
 import { getAllJourneys } from "@/lib/journeys";
 import { CATEGORIES } from "@/lib/types";
 
 export async function GET() {
   const allSkills = getAllSkills();
-  const featured = getFeaturedSkills();
   const journeys = getAllJourneys();
 
   const skillRows = allSkills.map(

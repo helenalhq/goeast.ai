@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server";
-import { getAllSkills } from "@/lib/skills";
-import { getAllJourneys } from "@/lib/journeys";
 import { CATEGORIES } from "@/lib/types";
 import fs from "fs";
 import path from "path";

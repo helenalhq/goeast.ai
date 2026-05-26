@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getSkillWithHtml, getSkillSlugs, getAllSkills } from "@/lib/skills";
-import { CATEGORIES } from "@/lib/types";
 import CategoryBadge from "@/components/CategoryBadge";
 import JsonLd from "@/components/JsonLd";
 import type { Metadata } from "next";
