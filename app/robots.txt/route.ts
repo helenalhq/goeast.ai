@@ -5,11 +5,18 @@ export async function GET() {
     "User-agent: *",
     "Allow: /",
     "",
-    "Sitemap: https://goeast.ai/sitemap.xml",
+    "# Disallow internal/sensitive routes",
+    "Disallow: /api/webhooks/",
+    "Disallow: /api/checkout/",
+    "Disallow: /api/oracle/",
+    "Disallow: /account/",
     "",
-    "# Agent resources",
-    "# llms.txt: https://goeast.ai/llms.txt",
-    "# JSON API: https://goeast.ai/api/skills",
+    "# AI Agent Resources",
+    "# Machine-readable index: https://goeast.ai/llms.txt",
+    "# Full content dump: https://goeast.ai/llms-full.txt",
+    "# Structured API: https://goeast.ai/api/skills",
+    "",
+    "Sitemap: https://goeast.ai/sitemap.xml",
   ].join("\n");
 
   return new NextResponse(content, {
