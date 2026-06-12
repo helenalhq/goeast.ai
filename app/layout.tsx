@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     "Follow Sophie's Journey East through 3,000 years of Chinese philosophy. Plus curated AI skills for traveling and living in China.",
   metadataBase: new URL("https://goeast.ai"),
   verification: {
-    google: "Kni6v5IMWNVO2StDAN_16Zor7UcQ6QPZ4xG4vNtY0Rg",
+    google: "3z9kuvrOqe9ZRP7GWl7mi2AO4FERHhlnFe59ryDsAHY",
   },
   alternates: {
     canonical: "/",
