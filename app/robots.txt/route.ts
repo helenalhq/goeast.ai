@@ -12,11 +12,11 @@ export async function GET() {
     "Disallow: /account/",
     "",
     "# AI Agent Resources",
-    "# Machine-readable index: https://goeast.ai/llms.txt",
-    "# Full content dump: https://goeast.ai/llms-full.txt",
-    "# Structured API: https://goeast.ai/api/skills",
+    "# Machine-readable index: https://www.goeast.ai/llms.txt",
+    "# Full content dump: https://www.goeast.ai/llms-full.txt",
+    "# Structured API: https://www.goeast.ai/api/skills",
     "",
-    "Sitemap: https://goeast.ai/sitemap.xml",
+    "Sitemap: https://www.goeast.ai/sitemap.xml",
   ].join("\n");
 
   return new NextResponse(content, {

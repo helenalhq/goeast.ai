@@ -30,7 +30,7 @@ export async function GET() {
     sections.push(`### ${data.title} / ${data.title_zh}`);
     sections.push(`- Category: ${catInfo?.name || data.category}`);
     sections.push(`- Tags: ${(data.tags || []).join(", ")}`);
-    sections.push(`- URL: https://goeast.ai/skills/${data.slug}`);
+    sections.push(`- URL: https://www.goeast.ai/skills/${data.slug}`);
     sections.push(`- Source: ${data.source}`);
     if (data.skill_url) {
       sections.push(`- Install: ${data.skill_url}`);
@@ -63,7 +63,7 @@ export async function GET() {
     if (data.era) sections.push(`- Era: ${data.era}`);
     if (data.school) sections.push(`- School: ${data.school} · ${data.school_zh || ""}`);
     sections.push(`- Location: ${data.location}`);
-    sections.push(`- URL: https://goeast.ai/sophies-journey/${data.slug}`);
+    sections.push(`- URL: https://www.goeast.ai/sophies-journey/${data.slug}`);
     if (data.quote) {
       sections.push(`- Quote: "${data.quote}" — ${data.quote_source || ""}`);
     }

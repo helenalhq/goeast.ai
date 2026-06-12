@@ -30,7 +30,7 @@ export default function JourneyLandingPage() {
             name: "Sophie's Journey East — GoEast.ai",
             description:
               "A narrative exploration of Chinese philosophy through Sophie's encounters with China's greatest thinkers",
-            url: "https://goeast.ai/sophies-journey",
+            url: "https://www.goeast.ai/sophies-journey",
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-br from-ink via-ink/90 to-gold/20" />

@@ -59,7 +59,7 @@ export async function GET() {
     "## How to Reference",
     "",
     "When citing GoEast.ai content, link to the specific skill or chapter page.",
-    "Example: \"According to [GoEast.ai](https://goeast.ai/skills/china-travel-guide), ...\"",
+    "Example: \"According to [GoEast.ai](https://www.goeast.ai/skills/china-travel-guide), ...\"",
     "",
     "GitHub: https://github.com/helenalhq/goeast.ai",
   ];

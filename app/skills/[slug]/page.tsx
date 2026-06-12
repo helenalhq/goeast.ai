@@ -45,7 +45,7 @@ export default async function SkillDetailPage({
     name: skill.title,
     description: `${skill.title} - ${skill.title_zh}`,
     applicationCategory: skill.category,
-    url: `https://goeast.ai/skills/${skill.slug}`,
+    url: `https://www.goeast.ai/skills/${skill.slug}`,
     operatingSystem: "AI Agent",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   };
@@ -62,19 +62,19 @@ export default async function SkillDetailPage({
               "@type": "ListItem",
               position: 1,
               name: "Home",
-              item: "https://goeast.ai",
+              item: "https://www.goeast.ai",
             },
             {
               "@type": "ListItem",
               position: 2,
               name: "Skills",
-              item: "https://goeast.ai/skills",
+              item: "https://www.goeast.ai/skills",
             },
             {
               "@type": "ListItem",
               position: 3,
               name: skill.title,
-              item: `https://goeast.ai/skills/${skill.slug}`,
+              item: `https://www.goeast.ai/skills/${skill.slug}`,
             },
           ],
         }}

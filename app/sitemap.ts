@@ -4,7 +4,7 @@ import { getJourneySlugs } from "@/lib/journeys";
 import { CATEGORIES } from "@/lib/types";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://goeast.ai";
+  const baseUrl = "https://www.goeast.ai";
 
   const skillPages = getSkillSlugs().map((slug) => ({
     url: `${baseUrl}/skills/${slug}`,

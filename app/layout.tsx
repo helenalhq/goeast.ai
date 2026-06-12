@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: "GoEast.ai — Sophie's Journey East | AI Skills for China",
   description:
     "Follow Sophie's Journey East through 3,000 years of Chinese philosophy. Plus curated AI skills for traveling and living in China.",
-  metadataBase: new URL("https://goeast.ai"),
+  metadataBase: new URL("https://www.goeast.ai"),
   verification: {
     google: "3z9kuvrOqe9ZRP7GWl7mi2AO4FERHhlnFe59ryDsAHY",
   },
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     title: "GoEast.ai — Sophie's Journey East | AI Skills for China",
     description:
       "Follow Sophie's Journey East through 3,000 years of Chinese philosophy. Plus curated AI skills for traveling and living in China.",
-    url: "https://goeast.ai",
+    url: "https://www.goeast.ai",
     siteName: "GoEast.ai",
     type: "website",
   },

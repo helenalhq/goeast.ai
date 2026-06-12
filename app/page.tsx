@@ -21,14 +21,14 @@ export default function HomePage() {
           "@context": "https://schema.org",
           "@type": "WebSite",
           name: "GoEast.ai",
-          url: "https://goeast.ai",
+          url: "https://www.goeast.ai",
           description:
             "Curated AI skills for navigating life in China — travel, medical, shopping, accommodation.",
           potentialAction: {
             "@type": "SearchAction",
             target: {
               "@type": "EntryPoint",
-              urlTemplate: "https://goeast.ai/api/skills?q={search_term_string}",
+              urlTemplate: "https://www.goeast.ai/api/skills?q={search_term_string}",
             },
             "query-input": "required name=search_term_string",
           },
@@ -39,8 +39,8 @@ export default function HomePage() {
           "@context": "https://schema.org",
           "@type": "Organization",
           name: "GoEast.ai",
-          url: "https://goeast.ai",
-          logo: "https://goeast.ai/images/logo.png",
+          url: "https://www.goeast.ai",
+          logo: "https://www.goeast.ai/images/logo.png",
           sameAs: ["https://github.com/helenalhq/goeast.ai"],
         }}
       />

@@ -20,7 +20,7 @@ export default function SkillsPage() {
           "@type": "CollectionPage",
           name: "All AI Skills — GoEast.ai",
           description: "Browse all curated AI skills for foreigners in China",
-          url: "https://goeast.ai/skills",
+          url: "https://www.goeast.ai/skills",
         }}
       />
       <h1 className="text-3xl font-bold text-ink mb-2">All Skills</h1>

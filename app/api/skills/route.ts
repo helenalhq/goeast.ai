@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
       ...s,
       category_name: catInfo?.name || s.category,
       category_name_zh: catInfo?.name_zh || "",
-      url: `https://goeast.ai/skills/${s.slug}`,
+      url: `https://www.goeast.ai/skills/${s.slug}`,
     };
     if (full) {
       const fullSkill = getSkillBySlug(s.slug);
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     { total, page, per_page: perPage, skills: enriched },
     {
       headers: {
-        Link: '<https://goeast.ai/llms.txt>; rel="service-desc", <https://goeast.ai/llms-full.txt>; rel="alternate"',
+        Link: '<https://www.goeast.ai/llms.txt>; rel="service-desc", <https://www.goeast.ai/llms-full.txt>; rel="alternate"',
       },
     }
   );

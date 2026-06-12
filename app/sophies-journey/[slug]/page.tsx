@@ -62,7 +62,7 @@ export default async function JourneyStoryPage({
           description: journey.quote
             ? `${journey.quote} — ${journey.quote_source}`
             : `${journey.title} - ${journey.title_zh}`,
-          url: `https://goeast.ai/sophies-journey/${journey.slug}`,
+          url: `https://www.goeast.ai/sophies-journey/${journey.slug}`,
           ...(journey.philosopher && {
             author: {
               "@type": "Person",
@@ -72,10 +72,10 @@ export default async function JourneyStoryPage({
           publisher: {
             "@type": "Organization",
             name: "GoEast.ai",
-            url: "https://goeast.ai",
+            url: "https://www.goeast.ai",
             logo: {
               "@type": "ImageObject",
-              url: "https://goeast.ai/images/logo.png",
+              url: "https://www.goeast.ai/images/logo.png",
             },
           },
         }}
@@ -89,19 +89,19 @@ export default async function JourneyStoryPage({
               "@type": "ListItem",
               position: 1,
               name: "Home",
-              item: "https://goeast.ai",
+              item: "https://www.goeast.ai",
             },
             {
               "@type": "ListItem",
               position: 2,
               name: "Sophie's Journey",
-              item: "https://goeast.ai/sophies-journey",
+              item: "https://www.goeast.ai/sophies-journey",
             },
             {
               "@type": "ListItem",
               position: 3,
               name: journey.title,
-              item: `https://goeast.ai/sophies-journey/${journey.slug}`,
+              item: `https://www.goeast.ai/sophies-journey/${journey.slug}`,
             },
           ],
         }}
