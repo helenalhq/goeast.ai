@@ -3,6 +3,7 @@ import { getSkillSlugs } from "@/lib/skills";
 import { getJourneySlugs } from "@/lib/journeys";
 import { getPhilosopherSlugs } from "@/lib/philosophers";
 import { CATEGORIES } from "@/lib/types";
+import { getAllHexagrams } from "@/lib/iching-data";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://www.goeast.ai";
@@ -35,6 +36,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
+  const ichingHexagramPages = getAllHexagrams().map((h) => ({
+    url: `${baseUrl}/iching/${h.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
   return [
     {
       url: baseUrl,
@@ -56,10 +64,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     ...journeyPages,
     ...philosopherPages,
+    ...ichingHexagramPages,
     ...skillPages,
     ...categoryPages,
     {
       url: `${baseUrl}/philosophers`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/iching`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.9,
