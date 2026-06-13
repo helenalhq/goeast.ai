@@ -72,6 +72,28 @@ export default function HomePage() {
               <PhilosopherCard key={journey.slug} journey={journey} />
             ))}
         </div>
+        <div className="text-center mt-8">
+          <Link
+            href="/philosophers"
+            className="text-china-red hover:text-china-red/80 text-sm font-medium transition-colors"
+          >
+            Explore all philosophers →
+          </Link>
+        </div>
+      </section>
+
+      {/* I Ching Entry */}
+      <section className="max-w-4xl mx-auto px-4 py-16 border-t border-sand text-center">
+        <h2 className="text-2xl font-bold text-ink mb-2">I Ching · 易经</h2>
+        <p className="text-warm mb-4">
+          The Book of Changes — 3,000 years of wisdom encoded in 64 hexagrams
+        </p>
+        <Link
+          href="/iching"
+          className="inline-block px-6 py-2.5 rounded-full bg-china-red text-white font-medium text-sm hover:bg-china-red/90 transition-colors"
+        >
+          Explore the I Ching →
+        </Link>
       </section>
 
       {/* Oracle Subscription CTA */}

@@ -10,6 +10,8 @@ export default function Footer() {
         </div>
         <div className="flex gap-6 text-sm text-warm">
           <Link href="/#journey" className="hover:text-china-red transition-colors">Journey</Link>
+          <Link href="/philosophers" className="hover:text-china-red transition-colors">Philosophers</Link>
+          <Link href="/iching" className="hover:text-china-red transition-colors">I Ching</Link>
           <Link href="/skills" className="hover:text-china-red transition-colors">Skills</Link>
           <Link href="/account" className="hover:text-china-red transition-colors">Account</Link>
           <Link href="/llms.txt" className="hover:text-china-red transition-colors">For Agents</Link>

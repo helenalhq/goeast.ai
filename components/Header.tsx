@@ -56,6 +56,18 @@ export default function Header() {
             The Journey
           </Link>
           <Link
+            href="/philosophers"
+            className="text-warm hover:text-china-red transition-colors"
+          >
+            Philosophers
+          </Link>
+          <Link
+            href="/iching"
+            className="text-warm hover:text-china-red transition-colors"
+          >
+            I Ching
+          </Link>
+          <Link
             href="/skills"
             className="text-warm hover:text-china-red transition-colors"
           >
