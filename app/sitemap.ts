@@ -1,6 +1,7 @@
 import { MetadataRoute } from "next";
 import { getSkillSlugs } from "@/lib/skills";
 import { getJourneySlugs } from "@/lib/journeys";
+import { getPhilosopherSlugs } from "@/lib/philosophers";
 import { CATEGORIES } from "@/lib/types";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -27,6 +28,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
+  const philosopherPages = getPhilosopherSlugs().map((slug) => ({
+    url: `${baseUrl}/philosophers/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.8,
+  }));
+
   return [
     {
       url: baseUrl,
@@ -47,8 +55,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     ...journeyPages,
+    ...philosopherPages,
     ...skillPages,
     ...categoryPages,
+    {
+      url: `${baseUrl}/philosophers`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
     {
       url: `${baseUrl}/about`,
       lastModified: new Date(),
