@@ -30,23 +30,23 @@ modern_influence_zh: |
 core_concepts:
   - name: Innate Goodness (Xing Shan)
     name_zh: 性善论
-    description: Mencius's central philosophical claim: human nature is fundamentally good. Every person carries four innate "sprouts" — compassion, shame, respect, and the sense of right and wrong — which are the seeds of the four cardinal virtues. These sprouts need cultivation, not creation. Evil arises not from nature but from neglect, abuse, or perverse conditioning that kills the sprouts before they can grow.
-    description_zh: 孟子的核心哲学主张：人性本善。每个人天生携带四个"萌芽"——恻隐、羞恶、恭敬、是非——是四种核心德行的种子。这些萌芽需要培育而非创造。恶不来自本性而来自忽视、虐待或扭曲的教养，后者在萌芽能够生长之前便扼杀了它们。
+    description: "Mencius's central philosophical claim: human nature is fundamentally good. Every person carries four innate \"sprouts\" — compassion, shame, respect, and the sense of right and wrong — which are the seeds of the four cardinal virtues. These sprouts need cultivation, not creation. Evil arises not from nature but from neglect, abuse, or perverse conditioning that kills the sprouts before they can grow."
+    description_zh: "孟子的核心哲学主张：人性本善。每个人天生携带四个\"萌芽\"——恻隐、羞恶、恭敬、是非——是四种核心德行的种子。这些萌芽需要培育而非创造。恶不来自本性而来自忽视、虐待或扭曲的教养，后者在萌芽能够生长之前便扼杀了它们。"
   - name: Benevolent Governance (Ren Zheng)
     name_zh: 仁政
-    description: Mencius's political program: rulers must govern through compassion rather than coercion, providing for the people's basic needs before demanding their loyalty. "When the people have constant livelihood, they will have constant hearts; when they lack constant livelihood, they will lack constant hearts." Benevolent governance is not charity but the precondition for a stable, moral society.
-    description_zh: 孟子的政治纲领：统治者必须以同情而非胁迫治理，先满足人民基本需要再要求其忠诚。"民有恒产则有恒心，无恒产则无恒心。"仁政不是慈善而是稳定道德社会的前提。
+    description: "Mencius's political program: rulers must govern through compassion rather than coercion, providing for the people's basic needs before demanding their loyalty. \"When the people have constant livelihood, they will have constant hearts; when they lack constant livelihood, they will lack constant hearts.\" Benevolent governance is not charity but the precondition for a stable, moral society."
+    description_zh: "孟子的政治纲领：统治者必须以同情而非胁迫治理，先满足人民基本需要再要求其忠诚。\"民有恒产则有恒心，无恒产则无恒心。\"仁政不是慈善而是稳定道德社会的前提。"
   - name: The Four Sprouts
     name_zh: 四端
-    description: Mencius identifies four innate moral tendencies: compassion (*ceyin*) that grows into humaneness (*ren*), shame (*xiwu*) that grows into righteousness (*yi*), respect (*cirang*) that grows into propriety (*li*), and moral discernment (*shifei*) that grows into wisdom (*zhi*). These are not fully formed virtues but potentialities — like seeds that need water, sunlight, and good soil to become trees.
+    description: "Mencius identifies four innate moral tendencies: compassion (*ceyin*) that grows into humaneness (*ren*), shame (*xiwu*) that grows into righteousness (*yi*), respect (*cirang*) that grows into propriety (*li*), and moral discernment (*shifei*) that grows into wisdom (*zhi*). These are not fully formed virtues but potentialities — like seeds that need water, sunlight, and good soil to become trees."
     description_zh: 孟子识别四种先天道德倾向：恻隐之心长为仁，羞恶之心长为义，恭敬之心长为礼，是非之心长为智。这些不是已成形的德行而是潜能——如需要水、阳光与好土才能长成树的种子。
   - name: Noble Spirit (Haoran Zhi Qi)
     name_zh: 浩然之气
-    description: Mencius describes a cultivated moral energy — "the vast, resolute qi" — that fills the body and spirit of the person who has consistently practiced righteousness. It is not physical courage but moral courage: the unwavering commitment to principle that persists even when doing right leads to suffering. "It is produced by accumulated righteousness and cannot be obtained by sporadic acts."
-    description_zh: 孟子描述了一种修习的道德能量——"浩然之气"——充满持续践行正义者的身体与精神。这不是身体的勇气而是道德勇气：即使做正确的事导致痛苦也不动摇的原则承诺。"其为气也，配义与道；无是，馁也。是集义所生者，非义袭而取之也。"
+    description: "Mencius describes a cultivated moral energy — \"the vast, resolute qi\" — that fills the body and spirit of the person who has consistently practiced righteousness. It is not physical courage but moral courage: the unwavering commitment to principle that persists even when doing right leads to suffering. \"It is produced by accumulated righteousness and cannot be obtained by sporadic acts.\""
+    description_zh: "孟子描述了一种修习的道德能量——\"浩然之气\"——充满持续践行正义者的身体与精神。这不是身体的勇气而是道德勇气：即使做正确的事导致痛苦也不动摇的原则承诺。\"其为气也，配义与道；无是，馁也。是集义所生者，非义袭而取之也。\""
   - name: People as Foundation (Minben)
     name_zh: 民本
-    description: Mencius's revolutionary political principle: the people are the most important element, the state is secondary, the ruler is least. Legitimacy flows from popular welfare, not from divine appointment or military power. A ruler who oppresses his people is not a ruler but a tyrant, and the people have the right — even the duty — to resist him.
+    description: "Mencius's revolutionary political principle: the people are the most important element, the state is secondary, the ruler is least. Legitimacy flows from popular welfare, not from divine appointment or military power. A ruler who oppresses his people is not a ruler but a tyrant, and the people have the right — even the duty — to resist him."
     description_zh: 孟子的革命性政治原则：人民最重要，国家其次，君主最轻。合法性来自民生而非天命或武力。压迫人民的统治者不是君主而是暴君，人民有权——甚至有义务——反抗他。
 quotes:
   - text: "The people are the most important element in a state; the altars of the soil and grain are next; the sovereign is the least."
@@ -83,8 +83,8 @@ quotes:
     text_zh: "富贵不能淫，贫贱不能移，威武不能屈，此之谓大丈夫。"
     source: "Mencius, 3B.2"
     source_zh: "《孟子·滕文公下》"
-    interpretation: Mencius defines the "great man" — not by wealth or power but by moral integrity that remains unwavering regardless of circumstance. Riches cannot corrupt him, poverty cannot deflect him, violence cannot bend him. True greatness is not what you achieve but what you refuse to compromise.
-    interpretation_zh: 孟子定义"大丈夫"——不以财富或权力而是以无论境遇如何都不动摇的道德整全。富贵不能腐蚀他，贫贱不能转移他，威武不能屈服他。真正的伟大不是你成就了什么而是你拒绝妥协什么。
+    interpretation: "Mencius defines the \"great man\" — not by wealth or power but by moral integrity that remains unwavering regardless of circumstance. Riches cannot corrupt him, poverty cannot deflect him, violence cannot bend him. True greatness is not what you achieve but what you refuse to compromise."
+    interpretation_zh: "孟子定义\"大丈夫\"——不以财富或权力而是以无论境遇如何都不动摇的道德整全。富贵不能腐蚀他，贫贱不能转移他，威武不能屈服他。真正的伟大不是你成就了什么而是你拒绝妥协什么。"
   - text: "The vast, resolute qi is produced by accumulated righteousness and cannot be obtained by sporadic acts. It fills the space between heaven and earth."
     text_zh: "其为气也，至大至刚，以直养而无害，则塞于天地之间。其为气也，配义与道；无是，馁也。是集义所生者，非义袭而取之也。"
     source: "Mencius, 2A.2"

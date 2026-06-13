@@ -31,7 +31,7 @@ core_concepts:
   - name: The Tao (The Way)
     name_zh: 道
     description: The Tao is the unnamed, ungraspable source of all things — the pattern behind patterns, the movement that moves without moving. It cannot be defined because definition limits, and the Tao is limitless. Laozi opens his masterpiece by declaring that the Tao that can be spoken is not the eternal Tao, making the failure of language itself the first lesson.
-    description_zh: 是无名、不可把握的万物之源——模式背后的模式，运动而不动的运动。它无法被定义，因为定义即限制，而道是无限的。老子开篇便宣告"道可道，非常道"，使语言本身的失败成为第一课。
+    description_zh: "是无名、不可把握的万物之源——模式背后的模式，运动而不动的运动。它无法被定义，因为定义即限制，而道是无限的。老子开篇便宣告\"道可道，非常道\"，使语言本身的失败成为第一课。"
   - name: Wu Wei (Non-Action)
     name_zh: 无为
     description: Wu wei is not passivity but the art of acting in alignment with natural tendencies — like a skilled sailor who reads the wind rather than fights it. The highest efficacy comes from the least effort, because effort applied against the grain of reality creates resistance. Water does not try to flow downhill; it simply flows.
@@ -42,11 +42,11 @@ core_concepts:
     description_zh: 老子观察到最柔的水侵蚀最坚的石。牙齿坚硬而早衰，牙龈柔软而终身。这不是浪漫主义而是物理学——柔韧者适应，刚硬者碎裂。在每一系统中，退让者持久，抗拒者粉碎。
   - name: Emptiness and Usefulness
     name_zh: 空无与功用
-    description: A cup is useful because of its emptiness; a room is livable because of its space; a wheel works because of the hole at its center. Laozi's paradox: what makes things functional is not their substance but their void. This principle extends from architecture to psychology — the mind that retains no fixed ideas can respond to any situation.
+    description: "A cup is useful because of its emptiness; a room is livable because of its space; a wheel works because of the hole at its center. Laozi's paradox: what makes things functional is not their substance but their void. This principle extends from architecture to psychology — the mind that retains no fixed ideas can respond to any situation."
     description_zh: 杯子因空而有用；房间因空间而宜居；车轮因中心的孔洞而运转。老子的悖论：使事物发挥功能的不是其实体而是其虚空。这一原则从建筑延伸到心理学——不留固见之心可回应任何情境。
   - name: Return to the Uncarved Block
     name_zh: 复归于朴
-    description: The *pu* — uncarved wood — represents original nature before society carves it into shapes. Laozi advocates returning to this state: not childish innocence but mature simplicity, the wisdom that has passed through complexity and chosen simplicity over it. The carved block can only be one thing; the uncarved block can become anything.
+    description: "The *pu* — uncarved wood — represents original nature before society carves it into shapes. Laozi advocates returning to this state: not childish innocence but mature simplicity, the wisdom that has passed through complexity and chosen simplicity over it. The carved block can only be one thing; the uncarved block can become anything."
     description_zh: 朴——未雕之木——代表社会雕琢之前的原始本性。老子主张回归此境：非幼稚天真而是成熟简约，是穿越复杂性后选择简朴的智慧。雕成的木块只能是一种东西；未雕的木块可以成为任何东西。
 quotes:
   - text: "The Tao that can be told is not the eternal Tao. The name that can be named is not the eternal name."
@@ -65,31 +65,31 @@ quotes:
     text_zh: "知人者智，自知者明。胜人者有力，自胜者强。"
     source: "Tao Te Ching, Chapter 33"
     source_zh: "《道德经》第三十三章"
-    interpretation: Laozi reverses the conventional valuation: internal mastery outranks external mastery. To know yourself — your patterns, your tendencies, your limits — is harder and more valuable than any outward achievement. True strength is self-overcoming.
+    interpretation: "Laozi reverses the conventional valuation: internal mastery outranks external mastery. To know yourself — your patterns, your tendencies, your limits — is harder and more valuable than any outward achievement. True strength is self-overcoming."
     interpretation_zh: 老子翻转了常规价值排序：内在超越胜于外在征服。认识自己——你的模式、倾向、局限——比任何外在成就更难也更宝贵。真正的力量是自我克服。
   - text: "The soft overcomes the hard, and the weak overcomes the strong. Everyone knows this, but no one practices it."
     text_zh: "柔之胜刚，弱之胜强，天下莫不知，莫能行。"
     source: "Tao Te Ching, Chapter 78"
     source_zh: "《道德经》第七十八章"
-    interpretation: Laozi notes a universal failure: people understand the principle of softness intellectually but cannot live by it. The knowledge that yielding wins is easy; the practice of actually yielding requires a transformation of ego that most people refuse.
+    interpretation: "Laozi notes a universal failure: people understand the principle of softness intellectually but cannot live by it. The knowledge that yielding wins is easy; the practice of actually yielding requires a transformation of ego that most people refuse."
     interpretation_zh: 老子指出一个普遍的失败：人们在理智上理解柔弱之胜的原则，却无法依之生活。知道退让能赢是容易的；实际退让则需要大多数人拒绝的自我转变。
   - text: "When I let go of what I am, I become what I might be. When I let go of what I have, I receive what I need."
     text_zh: "无为而无不为。执者失之，为者败之。"
     source: "Tao Te Ching, Chapters 48 and 29"
     source_zh: "《道德经》第四十八、二十九章"
-    interpretation: Laozi's paradox of attainment: grasping destroys what you grasp; releasing opens what you need. The Tao operates through subtraction — each day learn less, hold less, assert less, and the way becomes clearer.
+    interpretation: "Laozi's paradox of attainment: grasping destroys what you grasp; releasing opens what you need. The Tao operates through subtraction — each day learn less, hold less, assert less, and the way becomes clearer."
     interpretation_zh: 老子关于获得的悖论：执取毁坏你所执取之物；释放打开你所需要之物。道以减法运作——每日少学、少持、少主张，道路便更清晰。
   - text: "A journey of a thousand miles begins beneath your feet."
     text_zh: "千里之行，始于足下。"
     source: "Tao Te Ching, Chapter 64"
     source_zh: "《道德经》第六十四章"
-    interpretation: Not "begins with a single step" as often mistranslated, but begins beneath your feet — right here, right now, with what you are already standing on. The grand journey does not require a grand beginning; it requires only the willingness to start from where you actually are.
-    interpretation_zh: 并非通常误译的"始于一步"，而是始于足下——就在此处、此刻，从你已站立的地方。宏大的旅程不需要宏大的开端；它只需要从你实际所在之处开始的意愿。
+    interpretation: "Not \"begins with a single step\" as often mistranslated, but begins beneath your feet — right here, right now, with what you are already standing on. The grand journey does not require a grand beginning; it requires only the willingness to start from where you actually are."
+    interpretation_zh: "并非通常误译的\"始于一步\"，而是始于足下——就在此处、此刻，从你已站立的地方。宏大的旅程不需要宏大的开端；它只需要从你实际所在之处开始的意愿。"
   - text: "The Tao does nothing, but leaves nothing undone. When the ruler follows the Tao, the people transform themselves."
     text_zh: "道常无为而无不为。侯王若能守之，万物将自化。"
     source: "Tao Te Ching, Chapter 37"
     source_zh: "《道德经》第三十七章"
-    interpretation: The central political teaching of Daoism: the best governance works through non-interference, creating conditions where natural self-organization emerges. People transform themselves when the environment is right — they do not need to be forced or programmed.
+    interpretation: "The central political teaching of Daoism: the best governance works through non-interference, creating conditions where natural self-organization emerges. People transform themselves when the environment is right — they do not need to be forced or programmed."
     interpretation_zh: 道家核心政治教诲：最好的治理通过不干预运作，创造自然自组织涌现的条件。环境对时，人们自行转化——无需强迫或规划。
   - text: "He who stands on tiptoe is not steady. He who strides cannot maintain the pace. He who displays himself does not shine. He who justifies himself has no glory."
     text_zh: "企者不立，跨者不行，自见者不明，自是者不彰。"

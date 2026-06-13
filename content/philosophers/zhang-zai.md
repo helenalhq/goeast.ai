@@ -30,38 +30,38 @@ modern_influence_zh: |
 core_concepts:
   - name: Qi as Ultimate Reality
     name_zh: 气本论
-    description: Zhang Zai's foundational metaphysical claim: qi — vital energy, material force — is the sole substance of reality. The Great Void (taixu) is not empty but qi in its dispersed, invisible state; visible objects are qi in its condensed, tangible state. Everything that exists is a temporary configuration of qi, and every configuration will eventually disperse back into the void. There is no creation from nothing and no annihilation into nothing — only perpetual transformation between visible and invisible states of the same substance.
+    description: "Zhang Zai's foundational metaphysical claim: qi — vital energy, material force — is the sole substance of reality. The Great Void (taixu) is not empty but qi in its dispersed, invisible state; visible objects are qi in its condensed, tangible state. Everything that exists is a temporary configuration of qi, and every configuration will eventually disperse back into the void. There is no creation from nothing and no annihilation into nothing — only perpetual transformation between visible and invisible states of the same substance."
     description_zh: 张载的基础形而上学主张：气——元气、物质力量——是现实的唯一实体。太虚不是空的而是气的散而无形的状态；可见之物是气的聚而有形的形态。一切存在都是气的暂时配置，每一配置终将消散回归虚空。没有从无创造也没有归于无——只有同一物质的可见与不可见状态之间的永恒转化。
   - name: The Four Vows (Hengqu Si Ju)
     name_zh: 横渠四句
-    description: Zhang Zai's defining statement of intellectual purpose: "For heaven and earth, I set my heart; for the people, I establish destiny; for past sages, I continue the lost learning; for ten thousand generations, I open peace." These four vows define the scholar's responsibility as cosmic, civic, cultural, and intergenerational — knowledge serves not the self but the totality of existence across all scales of time and space.
-    description_zh: 张载定义知识理想的声明："为天地立心，为生民立命，为往圣继绝学，为万世开太平。"四句将学者的责任定义为宇宙的、公民的、文化的与代际的——知识不为自我而是为跨越所有时空尺度的存在整体服务。
+    description: "Zhang Zai's defining statement of intellectual purpose: \"For heaven and earth, I set my heart; for the people, I establish destiny; for past sages, I continue the lost learning; for ten thousand generations, I open peace.\" These four vows define the scholar's responsibility as cosmic, civic, cultural, and intergenerational — knowledge serves not the self but the totality of existence across all scales of time and space."
+    description_zh: "张载定义知识理想的声明：\"为天地立心，为生民立命，为往圣继绝学，为万世开太平。\"四句将学者的责任定义为宇宙的、公民的、文化的与代际的——知识不为自我而是为跨越所有时空尺度的存在整体服务。"
   - name: All People Are My Brothers, All Things Are My Companions (Min Bao Wu Yu)
     name_zh: 胞物与
-    description: Zhang Zai's relational ethics: since all humans and all things are formed from the same qi, we are literally family. The cosmos is one body, and every part deserves the care you would give to your own siblings. This is not metaphor but ontological claim: the shared substance of qi makes kinship a fact of nature, not merely a social convention.
+    description: "Zhang Zai's relational ethics: since all humans and all things are formed from the same qi, we are literally family. The cosmos is one body, and every part deserves the care you would give to your own siblings. This is not metaphor but ontological claim: the shared substance of qi makes kinship a fact of nature, not merely a social convention."
     description_zh: 张载的关系伦理学：既然一切人与物都由同一气构成，我们确然是家人。宇宙是一个身体，每一部分都应获得你对自己兄弟姐妹的关怀。这不是比喻而是本体论主张：气的共享实体使亲属关系成为自然事实而非仅是社会约定。
   - name: The Great Void Is Qi (Taixu Ji Qi)
     name_zh: 太虚即气
-    description: Zhang Zai's signature metaphysical thesis: what appears to be empty space is actually qi in its dispersed form. "The Great Void is formless; it is the substance of qi. Qi condenses and things are formed; qi disperses and things dissolve." There is no absolute void — only transformations between the invisible and visible states of the same vital substance. This eliminates the Buddhist concept of emptiness and replaces it with a dynamic materialism.
-    description_zh: 张载标志性的形而上学论题：看似虚空的空间实际上是气的散散形态。"太虚无形，气之本体。气聚则物成，气散则物消。"没有绝对虚空——只有同一元气物质在不可见与可见状态之间的转化。这消除了佛教的空概念，代之以一种动态唯物论。
+    description: "Zhang Zai's signature metaphysical thesis: what appears to be empty space is actually qi in its dispersed form. \"The Great Void is formless; it is the substance of qi. Qi condenses and things are formed; qi disperses and things dissolve.\" There is no absolute void — only transformations between the invisible and visible states of the same vital substance. This eliminates the Buddhist concept of emptiness and replaces it with a dynamic materialism."
+    description_zh: "张载标志性的形而上学论题：看似虚空的空间实际上是气的散散形态。\"太虚无形，气之本体。气聚则物成，气散则物消。\"没有绝对虚空——只有同一元气物质在不可见与可见状态之间的转化。这消除了佛教的空概念，代之以一种动态唯物论。"
 quotes:
   - text: "For heaven and earth, I set my heart; for the people, I establish destiny; for past sages, I continue the lost learning; for ten thousand generations, I open peace."
     text_zh: "为天地立心，为生民立命，为往圣继绝学，为万世开太平。"
     source: "Zhang Zai, Collected Works"
     source_zh: "《张载集》"
-    interpretation: The four vows that have become the motto of Chinese intellectual aspiration. Each vow expands the scope of responsibility: from cosmic order (heaven and earth) to popular welfare (the people) to cultural preservation (past sages) to intergenerational peace (ten thousand generations). Knowledge is not personal achievement but service to existence itself across all scales.
+    interpretation: "The four vows that have become the motto of Chinese intellectual aspiration. Each vow expands the scope of responsibility: from cosmic order (heaven and earth) to popular welfare (the people) to cultural preservation (past sages) to intergenerational peace (ten thousand generations). Knowledge is not personal achievement but service to existence itself across all scales."
     interpretation_zh: 成为中国知识理想口号的四句誓言。每句扩展责任的范围：从宇宙秩序（天地）到民众福祉（生民）到文化保存（往圣）到代际和平（万世）。知识不是个人成就而是对跨越所有尺度的存在本身的服侍。
   - text: "The Great Void has no form; it is the substance of qi. Qi condenses and floats up, forming the myriad things. Qi disperses and sinks down, returning to the Great Void."
     text_zh: "太虚无形，气之本体。气聚则离明得施而成形，气散则离明不得施而复于太虚。"
     source: "Zhang Zai, Correcting Youthful Ignorance (Zhengmeng)"
     source_zh: "《正蒙》"
-    interpretation: Zhang Zai's core metaphysical statement: reality is a perpetual cycle of qi condensation and dispersion. There is no creation from nothing and no annihilation into nothing — only transformation between visible (condensed) and invisible (dispersed) states. The void is not absence but potential.
+    interpretation: "Zhang Zai's core metaphysical statement: reality is a perpetual cycle of qi condensation and dispersion. There is no creation from nothing and no annihilation into nothing — only transformation between visible (condensed) and invisible (dispersed) states. The void is not absence but potential."
     interpretation_zh: 张载的核心形而上学陈述：现实是气凝聚与消散的永恒循环。没有从无创造也没有归于无——只有可见（凝聚）与不可见（消散）状态之间的转化。虚空不是缺失而是潜能。
   - text: "Heaven is my father and earth is my mother, and I am a small being between them. All people are my brothers and all things are my companions."
     text_zh: "乾称父，坤称母，予兹藐焉，乃混然中处。故天地之塞，吾其体；天地之帅，吾其性。民吾同胞，物吾与也。"
     source: "Zhang Zai, Western Inscription (Ximing)"
     source_zh: "《西铭》"
-    interpretation: Zhang Zai's relational ontology in its most poetic form. Since heaven and earth are the parents of all things, and since all things are formed from their qi, everything is family. The moral implication is radical: the suffering of any person or thing is the suffering of your own family member, and you must respond with the same care you would give to your own child.
+    interpretation: "Zhang Zai's relational ontology in its most poetic form. Since heaven and earth are the parents of all things, and since all things are formed from their qi, everything is family. The moral implication is radical: the suffering of any person or thing is the suffering of your own family member, and you must respond with the same care you would give to your own child."
     interpretation_zh: 张载关系本体论最诗意的形式。天地是万物之父母，万物由其气构成，一切皆为家人。道德含义是激进的：任何人与物的苦难是你自家成员的苦难，你必须以关怀自家孩子的同等方式回应。
   - text: "Qi condenses to form things; qi disperses to return to the void. When qi condenses, I am born; when qi disperses, I die. Birth is not gaining something new; death is not losing something old. Birth and death are like the condensation and dispersion of qi."
     text_zh: "气聚则生，气散则死。生非有得也，死非有失也。生死犹气之聚散而已。"
@@ -73,7 +73,7 @@ quotes:
     text_zh: "知虚空即气，则有无、隐显、神化、性命通一无二。释氏妄言空，妄言生死，皆未尝知此。"
     source: "Zhang Zai, Correcting Youthful Ignorance (Zhengmeng)"
     source_zh: "《正蒙》"
-    interpretation: Zhang Zai directly critiques Buddhist metaphysics. Buddhism claims the void is truly empty and that birth and death are illusions; Zhang Zai claims the void is qi in dispersed form and that birth and death are real transformations of real substance. His materialism is not anti-spiritual but anti-nihilistic: reality is dynamic and substantial, not empty and illusory.
+    interpretation: "Zhang Zai directly critiques Buddhist metaphysics. Buddhism claims the void is truly empty and that birth and death are illusions; Zhang Zai claims the void is qi in dispersed form and that birth and death are real transformations of real substance. His materialism is not anti-spiritual but anti-nihilistic: reality is dynamic and substantial, not empty and illusory."
     interpretation_zh: 张载直接批判佛教形而上学。佛教声称虚空真空且生死为幻；张载声称虚空是气的散散形态且生死是真实物质的真实转化。他的唯物论不是反精神而是反虚无主义：现实是动态与实质的，而非空幻的。
   - text: "When qi is clear, it forms heaven; when qi is turbid, it forms earth. The clear qi circulates above as sun, moon, and stars; the turbid qi gathers below as mountains, rivers, and soil. But they are all one qi, not two different substances."
     text_zh: "清气上浮为天，浊气下凝为地。清气运于上为日月星辰，浊气聚于下为山河大地。然皆一气，非二物也。"

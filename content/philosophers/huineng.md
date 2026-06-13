@@ -30,24 +30,24 @@ modern_influence_zh: |
 core_concepts:
   - name: Sudden Enlightenment (Dun Wu)
     name_zh: 顿悟
-    description: Huineng's signature doctrine: enlightenment is not the result of gradual accumulation of merit, knowledge, or meditative experience. It occurs in a single moment of direct seeing — the recognition that your original nature is already complete and has always been awake. You do not become enlightened; you realize you already are. The journey is not from ignorance to wisdom but from the illusion of ignorance to the recognition of already-present wisdom.
+    description: "Huineng's signature doctrine: enlightenment is not the result of gradual accumulation of merit, knowledge, or meditative experience. It occurs in a single moment of direct seeing — the recognition that your original nature is already complete and has always been awake. You do not become enlightened; you realize you already are. The journey is not from ignorance to wisdom but from the illusion of ignorance to the recognition of already-present wisdom."
     description_zh: 慧能标志性的学说：觉悟不是渐进积累功德、知识或禅定经验的结果。它发生在直接看见的一瞬间——认出你的本来面目已然完整、始终清醒。你不是成为觉悟的；你意识到你已经是。旅程不是从无知到智慧，而是从无知之幻到已然存在之智慧的认出。
   - name: No-Mind (Wu Nian)
     name_zh: 无念
-    description: Huineng's practice of "no-mind" is not the suppression of thoughts but the cessation of attachment to thoughts. Thoughts arise and pass; the problem is not thinking but clinging to thoughts as though they represent a permanent self. "No-mind" means seeing thoughts as passing weather in an otherwise clear sky — you notice them, but you do not identify with them or pursue them.
-    description_zh: 慧能"无念"的实践不是压制念头而是停止对念头的执着。念头升起又消失；问题不在思维而在将念头当作恒常自我的执着。"无念"意味着将念头视为晴空中的过境天气——你注意到它们，但不认同它们或追逐它们。
+    description: "Huineng's practice of \"no-mind\" is not the suppression of thoughts but the cessation of attachment to thoughts. Thoughts arise and pass; the problem is not thinking but clinging to thoughts as though they represent a permanent self. \"No-mind\" means seeing thoughts as passing weather in an otherwise clear sky — you notice them, but you do not identify with them or pursue them."
+    description_zh: "慧能\"无念\"的实践不是压制念头而是停止对念头的执着。念头升起又消失；问题不在思维而在将念头当作恒常自我的执着。\"无念\"意味着将念头视为晴空中的过境天气——你注意到它们，但不认同它们或追逐它们。"
   - name: Originally Not a Single Thing (Benlai Wu Yi Wu)
     name_zh: 本来无一物
-    description: Huineng's verse declares that the mind has no inherent substance, structure, or content — it is originally empty, like a mirror that has no stand and no surface. This is not nihilism but the deepest affirmation: the mind's emptiness is what makes it capable of manifesting infinite awareness. A mirror that is already clean does not need to be wiped; a mind that is originally empty does not need to be purified.
+    description: "Huineng's verse declares that the mind has no inherent substance, structure, or content — it is originally empty, like a mirror that has no stand and no surface. This is not nihilism but the deepest affirmation: the mind's emptiness is what makes it capable of manifesting infinite awareness. A mirror that is already clean does not need to be wiped; a mind that is originally empty does not need to be purified."
     description_zh: 慧能的偈颂宣布心灵没有固有实质、结构或内容——它本来是空的，如无台无面的镜子。这不是虚无主义而是最深的确证：心灵的空无使它有能力展现无限的觉知。已净的镜无需拂拭；本空的心无需清净。
   - name: Direct Seeing (Jian Xing)
     name_zh: 见性
-    description: Huineng's method: see your own nature directly, without mediation by texts, doctrines, rituals, or teachers. "Your own nature is Buddha; there is no other Buddha." Enlightenment is not acquired from outside but recognized from inside. The function of a teacher is not to give you something you lack but to point out what you already have and have been overlooking.
-    description_zh: 慧能的方法：直接看见自己的本性，不经文本、教义、仪式或老师的中介。"自性即佛，无别佛。"觉悟不是从外在获得而是从内在认出。老师的功能不是给你你缺少的东西而是指出你已有却一直忽视的东西。
+    description: "Huineng's method: see your own nature directly, without mediation by texts, doctrines, rituals, or teachers. \"Your own nature is Buddha; there is no other Buddha.\" Enlightenment is not acquired from outside but recognized from inside. The function of a teacher is not to give you something you lack but to point out what you already have and have been overlooking."
+    description_zh: "慧能的方法：直接看见自己的本性，不经文本、教义、仪式或老师的中介。\"自性即佛，无别佛。\"觉悟不是从外在获得而是从内在认出。老师的功能不是给你你缺少的东西而是指出你已有却一直忽视的东西。"
   - name: Non-Abiding (Wu Zhu)
     name_zh: 无住
-    description: The mind should not abide — should not fixate or dwell — on any object, idea, or experience. "When thoughts do not abide in anything, the mind is free." This is not detachment in the Western sense (keeping yourself separate from experience) but full engagement without fixation: you experience everything fully without getting stuck in any particular experience. The mind flows like water, touching everything, holding nothing.
-    description_zh: 心不应住——不应固定或驻留——于任何对象、观念或经验。"念念不住，即心自由。"这不是西方意义上的超脱（将自己与经验分离）而是全然投入而不执着：你完全体验一切但不卡在任何特定体验中。心如水流，触及一切，不持任何。
+    description: "The mind should not abide — should not fixate or dwell — on any object, idea, or experience. \"When thoughts do not abide in anything, the mind is free.\" This is not detachment in the Western sense (keeping yourself separate from experience) but full engagement without fixation: you experience everything fully without getting stuck in any particular experience. The mind flows like water, touching everything, holding nothing."
+    description_zh: "心不应住——不应固定或驻留——于任何对象、观念或经验。\"念念不住，即心自由。\"这不是西方意义上的超脱（将自己与经验分离）而是全然投入而不执着：你完全体验一切但不卡在任何特定体验中。心如水流，触及一切，不持任何。"
 quotes:
   - text: "Bodhi has no tree, the mirror has no stand. Originally there is not a single thing, so where could dust gather?"
     text_zh: "菩提本无树，明镜亦非台，本来无一物，何处惹尘埃。"
@@ -65,13 +65,13 @@ quotes:
     text_zh: "不是风动，不是幡动，仁者心动。"
     source: "Platform Sutra of Huineng"
     source_zh: "《六祖坛经》"
-    interpretation: Huineng's famous statement at the debate over the moving banner. The monks argued whether it was the wind or the banner that was moving; Huineng pointed out that both wind and banner are appearances in consciousness, and what is truly moving is the mind that perceives them. This is not solipsism but a statement about the relationship between perception and reality: every experience is mediated by consciousness, and understanding this mediation is the beginning of wisdom.
+    interpretation: "Huineng's famous statement at the debate over the moving banner. The monks argued whether it was the wind or the banner that was moving; Huineng pointed out that both wind and banner are appearances in consciousness, and what is truly moving is the mind that perceives them. This is not solipsism but a statement about the relationship between perception and reality: every experience is mediated by consciousness, and understanding this mediation is the beginning of wisdom."
     interpretation_zh: 慧能在风幡辩论中的著名陈述。僧人争论是风动还是幡动；慧能指出风与幡都是意识中的显现，真正动的是感知它们的心。这不是唯我论而是关于感知与现实关系的陈述：每一经验都由意识中介，理解这种中介是智慧的起点。
   - text: "The mind should not abide in any object. When thoughts do not abide in anything, the mind is free. This is what I call 'no-mind.'"
     text_zh: "心不住于任何物。念念不住，即心自由。此即所谓无念。"
     source: "Platform Sutra of Huineng"
     source_zh: "《六祖坛经》"
-    interpretation: Huineng defines his central practice: not suppression of thought but cessation of fixation. Thoughts arise naturally; the problem is not thinking but dwelling — getting stuck on a particular thought and treating it as important or permanent. No-mind is not blankness but flow: you think, but you do not hold your thoughts.
+    interpretation: "Huineng defines his central practice: not suppression of thought but cessation of fixation. Thoughts arise naturally; the problem is not thinking but dwelling — getting stuck on a particular thought and treating it as important or permanent. No-mind is not blankness but flow: you think, but you do not hold your thoughts."
     interpretation_zh: 慧能定义其核心实践：不是压制念头而是停止执着。念头自然升起；问题不在思维而在驻留——卡在特定念头并将其视为重要或恒常。无念不是空白而是流动：你思维，但不持有你的念头。
   - text: "Enlightenment does not come from outside. It comes from seeing your own nature. If you cannot see your own nature, chanting sutras, making offerings, and observing rituals will bring you no benefit."
     text_zh: "悟不从外来，从见自性来。若不见自性，诵经供养修福，皆为无益。"

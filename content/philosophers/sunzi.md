@@ -30,24 +30,24 @@ modern_influence_zh: |
 core_concepts:
   - name: Complete Intelligence (Zhi)
     name_zh: 知
-    description: Sunzi insists that victory depends on complete knowledge of both your own capabilities and your opponent's — "know yourself and know your enemy, and you will never be defeated." Information is not a supplement to strategy; it is its foundation. Every decision must be grounded in thorough understanding of conditions, resources, and intentions on all sides.
-    description_zh: 孙子坚持胜利取决于对自身能力与对手状况的全面了解——"知己知彼，百战不殆。"信息不是战略的补充；它是战略的基础。每一决策都必须建立在各方条件、资源与意图的透彻理解之上。
+    description: "Sunzi insists that victory depends on complete knowledge of both your own capabilities and your opponent's — \"know yourself and know your enemy, and you will never be defeated.\" Information is not a supplement to strategy; it is its foundation. Every decision must be grounded in thorough understanding of conditions, resources, and intentions on all sides."
+    description_zh: "孙子坚持胜利取决于对自身能力与对手状况的全面了解——\"知己知彼，百战不殆。\"信息不是战略的补充；它是战略的基础。每一决策都必须建立在各方条件、资源与意图的透彻理解之上。"
   - name: Victory Without Fighting
     name_zh: 不战而胜
-    description: Sunzi's highest ideal is not battlefield triumph but strategic positioning so advantageous that the opponent concedes without a clash. "The supreme art of war is to subdue the enemy without fighting." This principle elevates strategy above combat, diplomacy above coercion, and prevention above remedy.
-    description_zh: 孙子的最高理想不是战场凯旋而是战略定位的优势大到对方不经交锋即屈服。"不战而屈人之兵，善之善者也。"此原则将战略提升于战斗之上，外交提升于胁迫之上，预防提升于补救之上。
+    description: "Sunzi's highest ideal is not battlefield triumph but strategic positioning so advantageous that the opponent concedes without a clash. \"The supreme art of war is to subdue the enemy without fighting.\" This principle elevates strategy above combat, diplomacy above coercion, and prevention above remedy."
+    description_zh: "孙子的最高理想不是战场凯旋而是战略定位的优势大到对方不经交锋即屈服。\"不战而屈人之兵，善之善者也。\"此原则将战略提升于战斗之上，外交提升于胁迫之上，预防提升于补救之上。"
   - name: Strategic Deception
     name_zh: 诡道
-    description: "All warfare is based on deception," Sunzi declares. When capable, appear incapable; when near, appear far; when far, appear near. Deception is not dishonesty in the moral sense but the strategic management of perception — controlling what your opponent believes about your intentions so that their responses serve your plan rather than theirs.
-    description_zh: "兵者，诡道也。"孙子宣言。能而示之不能，近而示之远，远而示之近。诡道不是道德意义上的不诚实，而是对感知的战略管理——控制对手对你意图的信念，使其回应服务于你的计划而非他们的。
+    description: "\"All warfare is based on deception,\" Sunzi declares. When capable, appear incapable; when near, appear far; when far, appear near. Deception is not dishonesty in the moral sense but the strategic management of perception — controlling what your opponent believes about your intentions so that their responses serve your plan rather than theirs."
+    description_zh: "\"兵者，诡道也。\"孙子宣言。能而示之不能，近而示之远，远而示之近。诡道不是道德意义上的不诚实，而是对感知的战略管理——控制对手对你意图的信念，使其回应服务于你的计划而非他们的。"
   - name: Adaptability (Bian)
     name_zh: 变
-    description: "In battle, there are no fixed conditions," Sunzi warns. Water shapes itself to the terrain; the commander shapes strategy to the situation. No plan survives contact with reality, and the skillful leader is one who can transform their approach moment by moment. Rigidity is death; flexibility is survival.
-    description_zh: "兵无常势。"孙子警示。水因地而流，将因势而变。没有计划能经得起与现实的接触，善于变通的领导者是能逐一时刻改变其方法的人。僵化是死亡；灵活是生存。
+    description: "\"In battle, there are no fixed conditions,\" Sunzi warns. Water shapes itself to the terrain; the commander shapes strategy to the situation. No plan survives contact with reality, and the skillful leader is one who can transform their approach moment by moment. Rigidity is death; flexibility is survival."
+    description_zh: "\"兵无常势。\"孙子警示。水因地而流，将因势而变。没有计划能经得起与现实的接触，善于变通的领导者是能逐一时刻改变其方法的人。僵化是死亡；灵活是生存。"
   - name: Speed and Economy
     name_zh: 速与节
-    description: Sunzi warns against prolonged campaigns: they exhaust resources, drain morale, and create opportunities for other threats. "In war, then, let your great object be victory, not lengthy campaigns." Speed is not recklessness but efficiency — achieving the objective before costs outweigh gains. Economy of force means concentrating resources at the decisive point while minimizing expenditure elsewhere.
-    description_zh: 孙子警告旷日持久之役：耗竭资源，消磨士气，为其他威胁创造机会。"兵贵胜，不贵久。"速不是鲁莽而是效率——在成本超出收益之前达成目标。力的节约意味着将资源集中于决胜点，同时最小化其他地方的消耗。
+    description: "Sunzi warns against prolonged campaigns: they exhaust resources, drain morale, and create opportunities for other threats. \"In war, then, let your great object be victory, not lengthy campaigns.\" Speed is not recklessness but efficiency — achieving the objective before costs outweigh gains. Economy of force means concentrating resources at the decisive point while minimizing expenditure elsewhere."
+    description_zh: "孙子警告旷日持久之役：耗竭资源，消磨士气，为其他威胁创造机会。\"兵贵胜，不贵久。\"速不是鲁莽而是效率——在成本超出收益之前达成目标。力的节约意味着将资源集中于决胜点，同时最小化其他地方的消耗。"
 quotes:
   - text: "Know yourself and know your enemy, and you will never be defeated. If you know yourself but not your enemy, you will win half and lose half. If you know neither yourself nor your enemy, you will be defeated in every battle."
     text_zh: "知己知彼，百战不殆；不知彼而知己，一胜一负；不知彼不知己，每战必殆。"
@@ -65,7 +65,7 @@ quotes:
     text_zh: "兵者，诡道也。能而示之不能，用而示之不用，近而示之远，远而示之近。"
     source: "The Art of War, Chapter 1"
     source_zh: "《孙子兵法·计篇》"
-    interpretation: Sunzi opens his text not with a moral statement but with a strategic one: perception management is the first art of war. Deception here means controlling what your opponent sees, so their strategic calculations are built on false premises and their actions serve your plan.
+    interpretation: "Sunzi opens his text not with a moral statement but with a strategic one: perception management is the first art of war. Deception here means controlling what your opponent sees, so their strategic calculations are built on false premises and their actions serve your plan."
     interpretation_zh: 孙子以战略陈述而非道德陈述开篇：感知管理是战争的第一艺术。此处诡道意味着控制对手所见，使其战略计算建立在虚假前提上，其行动服务于你的计划。
   - text: "Water shapes its course according to the nature of the ground over which it flows; the soldier shapes his victory according to the enemy he faces."
     text_zh: "水因地而制流，兵因敌而制胜。"
@@ -95,7 +95,7 @@ quotes:
     text_zh: "谋如幽冥，动如雷震。"
     source: "The Art of War, Chapter 7"
     source_zh: "《孙子兵法·军争篇》"
-    interpretation: The duality of strategy: concealment during preparation, maximum impact during execution. Plans that are visible can be countered; actions that are anticipated can be blocked. The perfect operation is one the opponent never sees coming, and whose effects are irreversible before they can respond.
+    interpretation: "The duality of strategy: concealment during preparation, maximum impact during execution. Plans that are visible can be countered; actions that are anticipated can be blocked. The perfect operation is one the opponent never sees coming, and whose effects are irreversible before they can respond."
     interpretation_zh: 战略的二元性：准备时的隐匿，执行时的最大冲击。可见的计划可以被对抗；预期的行动可以被阻止。完美的运作是对手从未预见且其效果在他们能回应之前便不可逆转的那个。
 ---
 

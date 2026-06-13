@@ -30,24 +30,24 @@ modern_influence_zh: |
 core_concepts:
   - name: Universal Love (Jian Ai)
     name_zh: 兼爱
-    description: Mozi's signature doctrine: love should be extended to all people equally, without partiality for one's own family, clan, or state. "If one regards others as one regards oneself, then there is no one who is not regarded." Universal love is not sentimental affection but a rational principle of equal moral consideration, designed to eliminate the conflicts that arise from partiality.
-    description_zh: 墨子的标志性学说：爱应平等延伸至所有人，不偏袒自己的家庭、宗族或国家。"视人之国若视其国，视人之家若视其家，视人之身若视其身。"兼爱不是感情上的亲近而是平等道德考量的理性原则，旨在消除由偏袒引发的冲突。
+    description: "Mozi's signature doctrine: love should be extended to all people equally, without partiality for one's own family, clan, or state. \"If one regards others as one regards oneself, then there is no one who is not regarded.\" Universal love is not sentimental affection but a rational principle of equal moral consideration, designed to eliminate the conflicts that arise from partiality."
+    description_zh: "墨子的标志性学说：爱应平等延伸至所有人，不偏袒自己的家庭、宗族或国家。\"视人之国若视其国，视人之家若视其家，视人之身若视其身。\"兼爱不是感情上的亲近而是平等道德考量的理性原则，旨在消除由偏袒引发的冲突。"
   - name: Opposition to Aggressive War (Fei Gong)
     name_zh: 靧攻
-    description: Mozi distinguished between aggressive warfare (which he condemned) and defensive warfare (which he supported). His followers were expert military engineers who built fortifications and developed counter-siege technologies, offering their services to any city under unjust attack. This is not pacifism but anti-imperialism: the right to defend yourself is absolute; the right to attack others is nonexistent.
+    description: "Mozi distinguished between aggressive warfare (which he condemned) and defensive warfare (which he supported). His followers were expert military engineers who built fortifications and developed counter-siege technologies, offering their services to any city under unjust attack. This is not pacifism but anti-imperialism: the right to defend yourself is absolute; the right to attack others is nonexistent."
     description_zh: 墨子区分侵略战争（他谴责的）与防御战争（他支持的）。他的弟子是专业军事工程师，建造城防设施、开发反攻城技术，免费为任何受到不正义攻击的城市提供服务。这不是和平主义而是反帝国主义：防御自己的权利是绝对的；攻击他人的权利是不存在的。
   - name: Frugality (Jie Yong)
     name_zh: 节用
-    description: Mozi argued that extravagant expenditure — lavish ceremonies, elaborate funerals, ornate clothing — wastes resources that could feed the hungry, clothe the poor, and strengthen the state. Frugality is not aesthetic preference but moral obligation: every resource diverted from practical welfare to ceremonial display is a moral failure. "When there is abundance, let people be joyful; when there is scarcity, let them be frugal."
-    description_zh: 墨子论证奢侈开支——奢华典礼、繁复葬礼、华美服饰——浪费了可以养活饥饿者、衣蔽贫穷者、巩固国家的资源。节用不是审美偏好而是道德义务：每一从实用福利转向仪式展示的资源都是道德失败。"丰则使人乐，俭则使人节。"
+    description: "Mozi argued that extravagant expenditure — lavish ceremonies, elaborate funerals, ornate clothing — wastes resources that could feed the hungry, clothe the poor, and strengthen the state. Frugality is not aesthetic preference but moral obligation: every resource diverted from practical welfare to ceremonial display is a moral failure. \"When there is abundance, let people be joyful; when there is scarcity, let them be frugal.\""
+    description_zh: "墨子论证奢侈开支——奢华典礼、繁复葬礼、华美服饰——浪费了可以养活饥饿者、衣蔽贫穷者、巩固国家的资源。节用不是审美偏好而是道德义务：每一从实用福利转向仪式展示的资源都是道德失败。\"丰则使人乐，俭则使人节。\""
   - name: Three Criteria for Truth (San Biao)
     name_zh: 三表法
-    description: Mozi's epistemological method for evaluating any claim: first, does it have a basis in the historical records of the ancient kings? Second, does it correspond to the eyes and ears of the common people — is it verified by widespread experience? Third, does it produce practical benefit when implemented as policy? A claim that passes all three tests is credible; one that fails any is suspect.
+    description: "Mozi's epistemological method for evaluating any claim: first, does it have a basis in the historical records of the ancient kings? Second, does it correspond to the eyes and ears of the common people — is it verified by widespread experience? Third, does it produce practical benefit when implemented as policy? A claim that passes all three tests is credible; one that fails any is suspect."
     description_zh: 墨子验证任何主张的认识论方法：首先，是否有古代圣王历史记录的依据？其次，是否符合百姓的耳目——是否被广泛经验所验证？第三，作为政策实施是否产生实际利益？通过三项检验的主张可信；任何一项失败则可疑。
   - name: Elevating the Worthy (Shang Xian)
     name_zh: 尚贤
-    description: Mozi argued that leadership positions should be awarded on merit, not on birth or wealth. "Though a farmer or artisan, if he has ability, he should be elevated." This was a radical challenge to the hereditary aristocracy of his time, and it anticipates modern meritocratic principles. The capable should lead; the incapable should follow — regardless of family background.
-    description_zh: 墨子论证领导职位应以才能而非出身或财富授予。"虽在农与工肆之人，有能则举之。"这是对他时代世袭贵族的激进挑战，预示了现代精英治国原则。有能力者应领导；无能力者应跟随——不论家庭背景。
+    description: "Mozi argued that leadership positions should be awarded on merit, not on birth or wealth. \"Though a farmer or artisan, if he has ability, he should be elevated.\" This was a radical challenge to the hereditary aristocracy of his time, and it anticipates modern meritocratic principles. The capable should lead; the incapable should follow — regardless of family background."
+    description_zh: "墨子论证领导职位应以才能而非出身或财富授予。\"虽在农与工肆之人，有能则举之。\"这是对他时代世袭贵族的激进挑战，预示了现代精英治国原则。有能力者应领导；无能力者应跟随——不论家庭背景。"
 quotes:
   - text: "If one regards other people's states as one regards one's own, who would attack other people's states? If one regards other people's families as one regards one's own, who would usurp other people's families? If one regards other people as one regards oneself, who would do harm to other people?"
     text_zh: "视人之国若视其国，视人之家若视其家，视人之身若视其身，则谁攻人之国、谁篡人之家、谁贼人之身？"
@@ -59,25 +59,25 @@ quotes:
     text_zh: "杀一人，谓之不义，必有一死罪矣。杀十人，十重不义，必有十死罪矣。杀百人，百重不义，必有百死罪矣。今攻国，杀百人，不知其不义，此可谓知义与不义之辩乎？"
     source: "Mozi, Chapter 17"
     source_zh: "《墨子·非攻》"
-    interpretation: Mozi exposes the moral blind spot that makes people condemn individual murder while celebrating mass murder in war. If killing one person is wrong, killing a hundred must be a hundred times worse — not magically transformed into virtue by the label "warfare." This is one of the earliest and most powerful anti-war arguments in human history.
-    interpretation_zh: 墨子揭露了使人谴责个人谋杀却在战争中庆祝集体谋杀的道德盲区。如果杀一人是错的，杀百人必须是错百倍——而非因贴上"战争"标签便神奇地转化为德行。这是人类历史上最早且最有力的反战论证之一。
+    interpretation: "Mozi exposes the moral blind spot that makes people condemn individual murder while celebrating mass murder in war. If killing one person is wrong, killing a hundred must be a hundred times worse — not magically transformed into virtue by the label \"warfare.\" This is one of the earliest and most powerful anti-war arguments in human history."
+    interpretation_zh: "墨子揭露了使人谴责个人谋杀却在战争中庆祝集体谋杀的道德盲区。如果杀一人是错的，杀百人必须是错百倍——而非因贴上\"战争\"标签便神奇地转化为德行。这是人类历史上最早且最有力的反战论证之一。"
   - text: "When there is abundance, let people be joyful; when there is scarcity, let them be frugal. This is the way of heaven."
     text_zh: "丰则使人乐，俭则使人节。此天道也。"
     source: "Mozi, Chapter 21"
     source_zh: "《墨子·节用》"
-    interpretation: Mozi's principle of economic adaptability: joy in prosperity, frugality in scarcity. Neither extravagant celebration nor grim austerity, but appropriate response to conditions. Heaven's way adjusts to circumstance; human foolishness clings to fixed habits regardless of conditions.
+    interpretation: "Mozi's principle of economic adaptability: joy in prosperity, frugality in scarcity. Neither extravagant celebration nor grim austerity, but appropriate response to conditions. Heaven's way adjusts to circumstance; human foolishness clings to fixed habits regardless of conditions."
     interpretation_zh: 墨子的经济适应性原则：丰裕时喜悦，匮乏时节俭。既非奢靡庆典亦非苦行 austerity，而是对条件的恰当回应。天道因势而变；人之愚则不顾条件执于定习。
   - text: "Though a farmer or artisan, if he has ability, he should be elevated to high position. Though a prince or noble, if he lacks ability, he should be dismissed from office."
     text_zh: "虽在农与工肆之人，有能则举之。虽在公卿大夫，无能则下之。"
     source: "Mozi, Chapter 9"
     source_zh: "《墨子·尚贤》"
-    interpretation: Mozi's radical meritocratic principle: birth and wealth should not determine political authority. Only ability and virtue should. This was a direct challenge to the hereditary aristocracy of ancient China and remains a challenge to every system that privileges family connections over merit.
+    interpretation: "Mozi's radical meritocratic principle: birth and wealth should not determine political authority. Only ability and virtue should. This was a direct challenge to the hereditary aristocracy of ancient China and remains a challenge to every system that privileges family connections over merit."
     interpretation_zh: 墨子的激进精英治国原则：出身与财富不应决定政治权威。只有才能与德行应。这是对古代中国世袭贵族的直接挑战，仍是对每一个优先家庭关系而非才能的体系的挑战。
   - text: "The purpose of heaven is to love people universally and to benefit them together. The purpose of the righteous is to follow heaven's purpose."
     text_zh: "天之欲人相爱相利，而不欲人相恶相贼也。义者，顺天之意也。"
     source: "Mozi, Chapter 27"
     source_zh: "《墨子·天志》"
-    interpretation: Mozi grounds universal love in a cosmic principle: heaven's will is universal benefit. Righteousness means aligning your actions with this cosmic intention. This gives the doctrine of jian ai a theological foundation that makes it not merely a human preference but an objective moral law embedded in the structure of reality.
+    interpretation: "Mozi grounds universal love in a cosmic principle: heaven's will is universal benefit. Righteousness means aligning your actions with this cosmic intention. This gives the doctrine of jian ai a theological foundation that makes it not merely a human preference but an objective moral law embedded in the structure of reality."
     interpretation_zh: 墨子将兼爱根植于宇宙原则：天意是普遍的利益。正义意味着将行动与此宇宙意图对齐。这赋予兼爱学说以神学基础，使其不仅是人类偏好而是嵌入现实结构的客观道德法则。
   - text: "Speaking of the way of heaven, we should base it on the deeds of the ancient sage kings; verify it through the eyes and ears of the common people; and apply it as policy to produce benefit for the state and the people."
     text_zh: "言有三表：有本之者，有原之者，有用之者。于何本之？本之先王之书。于何原之？原之百姓之耳目之实。于何用之？发以为刑政，观其中国家百姓人民之利。"

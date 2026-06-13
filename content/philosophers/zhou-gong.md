@@ -39,7 +39,7 @@ core_concepts:
   - name: Transformational Patterns (Yi)
     name_zh: 变易
     description: Through the I Ching's hexagram system, Zhou Gong codified the idea that all reality is a pattern of perpetual transformation. Nothing is static; every situation contains seeds of its opposite. The wise person reads these patterns and acts at the right moment.
-    description_zh: 通过《周易》的卦象体系，周公编码了"一切现实皆为永恒转化的模式"这一观念。没有静止之物；每一情境都蕴含其对立面的种子。智者辨识这些模式，在恰当时刻行动。
+    description_zh: "通过《周易》的卦象体系，周公编码了\"一切现实皆为永恒转化的模式\"这一观念。没有静止之物；每一情境都蕴含其对立面的种子。智者辨识这些模式，在恰当时刻行动。"
   - name: Music as Moral Education (Yue)
     name_zh: 乐教
     description: Zhou Gong paired ritual with music, believing that harmonious sounds cultivate harmonious souls. Music was not entertainment but civic infrastructure — it shaped the emotional landscape of a people and aligned individual hearts with social order.
@@ -85,7 +85,7 @@ quotes:
     text_zh: "风行地上，万物响应；为政以德，万民从之。"
     source: "I Ching, Hexagram Guan (观)"
     source_zh: "《周易·观卦》"
-    interpretation: The image of wind over earth suggests that influence should be gentle, pervasive, and responsive — not forceful or commanding. Good leadership works like weather: invisible in its mechanism, unmistakable in its effect.
+    interpretation: "The image of wind over earth suggests that influence should be gentle, pervasive, and responsive — not forceful or commanding. Good leadership works like weather: invisible in its mechanism, unmistakable in its effect."
     interpretation_zh: 风行地上的意象暗示影响应当是温和的、弥漫的、唤起回应的——而非强力的或命令的。好的领导如天气一般：机制不可见，效果却明确无误。
 ---
 

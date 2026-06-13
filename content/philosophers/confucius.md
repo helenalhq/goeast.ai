@@ -30,8 +30,8 @@ modern_influence_zh: |
 core_concepts:
   - name: Ren (Humaneness)
     name_zh: 仁
-    description: Ren is the central concept of Confucian ethics — a quality that combines empathy, generosity, and moral integrity. It is not merely kindness but a comprehensive virtue: the commitment to treat every person as a full human being, deserving of dignity and respect. Confucius said ren is "to love others," but its full meaning encompasses the entire way of being human well.
-    description_zh: 仁是儒家伦理的核心概念——结合了同理心、慷慨与道德整全的品质。不仅是善意，而是综合性美德：致力于将每个人都当作完整的人来对待，赋予其尊严与尊重。孔子说仁是"爱人"，但其完整含义涵盖了作为一个完整的人的全部方式。
+    description: "Ren is the central concept of Confucian ethics — a quality that combines empathy, generosity, and moral integrity. It is not merely kindness but a comprehensive virtue: the commitment to treat every person as a full human being, deserving of dignity and respect. Confucius said ren is \"to love others,\" but its full meaning encompasses the entire way of being human well."
+    description_zh: "仁是儒家伦理的核心概念——结合了同理心、慷慨与道德整全的品质。不仅是善意，而是综合性美德：致力于将每个人都当作完整的人来对待，赋予其尊严与尊重。孔子说仁是\"爱人\"，但其完整含义涵盖了作为一个完整的人的全部方式。"
   - name: Li (Ritual Propriety)
     name_zh: 礼
     description: Li is the external form that gives ren its shape — the rituals, manners, and social conventions that encode respect and obligation. Without li, ren is an abstract feeling; with li, ren becomes concrete action. Confucius insisted that every human interaction — from greeting a guest to governing a state — has a proper form that makes the virtue within it visible and effective.
@@ -42,18 +42,18 @@ core_concepts:
     description_zh: 君子是孔子的人格典范——通过礼培养仁、通过学习寻求智慧、无论境遇如何都保持道德整全的人。不同于西方英雄以非凡之举成就伟大，君子以一贯品格成就伟大。目标不是成为非凡之人，而是成为可靠的好人。
   - name: Filial Piety (Xiao)
     name_zh: 孝
-    description: Xiao — respect and care for parents and ancestors — is the root of Confucian morality. Confucius taught that the virtues that make a good citizen begin in the family: the child who learns to honor parents learns to honor teachers, officials, and ultimately the moral order itself. Xiao is not blind obedience but reciprocal care across generations.
+    description: "Xiao — respect and care for parents and ancestors — is the root of Confucian morality. Confucius taught that the virtues that make a good citizen begin in the family: the child who learns to honor parents learns to honor teachers, officials, and ultimately the moral order itself. Xiao is not blind obedience but reciprocal care across generations."
     description_zh: 孝——对父母与祖先的尊重与关怀——是儒家道德的根基。孔子教导使一个人成为好公民的德行始于家庭：学会敬父母的孩子会学会敬师长、官员，终至敬道德秩序本身。孝不是盲目服从，而是跨代的互惠关怀。
   - name: Rectification of Names (Zhengming)
     name_zh: 正名
-    description: Confucius insisted that social disorder begins with linguistic disorder — when words no longer match reality. If a "ruler" does not rule, if a "father" does not father, if a "friend" does not act as a friend, the names become hollow and the social fabric unravels. Rectifying names means ensuring that titles carry their proper obligations and that language remains tethered to reality.
-    description_zh: 孔子坚持认为社会混乱始于语言混乱——当词语不再匹配现实。"君"不君、"父"不父、"友"不友，名称便成空洞，社会织物便开始散裂。正名意味着确保称号承载其应尽的义务，使语言与现实保持联结。
+    description: "Confucius insisted that social disorder begins with linguistic disorder — when words no longer match reality. If a \"ruler\" does not rule, if a \"father\" does not father, if a \"friend\" does not act as a friend, the names become hollow and the social fabric unravels. Rectifying names means ensuring that titles carry their proper obligations and that language remains tethered to reality."
+    description_zh: "孔子坚持认为社会混乱始于语言混乱——当词语不再匹配现实。\"君\"不君、\"父\"不父、\"友\"不友，名称便成空洞，社会织物便开始散裂。正名意味着确保称号承载其应尽的义务，使语言与现实保持联结。"
 quotes:
   - text: "Is it not a joy to learn and to practice what you have learned? Is it not a delight to have friends come from afar?"
     text_zh: "学而时习之，不亦说乎？有朋自远方来，不亦乐乎？"
     source: "Analects, 1.1"
     source_zh: "《论语·学而》"
-    interpretation: The opening line of the Analects sets Confucius's entire project in motion: learning is not duty but joy; friendship is not convenience but delight. Philosophy begins with pleasure, not with suffering.
+    interpretation: "The opening line of the Analects sets Confucius's entire project in motion: learning is not duty but joy; friendship is not convenience but delight. Philosophy begins with pleasure, not with suffering."
     interpretation_zh: 《论语》开篇为孔子的整个计划启动了动力：学习不是义务而是喜悦；友谊不是便利而是欣喜。哲学始于愉悦而非苦痛。
   - text: "Do not impose on others what you yourself do not desire."
     text_zh: "己所不欲，勿施于人。"
@@ -83,7 +83,7 @@ quotes:
     text_zh: "学而不思则罔，思而不学则殆。"
     source: "Analects, 2.15"
     source_zh: "《论语·为政》"
-    interpretation: Confucius warns against two symmetrical errors: accumulating information without reflecting on it (you become a walking encyclopedia with no understanding), and reflecting without grounding your thoughts in study (you become an armchair theorist disconnected from reality). True understanding requires both input and digestion.
+    interpretation: "Confucius warns against two symmetrical errors: accumulating information without reflecting on it (you become a walking encyclopedia with no understanding), and reflecting without grounding your thoughts in study (you become an armchair theorist disconnected from reality). True understanding requires both input and digestion."
     interpretation_zh: 孔子警告两种对称的错误：积累信息而不反思（成为行走的百科全书却无理解），以及反思却不以学习为基础（成为脱离现实的沙发理论家）。真正的理解需要输入与消化两者。
   - text: "When you see a worthy person, think of equaling them; when you see an unworthy person, reflect on your own character."
     text_zh: "见贤思齐焉，见不贤而内自省也。"

@@ -30,7 +30,7 @@ modern_influence_zh: |
 core_concepts:
   - name: Principle (Li)
     name_zh: 理
-    description: Li is the universal principle or pattern that underlies all things — the rational structure that makes each thing what it is. Every object, every event, every relationship has its li, and all individual li participate in one ultimate li that is the principle of the cosmos itself. Li is not a physical substance but a structural reality: it is what makes a bamboo stalk a bamboo rather than a pine, what makes water flow downward rather than upward.
+    description: "Li is the universal principle or pattern that underlies all things — the rational structure that makes each thing what it is. Every object, every event, every relationship has its li, and all individual li participate in one ultimate li that is the principle of the cosmos itself. Li is not a physical substance but a structural reality: it is what makes a bamboo stalk a bamboo rather than a pine, what makes water flow downward rather than upward."
     description_zh: 理是万物背后的普遍原则或模式——使每物成为其所是的理性结构。每一物、每一事、每一关系都有其理，所有个别之理共参与一个终极之理即宇宙本身的原理。理不是物质而是结构性实在：它使竹竿成为竹而非松，使水流向下而非向上。
   - name: Material Force (Qi)
     name_zh: 气
@@ -38,16 +38,16 @@ core_concepts:
     description_zh: 气是使理在具体现实中显现的能动的物理基质。无气，理只是抽象模式；有气，理成形为实际事物。气有清明与浑浊之别——清气产生优异的个体与境遇；浊气产生低劣者。理与气的交互解释了同一普遍原理为何在不同人、地、时代中呈现不同面貌。
   - name: Investigation of Things (Ge Wu Zhi Zhi)
     name_zh: 格物致知
-    description: Zhu Xi's central methodological principle: knowledge is extended by carefully investigating the principle (*li*) in each thing you encounter. By examining one thing thoroughly, you begin to grasp the principle that pervades all things. The investigation is not random accumulation of facts but the disciplined search for underlying patterns that connect particulars to universals. "After you have investigated one thing, you can begin to understand the principle of ten thousand things."
-    description_zh: 朱熹的核心方法论原则：通过仔细探究你遇到的每物中的理来扩展知识。通过彻底考察一事，你开始把握贯穿万物的原理。探究不是事实的随机积累而是将特殊联系到普遍的底层模式的纪律性搜索。"格一物，便能通万物之理。"
+    description: "Zhu Xi's central methodological principle: knowledge is extended by carefully investigating the principle (*li*) in each thing you encounter. By examining one thing thoroughly, you begin to grasp the principle that pervades all things. The investigation is not random accumulation of facts but the disciplined search for underlying patterns that connect particulars to universals. \"After you have investigated one thing, you can begin to understand the principle of ten thousand things.\""
+    description_zh: "朱熹的核心方法论原则：通过仔细探究你遇到的每物中的理来扩展知识。通过彻底考察一事，你开始把握贯穿万物的原理。探究不是事实的随机积累而是将特殊联系到普遍的底层模式的纪律性搜索。\"格一物，便能通万物之理。\""
   - name: Knowledge Before Action (Zhi Xian Xing Hou)
     name_zh: 知先行后
-    description: Zhu Xi insists that correct knowledge must precede correct action — you cannot do the right thing unless you first know what the right thing is. But knowledge without subsequent action is hollow: "If you know but do not act, your knowledge is not truly knowledge." The sequence is: investigate, understand, then act. Knowing without doing is incomplete; doing without knowing is reckless.
-    description_zh: 朱熹坚持正确知识必须先于正确行动——除非你先知道何为正确之事，否则无法做正确之事。但没有后续行动的知识是空洞的："知而不行，只是未知。"顺序是：探究、理解、然后行动。知而不行是不完整的；行而不知是鲁莽的。
+    description: "Zhu Xi insists that correct knowledge must precede correct action — you cannot do the right thing unless you first know what the right thing is. But knowledge without subsequent action is hollow: \"If you know but do not act, your knowledge is not truly knowledge.\" The sequence is: investigate, understand, then act. Knowing without doing is incomplete; doing without knowing is reckless."
+    description_zh: "朱熹坚持正确知识必须先于正确行动——除非你先知道何为正确之事，否则无法做正确之事。但没有后续行动的知识是空洞的：\"知而不行，只是未知。\"顺序是：探究、理解、然后行动。知而不行是不完整的；行而不知是鲁莽的。"
   - name: Self-Cultivation (Xiu Shen)
     name_zh: 修身
-    description: The ultimate purpose of all philosophical investigation and moral knowledge is self-cultivation — the progressive refinement of one's character until principle and desire are aligned. Zhu Xi's daily practice included morning reading of classics, evening reflection on conduct, and continuous moral self-examination. "Every day, examine yourself: what have you done well? What have you done poorly? What should you improve?"
-    description_zh: 所有哲学探究与道德知识的终极目的是修身——逐步精进品格直到理与欲一致。朱熹的日常实践包括晨读经典、暮省行为与持续的道德自省。"每日省察：今日做得何事善？何事不善？何事当改？"
+    description: "The ultimate purpose of all philosophical investigation and moral knowledge is self-cultivation — the progressive refinement of one's character until principle and desire are aligned. Zhu Xi's daily practice included morning reading of classics, evening reflection on conduct, and continuous moral self-examination. \"Every day, examine yourself: what have you done well? What have you done poorly? What should you improve?\""
+    description_zh: "所有哲学探究与道德知识的终极目的是修身——逐步精进品格直到理与欲一致。朱熹的日常实践包括晨读经典、暮省行为与持续的道德自省。\"每日省察：今日做得何事善？何事不善？何事当改？\""
 quotes:
   - text: "The investigation of things is like eating: you must chew each mouthful carefully before you can digest it. If you swallow without chewing, you will not absorb the nourishment."
     text_zh: "格物如吃饭，须细细咀嚼方得消化。若囫囵吞下，便不得滋味。"
@@ -59,7 +59,7 @@ quotes:
     text_zh: "格一物，便能通万物之理。非一物之中有万物之理，只是此理与万物之理同。"
     source: "Zhu Xi, Classified Conversations"
     source_zh: "《朱子语类》"
-    interpretation: Zhu Xi's key epistemological claim: understanding is cumulative and transferable. The principle you discover in one thing is structurally identical to the principle in all things, so each successful investigation adds not just one item of knowledge but a template for understanding everything. This is the philosophical basis for analogical reasoning and scientific generalization.
+    interpretation: "Zhu Xi's key epistemological claim: understanding is cumulative and transferable. The principle you discover in one thing is structurally identical to the principle in all things, so each successful investigation adds not just one item of knowledge but a template for understanding everything. This is the philosophical basis for analogical reasoning and scientific generalization."
     interpretation_zh: 朱熹的关键认识论主张：理解是累积且可迁移的。你在一物中发现的原理与万物之理结构相同，因此每一次成功的探究不仅增添一项知识，更添加了理解一切的模式。这是类比推理与科学概括的哲学基础。
   - text: "Knowledge and action must always advance together. To know without acting is not truly to know; to act without knowing is not truly to act."
     text_zh: "知行常相须。如目无足不行，足无目不见。知而不行，只是未知；行而不知，只是妄行。"
@@ -71,25 +71,25 @@ quotes:
     text_zh: "读书不是为文字好看，也不是为积得多。只为理会得里面道理，将来在自家身上做得。"
     source: "Zhu Xi, Classified Conversations"
     source_zh: "《朱子语类》"
-    interpretation: Zhu Xi redefines the purpose of reading: not entertainment, not erudition, but moral transformation. A text is useful only when its principle has been extracted and applied to your own life. Reading without self-application is accumulation; reading with self-application is cultivation.
+    interpretation: "Zhu Xi redefines the purpose of reading: not entertainment, not erudition, but moral transformation. A text is useful only when its principle has been extracted and applied to your own life. Reading without self-application is accumulation; reading with self-application is cultivation."
     interpretation_zh: 朱熹重新定义阅读的目的：不是娱乐不是博学而是道德转化。文本只有当其原理被抽取并应用于你自己生活时才有用。不自用的阅读是积累；自用的阅读是修养。
   - text: "The principle of the cosmos is one, but it divides into many as it enters into individual things. The principle in each thing is complete, yet each thing expresses it differently according to the clarity of its qi."
     text_zh: "理一分殊。万物各具一理，而理同出一源。然气有清浊，故理之表现有异。"
     source: "Zhu Xi, Commentary on the Great Learning"
     source_zh: "《朱熹·大学章句》"
-    interpretation: Zhu Xi's signature metaphysical doctrine: "principle is one, its manifestations are many." The same universal rationality underlies everything, but it appears differently in each thing because each thing's material substrate (qi) filters and shapes it differently. This explains both the unity of reality and its diversity — the same truth expressed in infinite variations.
-    interpretation_zh: 朱熹标志性的形而上学学说："理一分殊。"同一普遍理性贯穿万物，但在每物中呈现不同，因为每物的气（物质基底）以不同方式过滤与塑造它。这解释了现实的统一性与多样性——同一真理以无限变化表达。
+    interpretation: "Zhu Xi's signature metaphysical doctrine: \"principle is one, its manifestations are many.\" The same universal rationality underlies everything, but it appears differently in each thing because each thing's material substrate (qi) filters and shapes it differently. This explains both the unity of reality and its diversity — the same truth expressed in infinite variations."
+    interpretation_zh: "朱熹标志性的形而上学学说：\"理一分殊。\"同一普遍理性贯穿万物，但在每物中呈现不同，因为每物的气（物质基底）以不同方式过滤与塑造它。这解释了现实的统一性与多样性——同一真理以无限变化表达。"
   - text: "To read a book, you must first read each sentence carefully, then each paragraph, then the whole chapter. Only then can you understand the overall meaning. Rushing through a book without pausing to reflect is like walking past a beautiful garden without stopping to look."
     text_zh: "读书须是一句一句地看，一段一段地看，一章一章地看，方能见得大意。若匆匆看过，便如走过花园而不驻足观看。"
     source: "Zhu Xi, Classified Conversations"
     source_zh: "《朱子语类》"
-    interpretation: Zhu Xi's pedagogical method in action: progressive, cumulative reading that builds understanding layer by layer. Each level of analysis depends on the previous level. Rushing through a text without reflective pauses produces superficial familiarity, not genuine comprehension. The method models his broader epistemology: understanding proceeds from particulars to wholes through careful, disciplined attention.
+    interpretation: "Zhu Xi's pedagogical method in action: progressive, cumulative reading that builds understanding layer by layer. Each level of analysis depends on the previous level. Rushing through a text without reflective pauses produces superficial familiarity, not genuine comprehension. The method models his broader epistemology: understanding proceeds from particulars to wholes through careful, disciplined attention."
     interpretation_zh: 朱熹教学方法的实践：渐进式、累积式阅读逐层建构理解。每一分析层次依赖于前一层。不反思便匆匆阅读产生肤浅的熟悉而非真正的理解。这一方法也建模了他更广的认识论：理解通过仔细的、纪律性的关注从特殊走向整体。
   - text: "Human nature is principle; human emotions are qi. When principle governs qi, the person is virtuous. When qi overwhelms principle, the person is flawed."
     text_zh: "性即理也，情即气也。理以御气，则为善人；气以掩理，则为恶人。"
     source: "Zhu Xi, Commentary on Mencius"
     source_zh: "《朱熹·孟子集注》"
-    interpretation: Zhu Xi's succinct formulation of his moral psychology: your essential nature is rational principle (li), your feelings and impulses are material force (qi). Virtue is the condition where li governs qi — reason guides emotion. Vice is the condition where qi overwhelms li — impulse overrides reason. Moral cultivation is the practice of strengthening li's governance over qi.
+    interpretation: "Zhu Xi's succinct formulation of his moral psychology: your essential nature is rational principle (li), your feelings and impulses are material force (qi). Virtue is the condition where li governs qi — reason guides emotion. Vice is the condition where qi overwhelms li — impulse overrides reason. Moral cultivation is the practice of strengthening li's governance over qi."
     interpretation_zh: 朱熹对其道德心理学的精炼表述：你的本性是理，你的情感与冲动是气。德行是理驾驭气的状态——理性引导情感。恶行是气淹没理的状态——冲动凌驾理性。道德修养是强化理对气之治理的实践。
 ---
 

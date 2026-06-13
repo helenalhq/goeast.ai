@@ -30,20 +30,20 @@ modern_influence_zh: |
 core_concepts:
   - name: Free Wandering (Xiaoyao)
     name_zh: 逍遥
-    description: Xiaoyao — free, unfettered wandering — is Zhuangzi's highest ideal. Not freedom in the political sense (the right to act without constraint) but freedom in the existential sense: liberation from the conceptual categories, social roles, and psychological habits that imprison the mind. The free wanderer is not bound by usefulness, reputation, or even the distinction between self and world.
+    description: "Xiaoyao — free, unfettered wandering — is Zhuangzi's highest ideal. Not freedom in the political sense (the right to act without constraint) but freedom in the existential sense: liberation from the conceptual categories, social roles, and psychological habits that imprison the mind. The free wanderer is not bound by usefulness, reputation, or even the distinction between self and world."
     description_zh: 逍遥——自由无拘的漫游——是庄子的最高理想。不是政治意义上的自由（不受约束行动的权利），而是存在意义上的自由：从囚禁心灵的概念范畴、社会角色与心理习惯中解放。逍遥者不受有用、名声甚至自我与世界之区分的束缚。
   - name: The Butterfly Dream
     name_zh: 梦蝶
-    description: Zhuangzi dreamed he was a butterfly, happily fluttering, with no thought of being Zhuang Zhou. Upon waking, he could not determine whether he was Zhuang Zhou dreaming he was a butterfly, or a butterfly now dreaming he was Zhuang Zhou. This is not merely a charming story but a profound epistemological challenge: if subjective experience cannot distinguish dream from reality, what grounds do we have for claiming any particular identity?
+    description: "Zhuangzi dreamed he was a butterfly, happily fluttering, with no thought of being Zhuang Zhou. Upon waking, he could not determine whether he was Zhuang Zhou dreaming he was a butterfly, or a butterfly now dreaming he was Zhuang Zhou. This is not merely a charming story but a profound epistemological challenge: if subjective experience cannot distinguish dream from reality, what grounds do we have for claiming any particular identity?"
     description_zh: 庄子梦见自己是一只蝴蝶，翩翩飞舞，毫无庄周之念。醒来后他无法确定：是庄周梦为蝴蝶，还是蝴蝶现在梦为庄周。这不仅是迷人的故事，更是深刻的认识论挑战：如果主观体验无法区分梦与现实，我们有何根据声称任何特定身份？
   - name: Uselessness as Virtue
     name_zh: 无用之用
-    description: Zhuangzi repeatedly celebrates things that are useless by conventional standards — the gnarled tree that cannot be cut for timber, the decrepit horse that cannot be ridden. Their uselessness is what saves them from exploitation. Zhuangzi reverses the usual valuation: usefulness makes you a target; uselessness grants you survival. The highest usefulness is the usefulness of being useless.
+    description: "Zhuangzi repeatedly celebrates things that are useless by conventional standards — the gnarled tree that cannot be cut for timber, the decrepit horse that cannot be ridden. Their uselessness is what saves them from exploitation. Zhuangzi reverses the usual valuation: usefulness makes you a target; uselessness grants you survival. The highest usefulness is the usefulness of being useless."
     description_zh: 庄子反复赞颂按常规标准无用的事物——不能伐为木材的扭曲大树，不能骑乘的老迈马匹。它们的无用正是免于被剥削的保障。庄子翻转了常规价值：有用让你成为目标；无用赋予你生存。最高的用处是无用的用处。
   - name: Equalizing All Things (Qiwu)
     name_zh: 齐物
-    description: Zhuangzi argues that all conceptual distinctions — right/wrong, beautiful/ugly, large/small — are relative to perspective, not absolute. From the perspective of a mosquito, a human is enormous; from the perspective of a mountain, a human is tiny. "Equalizing things" means recognizing that no single viewpoint has privileged access to truth; every perspective reveals one facet of an irreducibly complex reality.
-    description_zh: 庄子论证所有概念区分——对/错、美/丑、大/小——都是相对于视角的，而非绝对的。从蚊子的视角看，人是巨大的；从山的视角看，人是微小的。"齐物"意味着认识到没有单一视角拥有对真理的特权通道；每一视角揭示不可简化的复杂现实的一个面相。
+    description: "Zhuangzi argues that all conceptual distinctions — right/wrong, beautiful/ugly, large/small — are relative to perspective, not absolute. From the perspective of a mosquito, a human is enormous; from the perspective of a mountain, a human is tiny. \"Equalizing things\" means recognizing that no single viewpoint has privileged access to truth; every perspective reveals one facet of an irreducibly complex reality."
+    description_zh: "庄子论证所有概念区分——对/错、美/丑、大/小——都是相对于视角的，而非绝对的。从蚊子的视角看，人是巨大的；从山的视角看，人是微小的。\"齐物\"意味着认识到没有单一视角拥有对真理的特权通道；每一视角揭示不可简化的复杂现实的一个面相。"
   - name: Skill as Dao (Jiyang)
     name_zh: 技进乎道
     description: Zhuangzi's story of Cook Ding, who carves an ox with such effortless precision that his blade has lasted nineteen years without sharpening, illustrates the principle that technical mastery at its highest becomes spiritual mastery. When skill is so thoroughly internalized that the craftsman acts without thinking, the boundary between technique and the Tao dissolves.
@@ -95,7 +95,7 @@ quotes:
     text_zh: "庖丁释刀对曰：'臣之所好者道也，进乎技矣。始臣之解牛之时，所见无非牛者。三年之后，未尝见全牛也。方今之时，臣以神遇而不以目视，官知止而神欲行。'"
     source: "Zhuangzi, Chapter 3"
     source_zh: "《庄子·养生主》"
-    interpretation: The passage that defines Zhuangzi's theory of skill. Mastery proceeds through stages: from seeing the whole, to seeing the parts, to seeing nothing at all — only the spaces between the parts where the blade can move without resistance. At the highest level, the craftsman does not cut the ox; the ox opens itself.
+    interpretation: "The passage that defines Zhuangzi's theory of skill. Mastery proceeds through stages: from seeing the whole, to seeing the parts, to seeing nothing at all — only the spaces between the parts where the blade can move without resistance. At the highest level, the craftsman does not cut the ox; the ox opens itself."
     interpretation_zh: 定义庄子技艺理论的段落。精通经历阶段：从见整体，到见部分，到什么都不见——只见部分之间的空隙，刀刃可以无阻力地游走。在最高层次，匠人不是在切割牛；牛自己打开了。
 
 ---
