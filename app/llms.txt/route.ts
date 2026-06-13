@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getAllSkills } from "@/lib/skills";
 import { getAllJourneys } from "@/lib/journeys";
 import { getAllPhilosophers } from "@/lib/philosophers";
+import { getAllHexagrams } from "@/lib/iching-data";
 import { CATEGORIES } from "@/lib/types";
 
 export async function GET() {
@@ -21,6 +22,11 @@ export async function GET() {
 
   const philosopherRows = philosophers.map(
     (p) => `| ${p.name} | ${p.name_zh} | ${p.era} | ${p.school} | /philosophers/${p.slug} |`
+  );
+
+  const hexagrams = getAllHexagrams();
+  const hexagramRows = hexagrams.map(
+    (h) => `| ${h.number} | ${h.name} | ${h.name_zh} | ${h.upper_trigram}/${h.lower_trigram} | /iching/${h.slug} |`
   );
 
   const lines: string[] = [
@@ -61,6 +67,14 @@ export async function GET() {
     "| Name | Chinese | Era | School | URL |",
     "|------|---------|-----|--------|-----|",
     ...philosopherRows,
+    "",
+    "## I Ching — Book of Changes (易经)",
+    "",
+    `Total: ${hexagrams.length} hexagrams`,
+    "",
+    "| # | Name | Chinese | Trigrams | URL |",
+    "|---|------|---------|----------|-----|",
+    ...hexagramRows,
     "",
     "## API",
     "",
