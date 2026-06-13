@@ -53,6 +53,29 @@ export interface Journey extends JourneyMeta {
   content_zh?: string;
 }
 
+export interface PhilosopherMeta {
+  slug: string;
+  name: string;
+  name_zh: string;
+  era: string;
+  era_zh?: string;
+  school: string;
+  school_zh?: string;
+  location?: string;
+  location_zh?: string;
+  portrait_slug?: string;
+}
+
+export interface PhilosopherDeep extends PhilosopherMeta {
+  biography: string;
+  biography_zh?: string;
+  core_concepts: { name: string; name_zh: string; description: string; description_zh?: string }[];
+  quotes: { text: string; text_zh?: string; source: string; source_zh?: string; interpretation?: string; interpretation_zh?: string }[];
+  modern_influence: string;
+  modern_influence_zh?: string;
+  journey_slug?: string;
+}
+
 export interface SchoolInfo {
   id: string;
   name: string;
@@ -122,3 +145,25 @@ export const SCHOOLS: SchoolInfo[] = [
   { id: "zen", name: "Zen Buddhism", name_zh: "禅宗", color: "#d4a017", symbol: "禅" },
   { id: "mind-school", name: "School of Mind", name_zh: "心学", color: "#c0392b", symbol: "心" },
 ];
+
+export const PHILOSOPHER_SLUGS: Record<string, PhilosopherMeta> = {
+  "zhou-gong": { slug: "zhou-gong", name: "Zhou Gong", name_zh: "周公", era: "11th century BCE", era_zh: "公元前11世纪", school: "ancient", school_zh: "上古文明", portrait_slug: "prologue-zhougong" },
+  "laozi": { slug: "laozi", name: "Laozi", name_zh: "老子", era: "6th century BCE", era_zh: "公元前6世纪", school: "daoism", school_zh: "道家", location: "State of Chu", location_zh: "楚国", portrait_slug: "ch01-laozi" },
+  "confucius": { slug: "confucius", name: "Confucius", name_zh: "孔子", era: "551–479 BCE", era_zh: "公元前551–479年", school: "confucianism", school_zh: "儒家", location: "State of Lu", location_zh: "鲁国", portrait_slug: "ch02-confucius" },
+  "sunzi": { slug: "sunzi", name: "Sunzi", name_zh: "孙子", era: "544–496 BCE", era_zh: "公元前544–496年", school: "strategy", school_zh: "兵家", portrait_slug: "ch03-sunzi" },
+  "zhuangzi": { slug: "zhuangzi", name: "Zhuangzi", name_zh: "庄子", era: "4th century BCE", era_zh: "公元前4世纪", school: "daoism", school_zh: "道家", portrait_slug: "ch04-zhuangzi" },
+  "mencius": { slug: "mencius", name: "Mencius", name_zh: "孟子", era: "372–289 BCE", era_zh: "公元前372–289年", school: "confucianism", school_zh: "儒家", portrait_slug: "ch05-mencius" },
+  "mozi": { slug: "mozi", name: "Mozi", name_zh: "墨子", era: "470–391 BCE", era_zh: "公元前470–391年", school: "mohism", school_zh: "墨家", portrait_slug: "ch06-mozi" },
+  "zhu-xi": { slug: "zhu-xi", name: "Zhu Xi", name_zh: "朱熹", era: "1130–1200 CE", era_zh: "1130–1200年", school: "neo-confucianism", school_zh: "理学", location: "Wuyuan", location_zh: "婺源", portrait_slug: "ch07-zhuxi" },
+  "zhang-zai": { slug: "zhang-zai", name: "Zhang Zai", name_zh: "张载", era: "1020–1077 CE", era_zh: "1020–1077年", school: "neo-confucianism", school_zh: "理学", location: "Guanzhong", location_zh: "关中", portrait_slug: "ch08-zhangzai" },
+  "huineng": { slug: "huineng", name: "Huineng", name_zh: "慧能", era: "638–713 CE", era_zh: "638–713年", school: "zen", school_zh: "禅宗", location: "Lingnan", location_zh: "岭南", portrait_slug: "ch09-huineng" },
+  "wang-yangming": { slug: "wang-yangming", name: "Wang Yangming", name_zh: "王阳明", era: "1472–1529 CE", era_zh: "1472–1529年", school: "mind-school", school_zh: "心学", location: "Yuyao", location_zh: "余姚", portrait_slug: "ch10-wangyangming" },
+};
+
+export function getPhilosopherMeta(slug: string): PhilosopherMeta | null {
+  return PHILOSOPHER_SLUGS[slug] || null;
+}
+
+export function getAllPhilosopherMetas(): PhilosopherMeta[] {
+  return Object.values(PHILOSOPHER_SLUGS);
+}
