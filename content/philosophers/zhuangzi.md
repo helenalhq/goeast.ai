@@ -91,7 +91,6 @@ quotes:
     source_zh: "《庄子》多个篇章"
     interpretation: Zhuangzi's signature reversal. The gnarled tree lives because no carpenter wants it; the ugly duckling survives because no hunter values it. What conventional judgment calls useless, Zhuangzi reveals as the condition of freedom from exploitation. Usefulness makes you a tool of others; uselessness makes you your own.
     interpretation_zh: 庄子标志性的翻转。扭曲的大树因为没有木匠需要它而存活；丑陋的小鸭因为没有猎人重视它而幸存。常规判断称之为无用的东西，庄子揭示为免于被剥削的条件。有用使你成为他人的工具；无用使你成为自己的。
-quotes:
   - text: "Cook Ding laid down his knife and said: 'What I care about is the Tao, which goes beyond skill. When I first began carving oxen, I saw nothing but the whole ox. After three years, I no longer saw the whole ox. Now I meet it with my spirit rather than my eyes. My senses stop and my spirit moves.'"
     text_zh: "庖丁释刀对曰：'臣之所好者道也，进乎技矣。始臣之解牛之时，所见无非牛者。三年之后，未尝见全牛也。方今之时，臣以神遇而不以目视，官知止而神欲行。'"
     source: "Zhuangzi, Chapter 3"
