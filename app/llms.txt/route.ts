@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import { getAllSkills } from "@/lib/skills";
 import { getAllJourneys } from "@/lib/journeys";
+import { getAllPhilosophers } from "@/lib/philosophers";
 import { CATEGORIES } from "@/lib/types";
 
 export async function GET() {
   const allSkills = getAllSkills();
   const journeys = getAllJourneys();
+  const philosophers = getAllPhilosophers();
 
   const skillRows = allSkills.map(
     (s) =>
@@ -15,6 +17,10 @@ export async function GET() {
   const journeyRows = journeys.map(
     (j) =>
       `| ${j.chapter} | ${j.title} | ${j.philosopher || "—"} | ${j.era || "—"} | /sophies-journey/${j.slug} |`
+  );
+
+  const philosopherRows = philosophers.map(
+    (p) => `| ${p.name} | ${p.name_zh} | ${p.era} | ${p.school} | /philosophers/${p.slug} |`
   );
 
   const lines: string[] = [
@@ -47,6 +53,14 @@ export async function GET() {
     "| Ch | Title | Philosopher | Era | URL |",
     "|----|-------|-------------|-----|-----|",
     ...journeyRows,
+    "",
+    "## Chinese Philosophers",
+    "",
+    `Total: ${philosophers.length} philosophers`,
+    "",
+    "| Name | Chinese | Era | School | URL |",
+    "|------|---------|-----|--------|-----|",
+    ...philosopherRows,
     "",
     "## API",
     "",
