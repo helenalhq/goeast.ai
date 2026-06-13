@@ -167,3 +167,43 @@ export function getPhilosopherMeta(slug: string): PhilosopherMeta | null {
 export function getAllPhilosopherMetas(): PhilosopherMeta[] {
   return Object.values(PHILOSOPHER_SLUGS);
 }
+
+export interface TrigramInfo {
+  name: string;
+  name_zh: string;
+  symbol: string;
+  nature: string;
+  nature_zh: string;
+  attribute: string;
+  attribute_zh: string;
+  image: string;
+  image_zh: string;
+  binary: string; // e.g. "111" for ☰ Qian
+}
+
+export const TRIGRAMS: TrigramInfo[] = [
+  { name: "Qian", name_zh: "乾", symbol: "☰", nature: "Heaven", nature_zh: "天", attribute: "Creative, Strong", attribute_zh: "刚健", image: "Dragon, Sky", image_zh: "龙、天", binary: "111" },
+  { name: "Kun", name_zh: "坤", symbol: "☷", nature: "Earth", nature_zh: "地", attribute: "Receptive, Yielding", attribute_zh: "柔顺", image: "Field, Mother", image_zh: "田、母", binary: "000" },
+  { name: "Zhen", name_zh: "震", symbol: "☳", nature: "Thunder", nature_zh: "雷", attribute: "Inciting, Movement", attribute_zh: "动", image: "Horse, Lightning", image_zh: "马、电", binary: "100" },
+  { name: "Xun", name_zh: "巽", symbol: "☴", nature: "Wind", nature_zh: "风", attribute: "Gentle, Penetrating", attribute_zh: "入", image: "Tree, Penetration", image_zh: "木、入", binary: "011" },
+  { name: "Kan", name_zh: "坎", symbol: "☵", nature: "Water", nature_zh: "水", attribute: "Abysmal, Dangerous", attribute_zh: "险", image: "Rain, River", image_zh: "雨、河", binary: "010" },
+  { name: "Li", name_zh: "离", symbol: "☲", nature: "Fire", nature_zh: "火", attribute: "Clinging, Light", attribute_zh: "明", image: "Sun, Bird", image_zh: "日、鸟", binary: "101" },
+  { name: "Gen", name_zh: "艮", symbol: "☶", nature: "Mountain", nature_zh: "山", attribute: "Keeping Still, Resting", attribute_zh: "止", image: "Dog, Boundary", image_zh: "狗、边界", binary: "001" },
+  { name: "Dui", name_zh: "兑", symbol: "☱", nature: "Lake", nature_zh: "泽", attribute: "Joyous, Open", attribute_zh: "悦", image: "Sheep, Marsh", image_zh: "羊、泽", binary: "110" },
+];
+
+export interface HexagramData {
+  number: number;
+  name: string;
+  name_zh: string;
+  slug: string;
+  upper_trigram: string; // Trigram name
+  lower_trigram: string;
+  binary: string; // 6-digit binary, e.g. "111111" for Qian
+  judgment_en: string;
+  judgment_zh: string;
+  image_en: string;
+  image_zh: string;
+  modern_application?: string;
+  modern_application_zh?: string;
+}
