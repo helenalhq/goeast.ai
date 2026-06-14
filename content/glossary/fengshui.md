@@ -1,0 +1,32 @@
+---
+slug: fengshui
+name: Fengshui
+name_zh: 风水
+school: various
+school_zh: 各家
+related_concepts: [qi, yin-yang, ziran, dao]
+definition_zh: |
+  风水是中国古老的居住环境选择与空间布局艺术，字面意为"风"与"水"——两种对气之流动影响最大的自然力量。风可以吹散气，水可以聚留气，因此理想的居住环境应当藏风聚气——既能避免气被疾风吹散，又能让气在水源与山水之间汇聚停留。风水不是迷信或魔法，而是基于对地形、水文、风向、日照等自然条件的系统性观察，寻找人与环境之间的最佳和谐关系。
+
+  风水的核心原则是气的聚散与阴阳的平衡。好的风水地形如同一个容器——背靠高山（阴，稳固与庇护），前临曲水（阳，流动与生机），左右有丘陵护持（犹如扶手），中间有开阔平地（明堂，气的汇聚空间）。这种"背山面水"的格局不是任意的偏好，而是对自然力量流动路径的经验总结——山脉引导风向，水系汇聚生气，地形决定气的停留与流动方式。风水的评估不是关于"好运气"的抽象判断，而是关于具体环境中气的质量与流动的具体分析。
+
+  风水的实践包含了从选址（宏观地理格局）到布局（微观室内安排）的多层次考量。在选址层面，风水关注山势水形、道路走向、周边建筑的形态与距离；在布局层面，风水关注门窗朝向、家具摆放、房间功能的分配。风水的原则也延伸到城市规划——许多中国古城的选址与布局都遵循风水逻辑：北京的中轴线、南京的山水格局、西安的龙脉走向，都是风水思想在宏大尺度上的实践。风水至今仍深深影响中国人的住房选择与室内装修，虽然现代形式已与传统有所不同，但核心关切——人与环境的和谐——始终不变。
+modern_application: |
+  Fengshui's core insight — that the physical environment profoundly affects human wellbeing — has been validated by modern environmental psychology and neuroscience. Research demonstrates that natural light exposure regulates circadian rhythms and mood; that views of vegetation reduce cortisol levels and improve cognitive performance; that airflow and ventilation directly impact concentration and health; that spatial layout affects social interaction patterns and emotional security. These are not mystical claims but measurable physiological responses — and they are precisely the variables that traditional fengshui practitioners have been optimizing for centuries through observation rather than instrumentation.
+
+  In sustainable architecture and biophilic design, fengshui principles have found a scientific second life. The LEED certification system emphasizes natural ventilation, daylight access, and connection to landscape — all core fengshui concerns. Biophilic design research shows that buildings incorporating natural forms, water features, and vegetative elements produce occupants with lower stress, higher productivity, and greater satisfaction. The fengshui ideal of "sheltering mountain and flowing water" maps onto the architectural principle that buildings should be oriented for optimal solar access while protected from prevailing harsh winds — not superstition but climate-responsive design.
+
+  In workplace and home design, fengshui translates into practical guidelines that anyone can apply without specialized knowledge. Position your desk to face the door (security and awareness). Avoid sitting with your back to a window (lack of psychological support). Ensure natural light reaches primary living spaces (mood and energy regulation). Keep pathways clear and uncluttered (ease of movement reduces daily friction). Introduce living plants and water elements where possible (proven stress reduction). These recommendations — which fengshui practitioners have offered for millennia — are now supported by environmental psychology studies, confirming that the tradition's empirical observations anticipated findings that modern science has only recently formalized.
+modern_application_zh: |
+  风水的核心洞见——物理环境深刻影响人类福祉——已被现代环境心理学与神经科学验证。研究证明自然光照射调节昼夜节律与情绪；植被景观降低皮质醇水平与改善认知表现；气流与通风直接影响专注与健康；空间布局影响社交互动模式与情感安全感。这些不是神秘主张而是可测量的生理反应——正是传统风水师通过观察而非仪器优化了数百年的变量。
+
+  在可持续建筑与亲自然设计中，风水原则找到了科学的第二生命。LEED认证体系强调自然通风、日照获取与景观连接——都是核心风水关切。亲自然设计研究显示融入自然形态、水景与植被元素的建筑产生压力更低、生产力更高、满意度更大的使用者。风水"背山面水"的理想映射到建筑原则——建筑应朝向最优日照方向同时保护免受严酷主风向——不是迷信而是气候响应设计。
+
+  在工作场所与家居设计中，风水转化为任何人无需专业知识即可应用的实用指南。让桌子面对门口（安全与觉察）。避免背对窗户坐着（缺乏心理支撑）。确保自然光到达主要生活空间（情绪与能量调节）。保持通道清晰不杂乱（移动便利减少日常摩擦）。尽可能引入活植物与水元素（经证实的减压）。这些推荐——风水师提供了数千年——现在被环境心理学研究支持，确认这一传统的经验性观察预见了现代科学仅最近才正式化的发现。
+---
+
+Fengshui — literally "wind and water" — is the ancient Chinese art of selecting and arranging living environments to optimize the relationship between human beings and the natural forces that surround them. The name identifies the two most influential natural elements for the flow of qi: wind, which can scatter vital energy, and water, which can gather and retain it. The fundamental principle of fengshui is therefore "concealing the wind and gathering the qi" (*cang feng de qi*) — finding places and arranging spaces so that beneficial energy is preserved rather than dispersed. Fengshui is not superstition or magical thinking; it is a systematic empirical practice built upon centuries of observation of terrain, hydrology, wind patterns, solar exposure, and the correlations between environmental conditions and human prosperity, health, and satisfaction.
+
+The theoretical core of fengshui rests on the dynamics of qi and the balance of yin and yang. An ideal fengshui landscape functions as a container: a mountain or hill behind the site (yin — providing stability, shelter, and support), a curving river or water body before it (yang — bringing movement, vitality, and abundance), protective hills on either side (like the arms of a chair enclosing the space), and an open clearing in the center (the "bright hall" where qi gathers). This "mountain behind, water before" pattern is not arbitrary aesthetic preference but empirical generalization about how natural forces actually flow — mountains direct wind patterns, waterways accumulate vital energy, and terrain shapes determine whether qi settles or dissipates. Fengshui assessment is not about abstract "good fortune" but about concrete analysis of qi quality and movement in specific locations.
+
+Fengshui practice encompasses multiple scales, from macro-level site selection to micro-level interior arrangement. At the site level, practitioners evaluate mountain formations, water courses, road patterns, and the spatial relationships between neighboring structures. At the interior level, they consider door and window orientation, furniture placement, room function allocation, and the circulation pathways within a building. Fengshui principles also extend to urban planning: many major Chinese cities were located and designed according to fengshui logic — Beijing's central axis oriented toward the mountain-gates to the north, Nanjing's integration of mountain and river systems, Xi'an's positioning along recognized "dragon vein" corridors. Although contemporary fengshui practice has evolved from its classical forms, the underlying concern — harmonizing human habitation with environmental forces — remains constant, and modern environmental psychology is increasingly confirming that the spatial variables fengshui has always prioritized — light, air, view, spatial orientation, natural elements — have measurable, significant effects on human health, performance, and emotional wellbeing.
