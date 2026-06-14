@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getInsightWithHtml, getInsightSlugs } from "@/lib/insights";
+import { getInsightWithHtml, getInsightSlugs, getInsightBySlug } from "@/lib/insights";
 import { PHILOSOPHER_SLUGS } from "@/lib/types";
 import OracleCta from "@/components/OracleCta";
 import JsonLd from "@/components/JsonLd";
@@ -16,16 +16,16 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const slugs = getInsightSlugs();
-  if (!slugs.includes(slug)) return {};
-  // Use PHILOSOPHER_SLUGS for philosopher context
+  const insight = getInsightBySlug(slug);
+  if (!insight) return {};
+  const philosopher = insight.philosopher_slug ? PHILOSOPHER_SLUGS[insight.philosopher_slug] : null;
   return {
-    title: `Insight — GoEast.ai`,
-    description: `Explore Chinese philosophy in the modern world at GoEast.ai.`,
-    alternates: { canonical: `/insights/${slug}` },
+    title: `${insight.title} — GoEast.ai`,
+    description: `${philosopher?.name || 'Chinese philosophy'} meets modern life: ${insight.title}. ${insight.title_zh || ''}`,
+    alternates: { canonical: `/insights/${slug}`, languages: { en: `/insights/${slug}`, zh: `/insights/${slug}` } },
     openGraph: {
-      title: `Insight — GoEast.ai`,
-      description: `Explore Chinese philosophy in the modern world.`,
+      title: insight.title,
+      description: `${philosopher?.name || 'Chinese philosophy'} meets modern life: ${insight.title}`,
       type: "article",
     },
   };

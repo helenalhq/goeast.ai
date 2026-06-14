@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getGlossaryWithHtml, getGlossarySlugs } from "@/lib/glossary";
+import { getGlossaryWithHtml, getGlossarySlugs, getGlossaryBySlug } from "@/lib/glossary";
 import { SCHOOLS } from "@/lib/types";
 import OracleCta from "@/components/OracleCta";
 import JsonLd from "@/components/JsonLd";
@@ -16,16 +16,16 @@ export async function generateMetadata({
   params: Promise<{ concept: string }>;
 }): Promise<Metadata> {
   const { concept } = await params;
-  const slugs = getGlossarySlugs();
-  if (!slugs.includes(concept)) return {};
-  // Just use the slug to create metadata
+  const entry = getGlossaryBySlug(concept);
+  if (!entry) return {};
+  const defSnippet = entry.definition.slice(0, 150).replace(/\n/g, ' ').trim();
   return {
-    title: `${concept.charAt(0).toUpperCase() + concept.slice(1)} — Chinese Philosophy Glossary — GoEast.ai`,
-    description: `Explore the concept of ${concept} in Chinese philosophy: definition, modern application, and related ideas.`,
-    alternates: { canonical: `/glossary/${concept}` },
+    title: `${entry.name} (${entry.name_zh}) — Chinese Philosophy Glossary — GoEast.ai`,
+    description: `${entry.name} (${entry.name_zh}): ${defSnippet}...`,
+    alternates: { canonical: `/glossary/${concept}`, languages: { en: `/glossary/${concept}`, zh: `/glossary/${concept}` } },
     openGraph: {
-      title: `${concept.charAt(0).toUpperCase() + concept.slice(1)} — GoEast.ai`,
-      description: `Explore the concept of ${concept} in Chinese philosophy.`,
+      title: `${entry.name} (${entry.name_zh}) — GoEast.ai`,
+      description: `${entry.name}: ${defSnippet}...`,
       type: "article",
     },
   };
