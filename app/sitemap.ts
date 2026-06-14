@@ -4,6 +4,8 @@ import { getJourneySlugs } from "@/lib/journeys";
 import { getPhilosopherSlugs } from "@/lib/philosophers";
 import { CATEGORIES } from "@/lib/types";
 import { getAllHexagrams } from "@/lib/iching-data";
+import { getGlossarySlugs } from "@/lib/glossary";
+import { getInsightSlugs } from "@/lib/insights";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://www.goeast.ai";
@@ -43,6 +45,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
+  const glossaryPages = getGlossarySlugs().map((slug) => ({
+    url: `${baseUrl}/glossary/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+
+  const insightPages = getInsightSlugs().map((slug) => ({
+    url: `${baseUrl}/insights/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
   return [
     {
       url: baseUrl,
@@ -65,6 +81,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...journeyPages,
     ...philosopherPages,
     ...ichingHexagramPages,
+    ...glossaryPages,
+    ...insightPages,
     ...skillPages,
     ...categoryPages,
     {
@@ -78,6 +96,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/glossary`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/insights`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
     },
     {
       url: `${baseUrl}/about`,
