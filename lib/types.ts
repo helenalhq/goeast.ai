@@ -207,3 +207,33 @@ export interface HexagramData {
   modern_application?: string;
   modern_application_zh?: string;
 }
+
+export interface GlossaryEntryMeta {
+  slug: string;
+  name: string;
+  name_zh: string;
+  school: string;
+  school_zh?: string;
+  related_concepts: string[];
+}
+
+export interface GlossaryEntry extends GlossaryEntryMeta {
+  definition: string;
+  definition_zh?: string;
+  modern_application?: string;
+  modern_application_zh?: string;
+}
+
+export interface InsightMeta {
+  slug: string;
+  title: string;
+  title_zh?: string;
+  philosopher_slug?: string;
+  concept_slugs?: string[];
+  published_at: string;
+}
+
+export interface Insight extends InsightMeta {
+  content: string;
+  content_zh?: string;
+}
