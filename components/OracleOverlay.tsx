@@ -968,18 +968,36 @@ export default function OracleOverlay({
                   ) : (
                     <>
                       <p
-                        className="text-white/60 text-sm leading-relaxed"
+                        className="text-white/60 text-sm leading-relaxed mb-2"
                         style={{ fontFamily: SERIF }}
                       >
-                        Daily free consultation limit reached.{" "}
-                        {user
-                          ? "Unlock unlimited access for deeper consultations."
-                          : "Sign in to unlock unlimited access."}
+                        You&apos;ve used all 3 free consultations today. Pro unlocks deep features and 10 per day:
                       </p>
+                      <ul
+                        className="text-white/40 text-xs leading-relaxed space-y-1 mb-3"
+                        style={{ fontFamily: SERIF }}
+                      >
+                        <li className="flex items-center gap-2">
+                          <span style={{ color: `rgba(${accent},0.5)` }}>追问</span>
+                          Deep conversation mode — follow-up questions
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <span style={{ color: `rgba(${accent},0.5)` }}>多哲</span>
+                          Multi-philosopher dialogue
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <span style={{ color: `rgba(${accent},0.5)` }}>易经</span>
+                          I Ching AI interpretation
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <span style={{ color: `rgba(${accent},0.5)` }}>历史</span>
+                          Conversation history saved
+                        </li>
+                      </ul>
                       <button
                         onClick={handleUnlock}
                         disabled={unlocking}
-                        className="mt-3 w-full py-2.5 rounded-lg text-sm font-medium disabled:opacity-40 transition-all duration-200 cursor-pointer"
+                        className="w-full py-2.5 rounded-lg text-sm font-medium disabled:opacity-40 transition-all duration-200 cursor-pointer"
                         style={{
                           backgroundColor: `rgba(${accent},0.15)`,
                           border: `1px solid rgba(${accent},0.2)`,
@@ -990,8 +1008,8 @@ export default function OracleOverlay({
                         {unlocking
                           ? "Redirecting..."
                           : user
-                            ? "Unlock Unlimited · $4.99/month"
-                            : "Sign In to Unlock"}
+                            ? "Unlock Deep Features · $4.99/mo"
+                            : "Sign In to Unlock Deep Features"}
                       </button>
                     </>
                   )}
@@ -1223,7 +1241,7 @@ export default function OracleOverlay({
                     fontFamily: SERIF,
                   }}
                 >
-                  {unlocking ? "Redirecting..." : "Unlock · $4.99/mo"}
+                  {unlocking ? "Redirecting..." : "Unlock Deep Features · $4.99/mo"}
                 </button>
               )}
             </div>
