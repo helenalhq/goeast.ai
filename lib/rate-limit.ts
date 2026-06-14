@@ -7,8 +7,8 @@ interface RateLimitEntry {
   resetAt: number;
 }
 
-// Free tier: 1 request per 24 hours per IP + fingerprint
-const FREE_TIER_LIMIT = 1;
+// Free tier: 3 requests per 24 hours per IP + fingerprint
+const FREE_TIER_LIMIT = 3;
 const FREE_TIER_WINDOW_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 // Paid tier: 10 requests per 24 hours per user
