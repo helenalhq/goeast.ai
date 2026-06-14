@@ -8,7 +8,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "I Ching — Book of Changes — GoEast.ai",
   description: "Explore the I Ching (易经), the ancient Book of Changes. Interactive trigram chart, free coin-cast divination, and all 64 hexagram meanings.",
-  alternates: { canonical: "/iching" },
+  alternates: { canonical: "/iching", languages: { en: "/iching", zh: "/iching" } },
   openGraph: {
     title: "I Ching — Book of Changes — GoEast.ai",
     description: "Explore the I Ching: interactive divination, 64 hexagram meanings, and AI-powered interpretations.",

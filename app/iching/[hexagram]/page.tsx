@@ -57,6 +57,8 @@ export default async function HexagramDetailPage({
           headline: `Hexagram ${h.number}: ${h.name} (${h.name_zh})`,
           description: h.judgment_en.slice(0, 200),
           url: `https://www.goeast.ai/iching/${h.slug}`,
+          datePublished: "2026-06-13",
+          dateModified: "2026-06-13",
           publisher: { "@type": "Organization", name: "GoEast.ai", url: "https://www.goeast.ai" },
         }}
       />
@@ -148,6 +150,28 @@ export default async function HexagramDetailPage({
             )}
           </section>
         )}
+
+        {/* Related Philosophical Concepts */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-bold text-ink mb-4">Related Concepts · 相关概念</h2>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/glossary/yin-yang" className="px-3 py-1.5 rounded-full bg-cream border border-sand text-sm text-ink hover:border-china-red hover:text-china-red transition-colors">
+              Yin-Yang (阴阳)
+            </Link>
+            <Link href="/glossary/tian" className="px-3 py-1.5 rounded-full bg-cream border border-sand text-sm text-ink hover:border-china-red hover:text-china-red transition-colors">
+              Tian (天)
+            </Link>
+            <Link href="/glossary/dao" className="px-3 py-1.5 rounded-full bg-cream border border-sand text-sm text-ink hover:border-china-red hover:text-china-red transition-colors">
+              Dao (道)
+            </Link>
+            <Link href="/glossary/de" className="px-3 py-1.5 rounded-full bg-cream border border-sand text-sm text-ink hover:border-china-red hover:text-china-red transition-colors">
+              De (德)
+            </Link>
+          </div>
+          <p className="text-sm text-warm mt-3">
+            <Link href="/glossary" className="hover:text-china-red transition-colors">Explore all Chinese philosophy concepts →</Link>
+          </p>
+        </section>
 
         {/* Oracle CTA */}
         <OracleCta

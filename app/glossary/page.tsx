@@ -8,7 +8,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Chinese Philosophy Glossary — GoEast.ai",
   description: "Key concepts in Chinese philosophy explained: Dao, Wuwei, Ren, Yin-Yang, Qi, and more. Bilingual definitions with modern applications.",
-  alternates: { canonical: "/glossary" },
+  alternates: { canonical: "/glossary", languages: { en: "/glossary", zh: "/glossary" } },
   openGraph: {
     title: "Chinese Philosophy Glossary — GoEast.ai",
     description: "Key concepts in Chinese philosophy: Dao, Wuwei, Ren, Qi, and 20 more terms explained in depth.",

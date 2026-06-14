@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getGlossaryWithHtml, getGlossarySlugs, getGlossaryBySlug } from "@/lib/glossary";
-import { SCHOOLS } from "@/lib/types";
+import { SCHOOLS, PHILOSOPHER_SLUGS } from "@/lib/types";
 import OracleCta from "@/components/OracleCta";
 import JsonLd from "@/components/JsonLd";
 import type { Metadata } from "next";
@@ -41,16 +41,25 @@ export default async function GlossaryDetailPage({
   if (!entry) notFound();
 
   const school = SCHOOLS.find((s) => s.id === entry.school);
+  const relatedPhilosophers = Object.entries(PHILOSOPHER_SLUGS)
+    .filter(([_, meta]) => meta.school === entry.school)
+    .slice(0, 4);
 
   return (
     <article>
       <JsonLd
         data={{
           "@context": "https://schema.org",
-          "@type": "Article",
-          headline: `${entry.name} (${entry.name_zh})`,
-          description: `Explore the concept of ${entry.name} in Chinese philosophy.`,
+          "@type": "DefinedTerm",
+          name: entry.name,
+          alternateName: entry.name_zh,
+          description: `Explore the concept of ${entry.name} (${entry.name_zh}) in Chinese philosophy.`,
           url: `https://www.goeast.ai/glossary/${entry.slug}`,
+          inDefinedTermSet: {
+            "@type": "DefinedTermSet",
+            name: "Chinese Philosophy Glossary",
+            url: "https://www.goeast.ai/glossary",
+          },
           publisher: { "@type": "Organization", name: "GoEast.ai", url: "https://www.goeast.ai" },
         }}
       />
@@ -130,6 +139,27 @@ export default async function GlossaryDetailPage({
                 </Link>
               ))}
             </div>
+          </section>
+        )}
+
+        {/* Related Philosophers */}
+        {relatedPhilosophers.length > 0 && (
+          <section className="mb-10">
+            <h2 className="text-2xl font-bold text-ink mb-4">Philosophers · 哲学家</h2>
+            <div className="flex flex-wrap gap-3">
+              {relatedPhilosophers.map(([slug, meta]) => (
+                <Link
+                  key={slug}
+                  href={`/philosophers/${slug}`}
+                  className="px-3 py-1.5 rounded-full bg-cream border border-sand text-sm text-ink hover:border-china-red hover:text-china-red transition-colors"
+                >
+                  {meta.name} ({meta.name_zh})
+                </Link>
+              ))}
+            </div>
+            <p className="text-sm text-warm mt-3">
+              Explore thinkers from the {school?.name || "same"} tradition →
+            </p>
           </section>
         )}
 

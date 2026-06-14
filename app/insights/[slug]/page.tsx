@@ -51,6 +51,8 @@ export default async function InsightDetailPage({
           headline: insight.title,
           description: `Explore ${philosopher?.name || 'Chinese philosophy'} in the modern world.`,
           url: `https://www.goeast.ai/insights/${insight.slug}`,
+          datePublished: insight.published_at,
+          dateModified: insight.published_at,
           author: philosopher ? { "@type": "Person", name: philosopher.name } : undefined,
           publisher: { "@type": "Organization", name: "GoEast.ai", url: "https://www.goeast.ai" },
         }}

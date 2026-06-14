@@ -23,7 +23,14 @@ export default function HomePage() {
           name: "GoEast.ai",
           url: "https://www.goeast.ai",
           description:
-            "Curated AI skills for navigating life in China — travel, medical, shopping, accommodation.",
+            "Chinese philosophy meets modern life: AI-powered Oracle consultations with ancient thinkers, I Ching divination, philosophy glossary, curated AI skills for life in China.",
+          hasPart: [
+            { "@type": "WebPage", name: "Chinese Philosophers", url: "https://www.goeast.ai/philosophers" },
+            { "@type": "WebPage", name: "I Ching — Book of Changes", url: "https://www.goeast.ai/iching" },
+            { "@type": "WebPage", name: "Philosophy Glossary", url: "https://www.goeast.ai/glossary" },
+            { "@type": "WebPage", name: "Philosophical Insights", url: "https://www.goeast.ai/insights" },
+            { "@type": "WebPage", name: "AI Skills Directory", url: "https://www.goeast.ai/skills" },
+          ],
           potentialAction: {
             "@type": "SearchAction",
             target: {

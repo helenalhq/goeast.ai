@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getPhilosopherWithHtml, getPhilosopherSlugs } from "@/lib/philosophers";
 import { SCHOOLS, getPhilosopherImage, PHILOSOPHER_SLUGS } from "@/lib/types";
+import { getAllGlossary } from "@/lib/glossary";
 import OracleCta from "@/components/OracleCta";
 import JsonLd from "@/components/JsonLd";
 import type { Metadata } from "next";
@@ -22,7 +23,7 @@ export async function generateMetadata({
   return {
     title: `${meta.name} (${meta.name_zh}) — Chinese Philosopher — GoEast.ai`,
     description: `Explore ${meta.name}'s philosophy: core concepts, quotes, and modern influence. ${meta.era}.`,
-    alternates: { canonical: `/philosophers/${slug}` },
+    alternates: { canonical: `/philosophers/${slug}`, languages: { en: `/philosophers/${slug}`, zh: `/philosophers/${slug}` } },
     openGraph: {
       title: `${meta.name} (${meta.name_zh}) — GoEast.ai`,
       description: `Explore ${meta.name}'s philosophy: core concepts, quotes, and modern influence.`,
@@ -42,6 +43,7 @@ export default async function PhilosopherDetailPage({
 
   const school = SCHOOLS.find((s) => s.id === philosopher.school);
   const portrait = philosopher.portrait_slug ? getPhilosopherImage(philosopher.portrait_slug) : null;
+  const relatedConcepts = getAllGlossary().filter((c) => c.school === philosopher.school).slice(0, 8);
 
   return (
     <article>
@@ -52,7 +54,9 @@ export default async function PhilosopherDetailPage({
           headline: `${philosopher.name} (${philosopher.name_zh})`,
           description: `Explore ${philosopher.name}'s philosophy: core concepts, quotes, and modern influence.`,
           url: `https://www.goeast.ai/philosophers/${philosopher.slug}`,
-          author: { "@type": "Person", name: philosopher.name },
+          datePublished: "2026-06-13",
+          dateModified: "2026-06-13",
+          about: { "@type": "Person", name: philosopher.name, alternateName: philosopher.name_zh },
           publisher: { "@type": "Organization", name: "GoEast.ai", url: "https://www.goeast.ai" },
         }}
       />
@@ -194,6 +198,27 @@ export default async function PhilosopherDetailPage({
             >
               Read Chapter →
             </Link>
+          </section>
+        )}
+
+        {/* Related Glossary Concepts */}
+        {relatedConcepts.length > 0 && (
+          <section className="mb-10">
+            <h2 className="text-2xl font-bold text-ink mb-4">Key Concepts · 核心概念</h2>
+            <div className="flex flex-wrap gap-3">
+              {relatedConcepts.map((c) => (
+                <Link
+                  key={c.slug}
+                  href={`/glossary/${c.slug}`}
+                  className="px-3 py-1.5 rounded-full bg-cream border border-sand text-sm text-ink hover:border-china-red hover:text-china-red transition-colors"
+                >
+                  {c.name} ({c.name_zh})
+                </Link>
+              ))}
+            </div>
+            <p className="text-sm text-warm mt-3">
+              Explore these {school?.name || "philosophical"} concepts in our glossary →
+            </p>
           </section>
         )}
 
