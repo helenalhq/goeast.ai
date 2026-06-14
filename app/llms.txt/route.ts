@@ -3,6 +3,8 @@ import { getAllSkills } from "@/lib/skills";
 import { getAllJourneys } from "@/lib/journeys";
 import { getAllPhilosophers } from "@/lib/philosophers";
 import { getAllHexagrams } from "@/lib/iching-data";
+import { getAllGlossary } from "@/lib/glossary";
+import { getAllInsights } from "@/lib/insights";
 import { CATEGORIES } from "@/lib/types";
 
 export async function GET() {
@@ -27,6 +29,16 @@ export async function GET() {
   const hexagrams = getAllHexagrams();
   const hexagramRows = hexagrams.map(
     (h) => `| ${h.number} | ${h.name} | ${h.name_zh} | ${h.upper_trigram}/${h.lower_trigram} | /iching/${h.slug} |`
+  );
+
+  const glossaryEntries = getAllGlossary();
+  const glossaryRows = glossaryEntries.map(
+    (g) => `| ${g.name} | ${g.name_zh} | ${g.school} | ${g.related_concepts.join(", ")} | /glossary/${g.slug} |`
+  );
+
+  const insights = getAllInsights();
+  const insightRows = insights.map(
+    (i) => `| ${i.title} | ${i.philosopher_slug || "—"} | ${i.concept_slugs?.join(", ") || "—"} | /insights/${i.slug} |`
   );
 
   const lines: string[] = [
@@ -75,6 +87,22 @@ export async function GET() {
     "| # | Name | Chinese | Trigrams | URL |",
     "|---|------|---------|----------|-----|",
     ...hexagramRows,
+    "",
+    "## Philosophy Glossary",
+    "",
+    `Total: ${glossaryEntries.length} concepts`,
+    "",
+    "| Concept | Chinese | School | Related | URL |",
+    "|---------|---------|--------|---------|-----|",
+    ...glossaryRows,
+    "",
+    "## Philosophical Insights",
+    "",
+    `Total: ${insights.length} articles`,
+    "",
+    "| Title | Philosopher | Concepts | URL |",
+    "|-------|-------------|----------|-----|",
+    ...insightRows,
     "",
     "## API",
     "",
