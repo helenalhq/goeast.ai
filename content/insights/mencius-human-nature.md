@@ -1,7 +1,7 @@
 ---
 slug: mencius-human-nature
-title: Mencius on Human Nature: Are We Naturally Good?
-title_zh: 孟子论人性：我们天生是善良的吗？
+title: "Mencius on Human Nature: Are We Naturally Good?"
+title_zh: "孟子论人性：我们天生是善良的吗？"
 philosopher_slug: mencius
 concept_slugs: [xing, ren]
 published_at: 2026-06-07

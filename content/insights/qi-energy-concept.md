@@ -1,7 +1,7 @@
 ---
 slug: qi-energy-concept
-title: Qi: The Energy Concept That Bridges Medicine and Philosophy
-title_zh: 气：连接医学与哲学的能量概念
+title: "Qi: The Energy Concept That Bridges Medicine and Philosophy"
+title_zh: "气：连接医学与哲学的能量概念"
 philosopher_slug: zhang-zai
 concept_slugs: [qi]
 published_at: 2026-06-11

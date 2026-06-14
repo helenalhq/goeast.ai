@@ -1,7 +1,7 @@
 ---
 slug: wuwei-hustle-culture
-title: Wuwei: The Art of Not Trying in a Hustle Culture
-title_zh: 无为：奋斗文化中的不努力艺术
+title: "Wuwei: The Art of Not Trying in a Hustle Culture"
+title_zh: "无为：奋斗文化中的不努力艺术"
 philosopher_slug: laozi
 concept_slugs: [wuwei, dao, ziran]
 published_at: 2026-06-02

@@ -1,7 +1,7 @@
 ---
 slug: iching-decision-making
 title: I Ching Decision-Making for Entrepreneurs
-title_zh: 易经决策法：创业者的古老工具
+title_zh: "易经决策法：创业者的古老工具"
 philosopher_slug: zhou-gong
 concept_slugs: [yin-yang, ming]
 published_at: 2026-06-05

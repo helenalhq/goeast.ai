@@ -1,7 +1,7 @@
 ---
 slug: zhangzai-interconnectedness
-title: Zhang Zai's Western Inscription: A Philosophy of Interconnectedness
-title_zh: 张载西铭：万物互联的哲学
+title: "Zhang Zai's Western Inscription: A Philosophy of Interconnectedness"
+title_zh: "张载西铭：万物互联的哲学"
 philosopher_slug: zhang-zai
 concept_slugs: [qi, xing]
 published_at: 2026-06-14

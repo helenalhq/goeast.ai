@@ -1,7 +1,7 @@
 ---
 slug: dao-of-design
-title: The Dao of Design: Minimalism Through Laozi's Lens
-title_zh: 道与设计：老子视角下的极简主义
+title: "The Dao of Design: Minimalism Through Laozi's Lens"
+title_zh: "道与设计：老子视角下的极简主义"
 philosopher_slug: laozi
 concept_slugs: [dao, wuwei, pu]
 published_at: 2026-06-04
