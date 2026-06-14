@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = localFont({
+  src: [
+    { path: "../public/fonts/Inter-latin-400.woff2", weight: "400", style: "normal" },
+    { path: "../public/fonts/Inter-latin-700.woff2", weight: "700", style: "normal" },
+  ],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "GoEast.ai — Sophie's Journey East | AI Skills for China",

@@ -104,7 +104,7 @@ export default async function SkillOG({
             marginBottom: 24,
           }}
         >
-          {skill.title_zh}
+          AI Skills for China
         </div>
         <div
           style={{

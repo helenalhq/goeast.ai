@@ -32,7 +32,7 @@ export default async function InsightOG({
             color: "#8b7355",
           }}
         >
-          GoEast.ai
+          <span>GoEast.ai</span>
         </div>
       ),
       { ...size }
@@ -52,9 +52,8 @@ export default async function InsightOG({
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          padding: "60px 80px",
+          alignItems: "center",
           backgroundColor: "#faf5ef",
-          fontFamily: "system-ui, sans-serif",
         }}
       >
         <div
@@ -67,16 +66,18 @@ export default async function InsightOG({
         >
           <div
             style={{
+              display: "flex",
               fontSize: 20,
               color: "#c0392b",
               fontWeight: 600,
             }}
           >
-            GoEast.ai
+            <span>GoEast.ai</span>
           </div>
           {philosopher ? (
             <div
               style={{
+                display: "flex",
                 fontSize: 14,
                 color: "#8b7355",
                 backgroundColor: "#e0d5c5",
@@ -84,32 +85,30 @@ export default async function InsightOG({
                 borderRadius: 12,
               }}
             >
-              {philosopher.name_zh} · {philosopher.name}
+              <span>{philosopher.name}</span>
             </div>
           ) : null}
         </div>
         <div
           style={{
+            display: "flex",
             fontSize: 48,
             fontWeight: 700,
             color: "#2c1810",
             marginBottom: 12,
-            lineHeight: 1.2,
-            maxWidth: 900,
           }}
         >
-          {insight.title}
+          <span>{insight.title}</span>
         </div>
-        {insight.title_zh ? (
-          <div
-            style={{
-              fontSize: 24,
-              color: "#8b7355",
-            }}
-          >
-            {insight.title_zh}
-          </div>
-        ) : null}
+        <div
+          style={{
+            display: "flex",
+            fontSize: 24,
+            color: "#8b7355",
+          }}
+        >
+          <span>Philosophical Insights</span>
+        </div>
       </div>
     ),
     { ...size }

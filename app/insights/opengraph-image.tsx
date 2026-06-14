@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Philosophical Insights 哲学洞见 — GoEast.ai";
+export const alt = "Philosophical Insights — GoEast.ai";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -16,49 +16,40 @@ export default function InsightsOG() {
           alignItems: "center",
           justifyContent: "center",
           backgroundColor: "#faf5ef",
-          fontFamily: "system-ui, sans-serif",
         }}
       >
         <div
           style={{
             display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            fontSize: 64,
+            fontWeight: 700,
+            color: "#c0392b",
             marginBottom: 24,
           }}
         >
-          <div
-            style={{
-              fontSize: 64,
-              fontWeight: 700,
-              color: "#c0392b",
-              letterSpacing: "-0.02em",
-            }}
-          >
-            GoEast.ai
-          </div>
+          <span>GoEast.ai</span>
         </div>
         <div
           style={{
+            display: "flex",
             fontSize: 28,
             color: "#2c1810",
             marginBottom: 12,
           }}
         >
-          Philosophical Insights 哲学洞见
+          <span>Philosophical Insights</span>
         </div>
         <div
           style={{
+            display: "flex",
             fontSize: 20,
             color: "#8b7355",
           }}
         >
-          Ancient wisdom meets modern challenges
+          <span>Chinese philosophy meets modern life</span>
         </div>
       </div>
     ),
-    {
-      ...size,
-    }
+    { ...size }
   );
 }

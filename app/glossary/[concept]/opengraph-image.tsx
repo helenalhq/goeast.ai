@@ -32,7 +32,7 @@ export default async function GlossaryDetailOG({
             color: "#8b7355",
           }}
         >
-          GoEast.ai
+          <span>GoEast.ai</span>
         </div>
       ),
       { ...size }
@@ -51,9 +51,8 @@ export default async function GlossaryDetailOG({
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          padding: "60px 80px",
+          alignItems: "center",
           backgroundColor: "#faf5ef",
-          fontFamily: "system-ui, sans-serif",
         }}
       >
         <div
@@ -66,46 +65,48 @@ export default async function GlossaryDetailOG({
         >
           <div
             style={{
+              display: "flex",
               fontSize: 20,
               color: "#c0392b",
               fontWeight: 600,
             }}
           >
-            GoEast.ai
+            <span>GoEast.ai</span>
           </div>
           {schoolInfo ? (
             <div
               style={{
+                display: "flex",
                 fontSize: 14,
-                backgroundColor: schoolColor + "15",
+                backgroundColor: "rgba(0,0,0,0.05)",
                 color: schoolColor,
                 padding: "4px 12px",
                 borderRadius: 12,
               }}
             >
-              {schoolInfo.symbol} {schoolInfo.name} · {schoolInfo.name_zh}
+              <span>{schoolInfo.name}</span>
             </div>
           ) : null}
         </div>
         <div
           style={{
-            fontSize: 48,
+            display: "flex",
+            fontSize: 56,
             fontWeight: 700,
             color: "#2c1810",
             marginBottom: 12,
-            lineHeight: 1.2,
-            maxWidth: 900,
           }}
         >
-          {entry.name}
+          <span>{entry.name}</span>
         </div>
         <div
           style={{
-            fontSize: 32,
+            display: "flex",
+            fontSize: 24,
             color: "#8b7355",
           }}
         >
-          {entry.name_zh}
+          <span>Chinese Philosophy Glossary</span>
         </div>
       </div>
     ),

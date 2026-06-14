@@ -109,7 +109,7 @@ export default async function JourneyOG({
             marginBottom: 16,
           }}
         >
-          {journey.title_zh}
+          Sophie&apos;s Journey East
         </div>
         {journey.philosopher ? (
           <div
