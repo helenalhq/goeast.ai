@@ -96,6 +96,28 @@ export default function HomePage() {
         </Link>
       </section>
 
+      {/* Glossary + Insights Entry */}
+      <section className="max-w-4xl mx-auto px-4 py-16 border-t border-sand text-center">
+        <h2 className="text-2xl font-bold text-ink mb-2">Learn Deeper · 深入探索</h2>
+        <p className="text-warm mb-6">
+          Key concepts explained in our Glossary, and philosophical essays in our Insights section.
+        </p>
+        <div className="flex gap-4 justify-center">
+          <Link
+            href="/glossary"
+            className="inline-block px-6 py-2.5 rounded-full bg-ink text-white font-medium text-sm hover:bg-ink/90 transition-colors"
+          >
+            Glossary →
+          </Link>
+          <Link
+            href="/insights"
+            className="inline-block px-6 py-2.5 rounded-full bg-warm text-white font-medium text-sm hover:bg-warm/90 transition-colors"
+          >
+            Insights →
+          </Link>
+        </div>
+      </section>
+
       {/* Oracle Subscription CTA */}
       <OracleCta />
 

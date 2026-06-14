@@ -48,13 +48,7 @@ export default function Header() {
         <Link href="/" className="text-xl font-bold text-ink">
           GoEast<span className="text-china-red">.ai</span>
         </Link>
-        <div className="flex items-center gap-6 text-sm">
-          <Link
-            href="/#journey"
-            className="text-warm hover:text-china-red transition-colors font-medium"
-          >
-            The Journey
-          </Link>
+        <div className="flex items-center gap-5 text-sm">
           <Link
             href="/philosophers"
             className="text-warm hover:text-china-red transition-colors"
@@ -68,6 +62,18 @@ export default function Header() {
             I Ching
           </Link>
           <Link
+            href="/glossary"
+            className="text-warm hover:text-china-red transition-colors"
+          >
+            Glossary
+          </Link>
+          <Link
+            href="/insights"
+            className="text-warm hover:text-china-red transition-colors"
+          >
+            Insights
+          </Link>
+          <Link
             href="/skills"
             className="text-warm hover:text-china-red transition-colors"
           >
@@ -78,12 +84,6 @@ export default function Header() {
             className="text-warm hover:text-china-red transition-colors"
           >
             About
-          </Link>
-          <Link
-            href="/contact"
-            className="text-warm hover:text-china-red transition-colors"
-          >
-            Contact
           </Link>
 
           {user ? (

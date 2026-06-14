@@ -9,11 +9,12 @@ export default function Footer() {
           {" "}— Sophie's Journey East | AI Skills for China
         </div>
         <div className="flex gap-6 text-sm text-warm">
-          <Link href="/#journey" className="hover:text-china-red transition-colors">Journey</Link>
           <Link href="/philosophers" className="hover:text-china-red transition-colors">Philosophers</Link>
           <Link href="/iching" className="hover:text-china-red transition-colors">I Ching</Link>
+          <Link href="/glossary" className="hover:text-china-red transition-colors">Glossary</Link>
+          <Link href="/insights" className="hover:text-china-red transition-colors">Insights</Link>
           <Link href="/skills" className="hover:text-china-red transition-colors">Skills</Link>
-          <Link href="/account" className="hover:text-china-red transition-colors">Account</Link>
+          <Link href="/#journey" className="hover:text-china-red transition-colors">Journey</Link>
           <Link href="/llms.txt" className="hover:text-china-red transition-colors">For Agents</Link>
           <Link href="/api/skills" className="hover:text-china-red transition-colors">API</Link>
           <Link href="/about" className="hover:text-china-red transition-colors">About</Link>
