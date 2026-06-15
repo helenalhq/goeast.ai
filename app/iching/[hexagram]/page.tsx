@@ -21,7 +21,7 @@ export async function generateMetadata({
   return {
     title: `Hexagram ${h.number}: ${h.name} (${h.name_zh}) — I Ching — GoEast.ai`,
     description: `Hexagram ${h.number}: ${h.name} (${h.name_zh}) — ${h.judgment_en.slice(0, 120)}`,
-    alternates: { canonical: `/iching/${hexagram}`, languages: { en: `/iching/${hexagram}`, zh: `/iching/${hexagram}` } },
+    alternates: { canonical: `/iching/${hexagram}` },
     openGraph: {
       title: `Hexagram ${h.number}: ${h.name} (${h.name_zh})`,
       description: `Hexagram ${h.number}: ${h.name} — ${h.judgment_en.slice(0, 120)}`,

@@ -8,7 +8,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Chinese Philosophers — GoEast.ai",
   description: "Explore 3,000 years of Chinese philosophy. Deep profiles of 11 great thinkers from Laozi to Wang Yangming, with core concepts, quotes, and modern influence.",
-  alternates: { canonical: "/philosophers", languages: { en: "/philosophers", zh: "/philosophers" } },
+  alternates: { canonical: "/philosophers" },
   openGraph: {
     title: "Chinese Philosophers — GoEast.ai",
     description: "Explore 3,000 years of Chinese philosophy through 11 great thinkers.",

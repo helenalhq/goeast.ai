@@ -23,7 +23,7 @@ export async function generateMetadata({
   return {
     title: `${meta.name} (${meta.name_zh}) — Chinese Philosopher — GoEast.ai`,
     description: `Explore ${meta.name}'s philosophy: core concepts, quotes, and modern influence. ${meta.era}.`,
-    alternates: { canonical: `/philosophers/${slug}`, languages: { en: `/philosophers/${slug}`, zh: `/philosophers/${slug}` } },
+    alternates: { canonical: `/philosophers/${slug}` },
     openGraph: {
       title: `${meta.name} (${meta.name_zh}) — GoEast.ai`,
       description: `Explore ${meta.name}'s philosophy: core concepts, quotes, and modern influence.`,

@@ -22,7 +22,7 @@ export async function generateMetadata({
   return {
     title: `${entry.name} (${entry.name_zh}) — Chinese Philosophy Glossary — GoEast.ai`,
     description: `${entry.name} (${entry.name_zh}): ${defSnippet}...`,
-    alternates: { canonical: `/glossary/${concept}`, languages: { en: `/glossary/${concept}`, zh: `/glossary/${concept}` } },
+    alternates: { canonical: `/glossary/${concept}` },
     openGraph: {
       title: `${entry.name} (${entry.name_zh}) — GoEast.ai`,
       description: `${entry.name}: ${defSnippet}...`,

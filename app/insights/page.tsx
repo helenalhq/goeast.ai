@@ -8,7 +8,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Philosophical Insights — GoEast.ai",
   description: "Explore Chinese philosophy in the modern world: Sunzi's strategy meets AI, Wuwei challenges hustle culture, and the I Ching guides entrepreneurs.",
-  alternates: { canonical: "/insights", languages: { en: "/insights", zh: "/insights" } },
+  alternates: { canonical: "/insights" },
   openGraph: {
     title: "Philosophical Insights — GoEast.ai",
     description: "Chinese philosophy meets modern life: essays connecting ancient wisdom to contemporary challenges.",

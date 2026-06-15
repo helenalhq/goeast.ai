@@ -21,13 +21,7 @@ export const metadata: Metadata = {
   verification: {
     google: "3z9kuvrOqe9ZRP7GWl7mi2AO4FERHhlnFe59ryDsAHY",
   },
-  alternates: {
-    canonical: "/",
-    languages: {
-      en: "/",
-      zh: "/",
-    },
-  },
+  alternates: { canonical: "/" },
   openGraph: {
     title: "GoEast.ai — Sophie's Journey East | AI Skills for China",
     description:

@@ -22,7 +22,7 @@ export async function generateMetadata({
   return {
     title: `${insight.title} — GoEast.ai`,
     description: `${philosopher?.name || 'Chinese philosophy'} meets modern life: ${insight.title}. ${insight.title_zh || ''}`,
-    alternates: { canonical: `/insights/${slug}`, languages: { en: `/insights/${slug}`, zh: `/insights/${slug}` } },
+    alternates: { canonical: `/insights/${slug}` },
     openGraph: {
       title: insight.title,
       description: `${philosopher?.name || 'Chinese philosophy'} meets modern life: ${insight.title}`,
