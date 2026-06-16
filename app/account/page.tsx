@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getSiteConfig } from "@/lib/config";
 import { redirect } from "next/navigation";
 import LogoutButton from "./logout-button";
 import UpgradeButton from "./upgrade-button";
@@ -9,6 +10,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AccountPage() {
   const supabase = await createClient();
+  const config = getSiteConfig();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -118,7 +120,15 @@ export default async function AccountPage() {
 
         {activeSub?.status === "active" && <CancelButton />}
         {activeSub?.status === "scheduled_cancel" && <ResumeButton />}
-        {!hasAccess && <UpgradeButton />}
+        {!hasAccess && !config.paymentEnabled && (
+          <div className="border-t border-sand pt-4">
+            <div className="flex items-center gap-2 text-warm">
+              <span className="text-sm">升级功能即将上线</span>
+              <span className="text-xs bg-gold/20 text-gold px-2 py-0.5 rounded">Coming soon</span>
+            </div>
+          </div>
+        )}
+        {!hasAccess && config.paymentEnabled && <UpgradeButton />}
       </div>
 
       <div className="flex items-center justify-between">
