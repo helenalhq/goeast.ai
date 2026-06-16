@@ -237,3 +237,7 @@ export interface Insight extends InsightMeta {
   content: string;
   content_zh?: string;
 }
+
+export interface SiteConfig {
+  paymentEnabled: boolean;
+}
