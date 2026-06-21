@@ -5,6 +5,8 @@ import CategoryBadge from "@/components/CategoryBadge";
 import JsonLd from "@/components/JsonLd";
 import CitationSnippet from "@/components/CitationSnippet";
 import { generateCitationSnippet } from "@/lib/citation-snippets";
+import FAQ from "@/components/FAQ";
+import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
 import type { Metadata } from "next";
 
 export async function generateStaticParams() {
@@ -156,6 +158,10 @@ export default async function SkillDetailPage({
             ))}
           </div>
         </footer>
+        {(() => {
+          const faqs = generateFAQs({ type: "skill", data: skill });
+          return <FAQ items={faqs} jsonLd={generateFAQJsonLd(faqs)} />;
+        })()}
       </article>
     </>
   );
