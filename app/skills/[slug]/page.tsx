@@ -3,6 +3,8 @@ import Link from "next/link";
 import { getSkillWithHtml, getSkillSlugs, getAllSkills } from "@/lib/skills";
 import CategoryBadge from "@/components/CategoryBadge";
 import JsonLd from "@/components/JsonLd";
+import CitationSnippet from "@/components/CitationSnippet";
+import { generateCitationSnippet } from "@/lib/citation-snippets";
 import type { Metadata } from "next";
 
 export async function generateStaticParams() {
@@ -109,6 +111,7 @@ export default async function SkillDetailPage({
           <h1 className="text-3xl font-bold text-ink mb-1">{skill.title}</h1>
           <p className="text-lg text-warm">{skill.title_zh}</p>
         </header>
+        <CitationSnippet text={generateCitationSnippet({ type: "skill", data: skill })} />
         <div
           className="prose prose-warm max-w-none prose-headings:text-ink prose-headings:font-semibold prose-a:text-china-red prose-a:no-underline hover:prose-a:underline"
           dangerouslySetInnerHTML={{ __html: skill.content }}
