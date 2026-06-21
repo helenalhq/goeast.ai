@@ -6,6 +6,10 @@ import OracleCta from "@/components/OracleCta";
 import RelatedContent from "@/components/RelatedContent";
 import { getRelatedContent } from "@/lib/cross-references";
 import JsonLd from "@/components/JsonLd";
+import CitationSnippet from "@/components/CitationSnippet";
+import { generateCitationSnippet } from "@/lib/citation-snippets";
+import FAQ from "@/components/FAQ";
+import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
 import type { Metadata } from "next";
 
 export async function generateStaticParams() {
@@ -55,7 +59,7 @@ export default async function GlossaryDetailPage({
           "@type": "DefinedTerm",
           name: entry.name,
           alternateName: entry.name_zh,
-          description: `Explore the concept of ${entry.name} (${entry.name_zh}) in Chinese philosophy.`,
+          description: generateCitationSnippet({ type: "glossary", data: entry }),
           url: `https://www.goeast.ai/glossary/${entry.slug}`,
           inDefinedTermSet: {
             "@type": "DefinedTermSet",
@@ -102,6 +106,8 @@ export default async function GlossaryDetailPage({
           <span>/</span>
           <span className="text-ink">{entry.name}</span>
         </nav>
+
+        <CitationSnippet text={generateCitationSnippet({ type: "glossary", data: entry })} />
 
         {/* Definition */}
         <section className="mb-10">
@@ -174,6 +180,11 @@ export default async function GlossaryDetailPage({
             relatedConcepts: entry.related_concepts,
           })}
         />
+
+        {(() => {
+          const faqs = generateFAQs({ type: "glossary", data: entry });
+          return <FAQ items={faqs} jsonLd={generateFAQJsonLd(faqs)} />;
+        })()}
 
         {/* Oracle CTA */}
         <OracleCta message={`Want to explore ${entry.name} deeper with a philosopher? Try the Oracle.`} />

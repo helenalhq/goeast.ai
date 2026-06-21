@@ -6,6 +6,12 @@ import { SCHOOLS, getPhilosopherImage, PHILOSOPHER_SLUGS } from "@/lib/types";
 import { getAllGlossary } from "@/lib/glossary";
 import OracleCta from "@/components/OracleCta";
 import JsonLd from "@/components/JsonLd";
+import CitationSnippet from "@/components/CitationSnippet";
+import { generateCitationSnippet } from "@/lib/citation-snippets";
+import FAQ from "@/components/FAQ";
+import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
+import RelatedContent from "@/components/RelatedContent";
+import { getRelatedContent } from "@/lib/cross-references";
 import type { Metadata } from "next";
 
 export async function generateStaticParams() {
@@ -50,14 +56,14 @@ export default async function PhilosopherDetailPage({
       <JsonLd
         data={{
           "@context": "https://schema.org",
-          "@type": "Article",
-          headline: `${philosopher.name} (${philosopher.name_zh})`,
-          description: `Explore ${philosopher.name}'s philosophy: core concepts, quotes, and modern influence.`,
+          "@type": "Person",
+          name: philosopher.name,
+          alternateName: philosopher.name_zh,
+          knowsAbout: philosopher.core_concepts.map((c) => c.name),
+          memberOf: school ? { "@type": "Organization", name: school.name } : undefined,
+          birthDate: philosopher.era,
+          description: generateCitationSnippet({ type: "philosopher", data: philosopher }),
           url: `https://www.goeast.ai/philosophers/${philosopher.slug}`,
-          datePublished: "2026-06-13",
-          dateModified: "2026-06-13",
-          about: { "@type": "Person", name: philosopher.name, alternateName: philosopher.name_zh },
-          publisher: { "@type": "Organization", name: "GoEast.ai", url: "https://www.goeast.ai" },
         }}
       />
       <JsonLd
@@ -116,6 +122,8 @@ export default async function PhilosopherDetailPage({
           <span>/</span>
           <span className="text-ink">{philosopher.name}</span>
         </nav>
+
+        <CitationSnippet text={generateCitationSnippet({ type: "philosopher", data: philosopher })} />
 
         {/* Biography */}
         {philosopher.biography && (
@@ -221,6 +229,20 @@ export default async function PhilosopherDetailPage({
             </p>
           </section>
         )}
+
+        {/* Related Content */}
+        <RelatedContent
+          items={getRelatedContent({
+            type: "philosopher",
+            slug: philosopher.slug,
+            school: philosopher.school,
+            journeySlug: philosopher.journey_slug,
+          })}
+        />
+        {(() => {
+          const faqs = generateFAQs({ type: "philosopher", data: philosopher });
+          return <FAQ items={faqs} jsonLd={generateFAQJsonLd(faqs)} />;
+        })()}
 
         {/* Oracle CTA */}
         <OracleCta

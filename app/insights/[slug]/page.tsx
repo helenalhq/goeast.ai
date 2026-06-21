@@ -4,6 +4,12 @@ import { getInsightWithHtml, getInsightSlugs, getInsightBySlug } from "@/lib/ins
 import { PHILOSOPHER_SLUGS } from "@/lib/types";
 import OracleCta from "@/components/OracleCta";
 import JsonLd from "@/components/JsonLd";
+import CitationSnippet from "@/components/CitationSnippet";
+import { generateCitationSnippet } from "@/lib/citation-snippets";
+import FAQ from "@/components/FAQ";
+import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
+import RelatedContent from "@/components/RelatedContent";
+import { getRelatedContent } from "@/lib/cross-references";
 import type { Metadata } from "next";
 
 export async function generateStaticParams() {
@@ -94,6 +100,8 @@ export default async function InsightDetailPage({
           <span className="text-ink">{insight.title}</span>
         </nav>
 
+        <CitationSnippet text={generateCitationSnippet({ type: "insight", data: insight })} />
+
         {/* Content */}
         <div className="prose prose-warm max-w-none mb-10" dangerouslySetInnerHTML={{ __html: insight.content }} />
 
@@ -129,6 +137,20 @@ export default async function InsightDetailPage({
             </div>
           </section>
         )}
+
+        {/* Related Content */}
+        <RelatedContent
+          items={getRelatedContent({
+            type: "insight",
+            slug: insight.slug,
+            philosopherSlug: insight.philosopher_slug,
+            conceptSlugs: insight.concept_slugs,
+          })}
+        />
+        {(() => {
+          const faqs = generateFAQs({ type: "insight", data: insight });
+          return <FAQ items={faqs} jsonLd={generateFAQJsonLd(faqs)} />;
+        })()}
 
         {/* Oracle CTA */}
         <OracleCta

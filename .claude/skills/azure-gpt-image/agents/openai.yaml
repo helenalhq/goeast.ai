@@ -1,0 +1,4 @@
+interface:
+  display_name: "Azure GPT Image"
+  short_description: "Generate and edit images via Azure GPT Image"
+  default_prompt: "Use $azure-gpt-image to generate or edit an image with my Azure GPT Image deployment."

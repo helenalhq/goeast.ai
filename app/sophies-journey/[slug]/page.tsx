@@ -6,6 +6,12 @@ import { getPhilosopherImage, getPhilosopherIntro } from "@/lib/types";
 import JourneyReader from "@/components/JourneyReader";
 import PhilosopherIntro from "@/components/PhilosopherIntro";
 import JsonLd from "@/components/JsonLd";
+import CitationSnippet from "@/components/CitationSnippet";
+import { generateCitationSnippet } from "@/lib/citation-snippets";
+import FAQ from "@/components/FAQ";
+import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
+import RelatedContent from "@/components/RelatedContent";
+import { getRelatedContent } from "@/lib/cross-references";
 import type { Metadata } from "next";
 
 export async function generateStaticParams() {
@@ -246,6 +252,8 @@ export default async function JourneyStoryPage({
           </header>
         )}
 
+        <CitationSnippet text={generateCitationSnippet({ type: "journey", data: journey })} />
+
         <JourneyReader
           contentHtml={journey.content}
           contentZhHtml={journey.content_zh}
@@ -258,6 +266,19 @@ export default async function JourneyStoryPage({
           quote_source={journey.quote_source}
           color={journey.color}
         />
+
+        <RelatedContent
+          items={getRelatedContent({
+            type: "journey",
+            slug: journey.slug,
+            philosopher: journey.philosopher,
+            school: journey.school,
+          })}
+        />
+        {(() => {
+          const faqs = generateFAQs({ type: "journey", data: journey });
+          return <FAQ items={faqs} jsonLd={generateFAQJsonLd(faqs)} />;
+        })()}
 
         <nav className="mt-12 pt-6 border-t border-sand flex justify-between">
           {prev ? (

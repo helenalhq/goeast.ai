@@ -7,6 +7,8 @@ import CitationSnippet from "@/components/CitationSnippet";
 import { generateCitationSnippet } from "@/lib/citation-snippets";
 import FAQ from "@/components/FAQ";
 import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
+import RelatedContent from "@/components/RelatedContent";
+import { getRelatedContent } from "@/lib/cross-references";
 import type { Metadata } from "next";
 
 export async function generateStaticParams() {
@@ -47,11 +49,14 @@ export default async function SkillDetailPage({
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     name: skill.title,
-    description: `${skill.title} - ${skill.title_zh}`,
+    alternateName: skill.title_zh,
     applicationCategory: skill.category,
-    url: `https://www.goeast.ai/skills/${skill.slug}`,
     operatingSystem: "AI Agent",
+    featureList: skill.tags.join(", "),
+    description: generateCitationSnippet({ type: "skill", data: skill }),
+    url: `https://www.goeast.ai/skills/${skill.slug}`,
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+    publisher: { "@type": "Organization", name: "GoEast.ai", url: "https://www.goeast.ai" },
   };
 
   return (
@@ -158,6 +163,14 @@ export default async function SkillDetailPage({
             ))}
           </div>
         </footer>
+        <RelatedContent
+          items={getRelatedContent({
+            type: "skill",
+            slug: skill.slug,
+            category: skill.category,
+            tags: skill.tags,
+          })}
+        />
         {(() => {
           const faqs = generateFAQs({ type: "skill", data: skill });
           return <FAQ items={faqs} jsonLd={generateFAQJsonLd(faqs)} />;

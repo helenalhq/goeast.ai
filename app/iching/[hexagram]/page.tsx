@@ -4,6 +4,12 @@ import { getHexagramBySlug, getAllHexagrams } from "@/lib/iching-data";
 import { TRIGRAMS } from "@/lib/types";
 import OracleCta from "@/components/OracleCta";
 import JsonLd from "@/components/JsonLd";
+import CitationSnippet from "@/components/CitationSnippet";
+import { generateCitationSnippet } from "@/lib/citation-snippets";
+import FAQ from "@/components/FAQ";
+import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
+import RelatedContent from "@/components/RelatedContent";
+import { getRelatedContent } from "@/lib/cross-references";
 import type { Metadata } from "next";
 
 export async function generateStaticParams() {
@@ -53,12 +59,16 @@ export default async function HexagramDetailPage({
       <JsonLd
         data={{
           "@context": "https://schema.org",
-          "@type": "Article",
-          headline: `Hexagram ${h.number}: ${h.name} (${h.name_zh})`,
-          description: h.judgment_en.slice(0, 200),
+          "@type": "CreativeWork",
+          name: `${h.name} (${h.name_zh})`,
+          alternateName: `Hexagram ${h.number}`,
+          text: h.judgment_en,
+          about: [
+            { "@type": "Thing", name: h.upper_trigram },
+            { "@type": "Thing", name: h.lower_trigram },
+          ],
+          description: generateCitationSnippet({ type: "hexagram", data: h }),
           url: `https://www.goeast.ai/iching/${h.slug}`,
-          datePublished: "2026-06-13",
-          dateModified: "2026-06-13",
           publisher: { "@type": "Organization", name: "GoEast.ai", url: "https://www.goeast.ai" },
         }}
       />
@@ -104,6 +114,8 @@ export default async function HexagramDetailPage({
           <span>/</span>
           <span className="text-ink">{h.name}</span>
         </nav>
+
+        <CitationSnippet text={generateCitationSnippet({ type: "hexagram", data: h })} />
 
         {/* Judgment */}
         <section className="mb-10">
@@ -172,6 +184,20 @@ export default async function HexagramDetailPage({
             <Link href="/glossary" className="hover:text-china-red transition-colors">Explore all Chinese philosophy concepts →</Link>
           </p>
         </section>
+
+        {/* Related Content */}
+        <RelatedContent
+          items={getRelatedContent({
+            type: "hexagram",
+            slug: h.slug,
+            upperTrigram: h.upper_trigram,
+            lowerTrigram: h.lower_trigram,
+          })}
+        />
+        {(() => {
+          const faqs = generateFAQs({ type: "hexagram", data: h });
+          return <FAQ items={faqs} jsonLd={generateFAQJsonLd(faqs)} />;
+        })()}
 
         {/* Oracle CTA */}
         <OracleCta
