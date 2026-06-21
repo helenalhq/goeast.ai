@@ -3,6 +3,8 @@ import Link from "next/link";
 import { getGlossaryWithHtml, getGlossarySlugs, getGlossaryBySlug } from "@/lib/glossary";
 import { SCHOOLS, PHILOSOPHER_SLUGS } from "@/lib/types";
 import OracleCta from "@/components/OracleCta";
+import RelatedContent from "@/components/RelatedContent";
+import { getRelatedContent } from "@/lib/cross-references";
 import JsonLd from "@/components/JsonLd";
 import type { Metadata } from "next";
 
@@ -162,6 +164,16 @@ export default async function GlossaryDetailPage({
             </p>
           </section>
         )}
+
+        {/* Related Content */}
+        <RelatedContent
+          items={getRelatedContent({
+            type: "glossary",
+            slug: entry.slug,
+            school: entry.school,
+            relatedConcepts: entry.related_concepts,
+          })}
+        />
 
         {/* Oracle CTA */}
         <OracleCta message={`Want to explore ${entry.name} deeper with a philosopher? Try the Oracle.`} />
