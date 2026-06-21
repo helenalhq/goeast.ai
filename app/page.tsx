@@ -5,8 +5,11 @@ import JourneyTimeline from "@/components/JourneyTimeline";
 import PhilosopherCard from "@/components/PhilosopherCard";
 import OracleCta from "@/components/OracleCta";
 import JsonLd from "@/components/JsonLd";
+import CitationSnippet from "@/components/CitationSnippet";
+import FAQ from "@/components/FAQ";
 import { getFeaturedSkills, getAllSkills, getSkillsByCategory } from "@/lib/skills";
 import { getAllJourneys } from "@/lib/journeys";
+import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
 import { CATEGORIES, type Category } from "@/lib/types";
 
 export default function HomePage() {
@@ -52,6 +55,11 @@ export default function HomePage() {
         }}
       />
       <Hero />
+
+      {/* CitationSnippet */}
+      <section className="max-w-3xl mx-auto px-4 pt-8">
+        <CitationSnippet text="GoEast.ai combines Chinese philosophy education with AI-powered tools. Explore 3,000 years of thought through Sophie's Journey East, consult AI Oracles modeled after ancient thinkers, or browse curated AI skills for navigating life in China." />
+      </section>
 
       {/* Journey Timeline */}
       <section id="journey" className="max-w-4xl mx-auto px-4 py-16">
@@ -170,6 +178,16 @@ export default function HomePage() {
           </Link>
         </div>
       </section>
+
+      {/* FAQ */}
+      {(() => {
+        const faqs = generateFAQs({ type: "homepage", totalSkills, totalJourneys: journeys.length });
+        return (
+          <section className="max-w-3xl mx-auto px-4 pb-16">
+            <FAQ items={faqs} jsonLd={generateFAQJsonLd(faqs)} />
+          </section>
+        );
+      })()}
     </>
   );
 }

@@ -3,6 +3,9 @@ import { SCHOOLS } from "@/lib/types";
 import PhilosopherCardDeep from "@/components/PhilosopherCardDeep";
 import OracleCta from "@/components/OracleCta";
 import JsonLd from "@/components/JsonLd";
+import CitationSnippet from "@/components/CitationSnippet";
+import FAQ from "@/components/FAQ";
+import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -50,6 +53,11 @@ export default function PhilosophersPage() {
         </div>
       </section>
 
+      {/* CitationSnippet */}
+      <section className="max-w-3xl mx-auto px-4 pt-8">
+        <CitationSnippet text="Explore profiles of 11 major Chinese philosophers from the 11th century BCE to the 16th century CE. Each profile covers core concepts, notable quotes, and modern influence." />
+      </section>
+
       {/* School sections */}
       <section className="max-w-5xl mx-auto px-4 py-12">
         {SCHOOLS.map((school) => {
@@ -74,6 +82,16 @@ export default function PhilosophersPage() {
       <div className="max-w-3xl mx-auto px-4">
         <OracleCta message="Want to consult a Chinese philosopher directly? Try the Oracle." />
       </div>
+
+      {/* FAQ */}
+      {(() => {
+        const faqs = generateFAQs({ type: "philosophers_listing" });
+        return (
+          <section className="max-w-3xl mx-auto px-4 pb-16">
+            <FAQ items={faqs} jsonLd={generateFAQJsonLd(faqs)} />
+          </section>
+        );
+      })()}
     </main>
   );
 }

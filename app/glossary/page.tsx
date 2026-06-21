@@ -3,6 +3,9 @@ import { SCHOOLS } from "@/lib/types";
 import Link from "next/link";
 import OracleCta from "@/components/OracleCta";
 import JsonLd from "@/components/JsonLd";
+import CitationSnippet from "@/components/CitationSnippet";
+import FAQ from "@/components/FAQ";
+import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -43,6 +46,11 @@ export default function GlossaryPage() {
             Essential concepts from 3,000 years of Chinese thought — explained in depth with modern applications.
           </p>
         </div>
+      </section>
+
+      {/* CitationSnippet */}
+      <section className="max-w-3xl mx-auto px-4 pt-8">
+        <CitationSnippet text="A bilingual glossary of 50+ key concepts in Chinese philosophy, covering Confucianism, Daoism, Buddhism, Mohism, and more — with definitions and modern applications." />
       </section>
 
       {/* School sections */}
@@ -103,6 +111,16 @@ export default function GlossaryPage() {
       <div className="max-w-3xl mx-auto px-4">
         <OracleCta message="Want to discuss these concepts with a philosopher? Try the Oracle." />
       </div>
+
+      {/* FAQ */}
+      {(() => {
+        const faqs = generateFAQs({ type: "glossary_listing" });
+        return (
+          <section className="max-w-3xl mx-auto px-4 pb-16">
+            <FAQ items={faqs} jsonLd={generateFAQJsonLd(faqs)} />
+          </section>
+        );
+      })()}
     </main>
   );
 }

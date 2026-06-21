@@ -1,6 +1,9 @@
 import { getAllSkills } from "@/lib/skills";
 import SkillList from "@/components/SkillList";
 import JsonLd from "@/components/JsonLd";
+import CitationSnippet from "@/components/CitationSnippet";
+import FAQ from "@/components/FAQ";
+import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -29,7 +32,20 @@ export default function SkillsPage() {
         <br />
         <span className="text-sm">浏览精选的面向外国人的 AI 技能</span>
       </p>
+      <div className="max-w-3xl mx-auto mt-6">
+        <CitationSnippet text="Browse 19+ curated AI skills for foreigners in China, organized by category: Travel, Medical, Shopping, and Accommodation. Each skill helps AI assistants provide specialized knowledge about navigating life in China." />
+      </div>
       <SkillList skills={skills} />
+
+      {/* FAQ */}
+      {(() => {
+        const faqs = generateFAQs({ type: "skills_listing" });
+        return (
+          <section className="max-w-3xl mx-auto px-4 pb-16">
+            <FAQ items={faqs} jsonLd={generateFAQJsonLd(faqs)} />
+          </section>
+        );
+      })()}
     </div>
   );
 }

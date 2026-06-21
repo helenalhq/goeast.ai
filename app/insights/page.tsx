@@ -3,6 +3,9 @@ import { PHILOSOPHER_SLUGS } from "@/lib/types";
 import Link from "next/link";
 import OracleCta from "@/components/OracleCta";
 import JsonLd from "@/components/JsonLd";
+import CitationSnippet from "@/components/CitationSnippet";
+import FAQ from "@/components/FAQ";
+import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -43,6 +46,11 @@ export default function InsightsPage() {
             Ancient wisdom meets modern challenges. Essays connecting Chinese philosophy to the world we live in today.
           </p>
         </div>
+      </section>
+
+      {/* CitationSnippet */}
+      <section className="max-w-3xl mx-auto px-4 pt-8">
+        <CitationSnippet text="Essays connecting Chinese philosophical concepts to modern life. Explore how Sunzi's strategy informs AI, how Wuwei challenges hustle culture, and how the I Ching guides decision-making." />
       </section>
 
       {/* Articles grid */}
@@ -88,6 +96,16 @@ export default function InsightsPage() {
       <div className="max-w-3xl mx-auto px-4">
         <OracleCta message="Want to explore these ideas further with a philosopher? Try the Oracle." />
       </div>
+
+      {/* FAQ */}
+      {(() => {
+        const faqs = generateFAQs({ type: "insights_listing" });
+        return (
+          <section className="max-w-3xl mx-auto px-4 pb-16">
+            <FAQ items={faqs} jsonLd={generateFAQJsonLd(faqs)} />
+          </section>
+        );
+      })()}
     </main>
   );
 }

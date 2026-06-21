@@ -3,6 +3,9 @@ import TrigramChart from "@/components/TrigramChart";
 import IChingDivination from "@/components/IChingDivination";
 import OracleCta from "@/components/OracleCta";
 import JsonLd from "@/components/JsonLd";
+import CitationSnippet from "@/components/CitationSnippet";
+import FAQ from "@/components/FAQ";
+import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -44,6 +47,11 @@ export default function IChingPage() {
             maps a moment of change — and a path through it.
           </p>
         </div>
+      </section>
+
+      {/* CitationSnippet */}
+      <section className="max-w-3xl mx-auto px-4 pt-8">
+        <CitationSnippet text="Consult all 64 hexagrams of the I Ching (Book of Changes). Each hexagram includes the original judgment text, image commentary, and modern applications." />
       </section>
 
       {/* Intro section */}
@@ -110,6 +118,16 @@ export default function IChingPage() {
           message="Want Zhou Gong to interpret your hexagram personally? Try the Oracle."
         />
       </div>
+
+      {/* FAQ */}
+      {(() => {
+        const faqs = generateFAQs({ type: "iching_listing" });
+        return (
+          <section className="max-w-3xl mx-auto px-4 pb-16">
+            <FAQ items={faqs} jsonLd={generateFAQJsonLd(faqs)} />
+          </section>
+        );
+      })()}
     </main>
   );
 }

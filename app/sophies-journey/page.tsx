@@ -2,6 +2,9 @@ import { getAllJourneys } from "@/lib/journeys";
 import JourneyTimeline from "@/components/JourneyTimeline";
 import PhilosopherCard from "@/components/PhilosopherCard";
 import JsonLd from "@/components/JsonLd";
+import CitationSnippet from "@/components/CitationSnippet";
+import FAQ from "@/components/FAQ";
+import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -52,6 +55,11 @@ export default function JourneyLandingPage() {
         </div>
       </section>
 
+      {/* CitationSnippet */}
+      <section className="max-w-3xl mx-auto px-4 pt-8">
+        <CitationSnippet text="Follow Sophie's Journey East through 12 chapters exploring 3,000 years of Chinese philosophy. A bilingual narrative encountering Confucius, Laozi, Sunzi, Zhuangzi, and 7 more great thinkers." />
+      </section>
+
       <section id="journey" className="max-w-4xl mx-auto px-4 py-16">
         <h2 className="text-2xl font-bold text-ink mb-2">The Journey</h2>
         <p className="text-warm mb-10">
@@ -77,6 +85,16 @@ export default function JourneyLandingPage() {
             ))}
         </div>
       </section>
+
+      {/* FAQ */}
+      {(() => {
+        const faqs = generateFAQs({ type: "journeys_listing" });
+        return (
+          <section className="max-w-3xl mx-auto px-4 pb-16">
+            <FAQ items={faqs} jsonLd={generateFAQJsonLd(faqs)} />
+          </section>
+        );
+      })()}
     </>
   );
 }
