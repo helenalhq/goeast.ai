@@ -1,0 +1,14 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "GoEast.ai",
+  "name_for_model": "goeast_ai",
+  "description_for_human": "AI skills directory for navigating China",
+  "description_for_model": "Provides curated AI skills and guides for foreigners in China, covering travel, medical, shopping, and accommodation. Also features Chinese philosophy content through Sophie's Journey East, I Ching consultations, and an AI Oracle for conversing with ancient Chinese philosophers.",
+  "api": {
+    "type": "openapi",
+    "url": "https://www.goeast.ai/api/skills"
+  },
+  "logo_url": "https://www.goeast.ai/icon.png",
+  "contact_email": "hello@goeast.ai",
+  "legal_info_url": "https://www.goeast.ai/about"
+}
