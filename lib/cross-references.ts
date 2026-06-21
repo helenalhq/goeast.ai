@@ -3,8 +3,7 @@ import { getAllJourneys } from "./journeys";
 import { getAllGlossary } from "./glossary";
 import { getAllInsights } from "./insights";
 import { getAllHexagrams } from "./iching-data";
-import { getPhilosopherSlugs, getPhilosopherBySlug } from "./philosophers";
-import { PHILOSOPHER_SLUGS, SCHOOLS } from "./types";
+import { PHILOSOPHER_SLUGS } from "./types";
 
 type RelatedItem = {
   title: string;
