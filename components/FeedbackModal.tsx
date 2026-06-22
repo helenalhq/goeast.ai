@@ -60,12 +60,12 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
     setError('');
 
     if (content.trim().length < 10) {
-      setError('反馈内容至少需要 10 个字符');
+      setError('Feedback must be at least 10 characters');
       return;
     }
 
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError('邮箱格式不正确');
+      setError('Invalid email format');
       return;
     }
 
@@ -84,13 +84,13 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
       });
 
       if (response.status === 429) {
-        setError('提交太频繁，请稍后再试');
+        setError('Too many submissions, please try again later');
         return;
       }
 
       if (!response.ok) {
         const data = await response.json();
-        setError(data.error || '服务器错误，请稍后重试');
+        setError(data.error || 'Server error, please try again later');
         return;
       }
 
@@ -99,7 +99,7 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
         handleClose();
       }, 3000);
     } catch (err) {
-      setError('网络连接失败，请检查网络后重试');
+      setError('Network connection failed, please check your network and try again');
     } finally {
       setIsSubmitting(false);
     }
@@ -120,23 +120,23 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
           <form onSubmit={handleSubmit} className="p-6">
             <div className="mb-6">
               <h2 className="text-2xl font-bold text-ink mb-2">
-                💬 有什么想法？聊聊吧！
+                💬 Got ideas? Let's chat!
               </h2>
               <p className="text-warm text-sm">
-                你的反馈对我们很重要，无论是建议、问题还是新功能想法，我们都想听。
+                Your feedback matters to us — whether it's a suggestion, a problem, or a new feature idea, we want to hear it.
               </p>
             </div>
 
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-ink mb-2">
-                  反馈类型 <span className="text-china-red">*</span>
+                  Feedback Type <span className="text-china-red">*</span>
                 </label>
                 <div className="flex gap-2">
                   {([
-                    { value: 'suggestion', label: '💡 建议' },
-                    { value: 'problem', label: '🐛 问题' },
-                    { value: 'feature', label: '✨ 新功能' },
+                    { value: 'suggestion', label: '💡 Suggestion' },
+                    { value: 'problem', label: '🐛 Problem' },
+                    { value: 'feature', label: '✨ New Feature' },
                   ] as const).map((type) => (
                     <button
                       key={type.value}
@@ -156,13 +156,13 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
 
               <div>
                 <label htmlFor="content" className="block text-sm font-medium text-ink mb-2">
-                  你的想法 <span className="text-china-red">*</span>
+                  Your Thoughts <span className="text-china-red">*</span>
                 </label>
                 <textarea
                   id="content"
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  placeholder="请描述你的想法..."
+                  placeholder="Describe your thoughts..."
                   rows={4}
                   className="w-full px-4 py-2 border border-sand rounded-lg focus:outline-none focus:ring-2 focus:ring-china-red/50 focus:border-china-red resize-none"
                   required
@@ -172,7 +172,7 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
 
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-ink mb-2">
-                  邮箱（可选，方便我们回复你）
+                  Email (optional, so we can reply to you)
                 </label>
                 <input
                   type="email"
@@ -190,7 +190,7 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
               )}
 
               <p className="text-xs text-warm">
-                我们尊重你的隐私，反馈内容仅用于改进网站
+                We respect your privacy. Feedback is only used to improve the site.
               </p>
             </div>
 
@@ -201,26 +201,26 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                 disabled={isSubmitting}
                 className="px-4 py-2 text-warm hover:text-ink transition-colors disabled:opacity-50"
               >
-                取消
+                Cancel
               </button>
               <button
                 type="submit"
                 disabled={!isFormValid || isSubmitting}
                 className="px-6 py-2 bg-china-red text-white rounded-lg hover:bg-china-red/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? '发送中...' : '发送反馈 →'}
+                {isSubmitting ? 'Sending...' : 'Send Feedback →'}
               </button>
             </div>
           </form>
         ) : (
           <div className="p-6 text-center">
             <div className="text-4xl mb-4">✓</div>
-            <h2 className="text-xl font-bold text-ink mb-3">感谢你的反馈！</h2>
+            <h2 className="text-xl font-bold text-ink mb-3">Thank you for your feedback!</h2>
             <p className="text-warm mb-4">
-              我们已收到你的想法，会认真查看。
+              We've received your thoughts and will review them carefully.
             </p>
             <p className="text-sm text-warm mb-6">
-              如果想继续交流，欢迎邮件联系：<br />
+              Want to continue the conversation? Email us at:<br />
               <a
                 href="mailto:helena.liuhanqing@gmail.com"
                 className="text-china-red hover:underline"
@@ -232,7 +232,7 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
               onClick={handleClose}
               className="px-6 py-2 bg-china-red text-white rounded-lg hover:bg-china-red/90 transition-colors"
             >
-              关闭
+              Close
             </button>
           </div>
         )}

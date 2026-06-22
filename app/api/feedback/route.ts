@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     const rateLimitResult = checkRateLimit(ip);
     if (!rateLimitResult.allowed) {
       return Response.json(
-        { error: '提交太频繁，请稍后再试' },
+        { error: 'Too many submissions, please try again later' },
         { status: 429 }
       );
     }
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     // Validate required fields
     if (!feedbackType || !content) {
       return Response.json(
-        { error: '缺少必填字段' },
+        { error: 'Missing required fields' },
         { status: 400 }
       );
     }
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
     const validTypes: FeedbackType[] = ['suggestion', 'problem', 'feature'];
     if (!validTypes.includes(feedbackType)) {
       return Response.json(
-        { error: '无效的反馈类型' },
+        { error: 'Invalid feedback type' },
         { status: 400 }
       );
     }
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
     // Validate email format if provided
     if (email && !isValidEmail(email)) {
       return Response.json(
-        { error: '邮箱格式不正确' },
+        { error: 'Invalid email format' },
         { status: 400 }
       );
     }
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
     // Validate content length
     if (content.trim().length < 10) {
       return Response.json(
-        { error: '反馈内容至少需要 10 个字符' },
+        { error: 'Feedback content must be at least 10 characters' },
         { status: 400 }
       );
     }
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
     if (dbError) {
       console.error('Database error:', dbError);
       return Response.json(
-        { error: '服务器错误，请稍后重试' },
+        { error: 'Server error, please try again later' },
         { status: 500 }
       );
     }
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
     }).catch(err => console.error('Email notification failed:', err));
 
     return Response.json(
-      { success: true, message: '感谢你的反馈！' },
+      { success: true, message: 'Thank you for your feedback!' },
       { status: 201 }
     );
   } catch (error) {
