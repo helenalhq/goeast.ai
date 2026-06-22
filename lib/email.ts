@@ -1,7 +1,14 @@
 // lib/email.ts
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resendInstance: Resend | null = null;
+
+function getResend(): Resend {
+  if (!resendInstance) {
+    resendInstance = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resendInstance;
+}
 
 const typeLabels = {
   suggestion: '💡 建议',
@@ -20,7 +27,7 @@ export async function sendFeedbackNotification(feedback: {
   const typeLabel = typeLabels[feedback.feedbackType] || feedback.feedbackType;
 
   try {
-    await resend.emails.send({
+    await getResend().emails.send({
       from: 'GoEast.ai <noreply@goeast.ai>',
       to: 'helena.liuhanqing@gmail.com',
       subject: `[GoEast 反馈] ${typeLabel}`,
