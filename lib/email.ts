@@ -29,7 +29,7 @@ export async function sendFeedbackNotification(feedback: {
   try {
     await getResend().emails.send({
       from: 'GoEast.ai <onboarding@resend.dev>',
-      to: 'helena.liuhanqing@gmail.com',
+      to: 'pcliu.fd@gmail.com', // TODO: Change to helena.liuhanqing@gmail.com after verifying domain
       subject: `[GoEast Feedback] ${typeLabel}`,
       html: `
         <h2>New Feedback</h2>
