@@ -27,8 +27,9 @@ export async function sendFeedbackNotification(feedback: {
   const typeLabel = typeLabels[feedback.feedbackType] || feedback.feedbackType;
 
   try {
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'GoEast.ai <onboarding@resend.dev>';
     await getResend().emails.send({
-      from: 'GoEast.ai <onboarding@resend.dev>',
+      from: fromEmail,
       to: 'pcliu.fd@gmail.com', // TODO: Change to helena.liuhanqing@gmail.com after verifying domain
       subject: `[GoEast Feedback] ${typeLabel}`,
       html: `
