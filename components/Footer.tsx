@@ -19,6 +19,15 @@ export default function Footer() {
           <Link href="/api/skills" className="hover:text-china-red transition-colors">API</Link>
           <Link href="/about" className="hover:text-china-red transition-colors">About</Link>
           <Link href="/contact" className="hover:text-china-red transition-colors">Contact</Link>
+          <button
+            onClick={() => {
+              const event = new CustomEvent('openFeedback');
+              window.dispatchEvent(event);
+            }}
+            className="hover:text-china-red transition-colors cursor-pointer bg-transparent border-none text-inherit font-sans text-sm p-0"
+          >
+            💬 反馈建议
+          </button>
         </div>
       </div>
     </footer>
