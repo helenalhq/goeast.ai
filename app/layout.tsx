@@ -21,6 +21,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.goeast.ai"),
   verification: {
     google: "3z9kuvrOqe9ZRP7GWl7mi2AO4FERHhlnFe59ryDsAHY",
+    yandex: "7a0573508be2216f",
   },
   alternates: { canonical: "/" },
   openGraph: {
