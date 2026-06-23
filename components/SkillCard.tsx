@@ -5,9 +5,9 @@ import CategoryBadge from "./CategoryBadge";
 export default function SkillCard({ skill }: { skill: SkillMeta }) {
   return (
     <Link href={`/skills/${skill.slug}`} className="block group">
-      <article className="bg-white rounded-xl border border-sand p-5 hover:border-china-red/30 hover:shadow-sm transition-all h-full">
+      <article className="bg-cream/60 rounded-sm shadow-sm hover:shadow-md transition-shadow p-5 h-full">
         <div className="flex items-start justify-between gap-3 mb-2">
-          <h3 className="font-semibold text-ink group-hover:text-china-red transition-colors">
+          <h3 className="font-serif font-semibold text-ink group-hover:text-china-red transition-colors">
             {skill.title}
           </h3>
           <span className="text-xs text-warm/60 whitespace-nowrap">
@@ -20,7 +20,7 @@ export default function SkillCard({ skill }: { skill: SkillMeta }) {
           {skill.tags.slice(0, 3).map((tag) => (
             <span
               key={tag}
-              className="text-xs text-warm/50 bg-cream px-2 py-0.5 rounded"
+              className="font-mono text-xs text-warm/50 bg-cream px-2 py-0.5 rounded-sm"
             >
               {tag}
             </span>

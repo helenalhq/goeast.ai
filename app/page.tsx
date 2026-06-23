@@ -12,6 +12,121 @@ import { getAllJourneys } from "@/lib/journeys";
 import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
 import { CATEGORIES, type Category } from "@/lib/types";
 
+/* ── SVG icons for skill categories ── */
+function CategoryIcon({ id }: { id: string }) {
+  const common = {
+    viewBox: "0 0 24 24",
+    style: { width: 22, height: 22, stroke: "#2c1810", strokeWidth: 1.5, fill: "none" },
+  };
+  switch (id) {
+    case "travel":
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 3v18M3 12h18" />
+          <path d="M12 3l-3 3M12 3l3 3" />
+        </svg>
+      );
+    case "medical":
+      return (
+        <svg {...common}>
+          <path d="M12 2v20M2 12h20" />
+        </svg>
+      );
+    case "shopping":
+      return (
+        <svg {...common}>
+          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+          <path d="M3 6h18" />
+          <path d="M16 10a4 4 0 01-8 0" />
+        </svg>
+      );
+    case "accommodation":
+      return (
+        <svg {...common}>
+          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+          <polyline points="9,22 9,12 15,12 15,22" />
+        </svg>
+      );
+    default:
+      return null;
+  }
+}
+
+/* ── 64 hexagram data (binary arrays) ── */
+const HEXAGRAMS = [
+  [1,1,1,1,1,1],[0,0,0,0,0,0],[1,0,0,0,1,0],[0,1,1,1,0,1],
+  [1,1,1,0,0,0],[0,0,0,1,1,1],[1,0,1,0,1,0],[0,1,0,1,0,1],
+  [1,1,0,0,1,1],[0,0,1,1,0,0],[1,0,0,1,1,0],[0,1,1,0,0,1],
+  [1,1,1,1,0,0],[0,0,1,1,1,1],[1,0,1,1,0,0],[0,0,1,0,1,1],
+  [1,1,0,1,0,0],[0,0,1,0,1,1],[1,0,0,0,0,1],[1,0,0,0,0,1],
+  [0,1,1,1,1,0],[1,1,0,0,0,1],[1,0,0,0,1,1],[1,1,0,1,1,1],
+  [1,1,1,1,0,1],[1,0,1,0,0,1],[1,0,0,1,0,1],[0,1,0,1,1,0],
+  [0,1,1,0,1,0],[0,0,1,1,0,1],[1,0,1,1,1,0],[0,1,1,1,0,0],
+  [1,1,1,0,1,0],[0,1,0,1,1,1],[1,0,0,1,0,0],[0,0,1,0,0,1],
+  [1,1,0,1,0,1],[1,0,1,0,1,1],[0,1,1,1,1,0],[1,1,1,0,0,1],
+  [1,0,0,1,1,1],[1,1,1,1,1,0],[0,1,1,0,0,0],[0,0,0,1,1,0],
+  [1,0,1,0,0,0],[0,0,0,1,0,1],[1,1,0,0,0,0],[0,0,0,0,1,1],
+  [1,0,0,1,0,0],[0,0,1,0,0,1],[0,1,0,0,1,0],[0,1,0,0,1,0],
+  [1,0,1,1,0,1],[1,0,1,1,0,1],[0,0,1,1,1,0],[0,1,1,1,0,0],
+  [1,1,0,0,1,0],[0,1,0,0,1,1],[1,0,0,1,1,0],[0,1,1,0,0,1],
+  [1,1,0,1,1,0],[0,1,1,0,1,1],[1,0,1,0,1,0],[0,1,0,1,0,1],
+];
+
+function Hexagram({ lines }: { lines: number[] }) {
+  return (
+    <div
+      style={{
+        aspectRatio: 1,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        gap: 3,
+        padding: 4,
+      }}
+    >
+      {lines.map((line, i) => (
+        <div
+          key={i}
+          style={{
+            height: 2,
+            borderRadius: 1,
+            background: line === 1 ? "#2c1810" : "transparent",
+            position: "relative",
+          }}
+        >
+          {line === 0 && (
+            <>
+              <div
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  top: 0,
+                  width: "40%",
+                  height: 2,
+                  background: "#2c1810",
+                  borderRadius: 1,
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  right: 0,
+                  top: 0,
+                  width: "40%",
+                  height: 2,
+                  background: "#2c1810",
+                  borderRadius: 1,
+                }}
+              />
+            </>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function HomePage() {
   const journeys = getAllJourneys();
   const featured = getFeaturedSkills();
@@ -63,24 +178,24 @@ export default function HomePage() {
 
       {/* Journey Timeline */}
       <section id="journey" className="max-w-4xl mx-auto px-4 py-16">
-        <h2 className="text-2xl font-bold text-ink mb-2">The Journey</h2>
+        <h2 className="font-serif text-2xl font-bold text-ink mb-2">The Journey</h2>
         <p className="text-warm mb-10">
           Follow Sophie&apos;s path from the Silk Road through China&apos;s heartland
           <br />
-          <span className="text-sm">追溯苏菲从丝绸之路到中原大地的旅途</span>
+          <span className="text-sm text-warm/70">追溯苏菲从丝绸之路到中原大地的旅途</span>
         </p>
         <JourneyTimeline journeys={journeys} />
       </section>
 
       {/* Philosopher Encounters */}
       <section className="max-w-6xl mx-auto px-4 py-16 border-t border-sand">
-        <h2 className="text-2xl font-bold text-ink mb-2">The Philosophers</h2>
+        <h2 className="font-serif text-2xl font-bold text-ink mb-2">The Philosophers</h2>
         <p className="text-warm mb-8">
           Eleven thinkers across three thousand years of Chinese thought
           <br />
-          <span className="text-sm">横跨三千年的十一位思想家</span>
+          <span className="text-sm text-warm/70">横跨三千年的十一位思想家</span>
         </p>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
           {journeys
             .filter((j) => j.philosopher)
             .map((journey) => (
@@ -97,39 +212,114 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* I Ching Entry */}
-      <section className="max-w-4xl mx-auto px-4 py-16 border-t border-sand text-center">
-        <h2 className="text-2xl font-bold text-ink mb-2">I Ching · 易经</h2>
-        <p className="text-warm mb-4">
-          The Book of Changes — 3,000 years of wisdom encoded in 64 hexagrams
-        </p>
-        <Link
-          href="/iching"
-          className="inline-block px-6 py-2.5 rounded-full bg-china-red text-white font-medium text-sm hover:bg-china-red/90 transition-colors"
-        >
-          Explore the I Ching →
-        </Link>
+      {/* I Ching Entry — split layout with hexagram decoration */}
+      <section className="max-w-5xl mx-auto px-4 py-16 border-t border-sand">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          {/* Left: 64 hexagrams grid decoration */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(8, 1fr)",
+              gap: 6,
+              opacity: 0.18,
+            }}
+          >
+            {HEXAGRAMS.map((hex, i) => (
+              <Hexagram key={i} lines={hex} />
+            ))}
+          </div>
+
+          {/* Right: content */}
+          <div>
+            <h2 className="font-serif text-2xl font-bold text-ink mb-3">I Ching · 易经</h2>
+            <p className="text-warm mb-7 text-base leading-relaxed">
+              The Book of Changes — 3,000 years of wisdom encoded in 64 hexagrams.
+              <br />
+              Consult AI Oracles modeled after ancient thinkers.
+            </p>
+            <Link
+              href="/iching"
+              className="inline-block px-7 py-3 bg-china-red text-white font-medium text-sm rounded-sm hover:bg-china-red/90 transition-colors no-underline"
+            >
+              Explore the I Ching →
+            </Link>
+          </div>
+        </div>
       </section>
 
-      {/* Glossary + Insights Entry */}
-      <section className="max-w-4xl mx-auto px-4 py-16 border-t border-sand text-center">
-        <h2 className="text-2xl font-bold text-ink mb-2">Learn Deeper · 深入探索</h2>
-        <p className="text-warm mb-6">
-          Key concepts explained in our Glossary, and philosophical essays in our Insights section.
-        </p>
-        <div className="flex gap-4 justify-center">
-          <Link
-            href="/glossary"
-            className="inline-block px-6 py-2.5 rounded-full bg-ink text-white font-medium text-sm hover:bg-ink/90 transition-colors"
+      {/* Glossary + Insights Entry — with background characters */}
+      <section className="max-w-4xl mx-auto px-4 py-16 border-t border-sand text-center relative overflow-hidden">
+        {/* Background decoration: large Chinese characters */}
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            display: "flex",
+            gap: "clamp(40px, 10vw, 120px)",
+            pointerEvents: "none",
+            zIndex: 0,
+          }}
+        >
+          <span
+            className="font-serif"
+            style={{
+              fontSize: "clamp(80px, 15vw, 180px)",
+              fontWeight: 900,
+              color: "#2c1810",
+              opacity: 0.06,
+              lineHeight: 1,
+            }}
           >
-            Glossary →
-          </Link>
-          <Link
-            href="/insights"
-            className="inline-block px-6 py-2.5 rounded-full bg-warm text-white font-medium text-sm hover:bg-warm/90 transition-colors"
+            仁
+          </span>
+          <span
+            className="font-serif"
+            style={{
+              fontSize: "clamp(80px, 15vw, 180px)",
+              fontWeight: 900,
+              color: "#2c1810",
+              opacity: 0.06,
+              lineHeight: 1,
+            }}
           >
-            Insights →
-          </Link>
+            道
+          </span>
+          <span
+            className="font-serif"
+            style={{
+              fontSize: "clamp(80px, 15vw, 180px)",
+              fontWeight: 900,
+              color: "#2c1810",
+              opacity: 0.06,
+              lineHeight: 1,
+            }}
+          >
+            阴阳
+          </span>
+        </div>
+
+        {/* Foreground content */}
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <h2 className="font-serif text-2xl font-bold text-ink mb-2">Learn Deeper · 深入探索</h2>
+          <p className="text-warm mb-6 max-w-md mx-auto">
+            Key concepts explained in our Glossary, and philosophical essays in our Insights section.
+          </p>
+          <div className="flex gap-3 justify-center flex-wrap">
+            <Link
+              href="/glossary"
+              className="inline-block px-7 py-3 bg-ink text-white font-medium text-sm rounded-sm hover:bg-ink/90 transition-colors no-underline"
+            >
+              Glossary →
+            </Link>
+            <Link
+              href="/insights"
+              className="inline-block px-7 py-3 bg-gold text-white font-medium text-sm rounded-sm hover:bg-gold/90 transition-colors no-underline"
+            >
+              Insights →
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -139,7 +329,7 @@ export default function HomePage() {
       {/* Skills — condensed section */}
       <section className="max-w-6xl mx-auto px-4 py-12 border-t border-sand">
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-ink mb-2">Skills for the Road</h2>
+          <h2 className="font-serif text-2xl font-bold text-ink mb-2">Skills for the Road</h2>
           <p className="text-sm text-warm">
             Practical AI skills for navigating life in China
           </p>
@@ -151,13 +341,27 @@ export default function HomePage() {
               <Link
                 key={cat.id}
                 href={`/categories/${cat.id}`}
-                className="bg-white rounded-xl border border-sand p-4 text-center hover:border-china-red/30 hover:shadow-sm transition-all group"
+                className="bg-cream/60 rounded-sm p-6 text-center hover:shadow-md transition-shadow group no-underline"
               >
-                <div className="text-2xl mb-1">{cat.icon}</div>
-                <div className="font-semibold text-ink text-sm group-hover:text-china-red transition-colors">
+                {/* SVG icon container */}
+                <div
+                  style={{
+                    width: 44,
+                    height: 44,
+                    margin: "0 auto 12px",
+                    borderRadius: 4,
+                    background: "#fff",
+                    border: "1px solid rgba(224,213,197,0.5)",
+                    display: "grid",
+                    placeItems: "center",
+                  }}
+                >
+                  <CategoryIcon id={cat.id} />
+                </div>
+                <div className="font-serif font-semibold text-ink text-sm group-hover:text-china-red transition-colors">
                   {cat.name}
                 </div>
-                <div className="text-xs text-warm/60 mt-1">{count} skills</div>
+                <div className="font-mono text-xs text-warm/50 mt-1">{count} skills</div>
               </Link>
             );
           })}

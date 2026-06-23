@@ -22,11 +22,11 @@ export default function OracleCta({
   const displayMsg = message || defaultMsg;
 
   return (
-    <div className="mt-12 p-6 bg-cream rounded-xl border border-sand text-center">
-      <p className="text-ink font-serif text-lg mb-4">{displayMsg}</p>
+    <div className="mt-12 p-6 bg-cream/60 rounded-sm text-center">
+      <p className="font-serif text-ink text-lg mb-4">{displayMsg}</p>
       <Link
         href="/sophies-journey"
-        className="inline-block px-6 py-2.5 rounded-full text-white font-medium text-sm transition-colors hover:opacity-90"
+        className="inline-block px-7 py-3 rounded-sm text-white font-medium text-sm transition-colors hover:opacity-90 no-underline"
         style={{ backgroundColor: accentColor }}
       >
         Consult the Oracle →

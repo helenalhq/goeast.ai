@@ -9,4 +9,9 @@ html {
 body {
   background-color: #faf5ef;
   color: #2c1810;
+  font-family: "Noto Sans SC", Inter, system-ui, sans-serif;
+}
+
+h1, h2, h3 {
+  font-family: "Noto Serif SC", Georgia, serif;
 }

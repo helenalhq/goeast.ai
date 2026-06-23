@@ -16,7 +16,9 @@ const config: Config = {
         sand: "#e0d5c5",
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
+        serif: ['"Noto Serif SC"', "Georgia", "serif"],
+        sans: ['"Noto Sans SC"', "Inter", "system-ui", "sans-serif"],
+        mono: ['"JetBrains Mono"', "ui-monospace", "monospace"],
       },
     },
   },

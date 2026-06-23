@@ -19,7 +19,7 @@ export default function FAQ({
   return (
     <section className="mt-12 border-t border-sand pt-8">
       <JsonLd data={jsonLd} />
-      <h2 className="text-2xl font-bold text-ink mb-6">
+      <h2 className="font-serif text-2xl font-bold text-ink mb-6">
         Frequently Asked Questions
         <span className="text-sm text-warm font-normal ml-2">常见问题</span>
       </h2>
@@ -27,13 +27,13 @@ export default function FAQ({
         {items.map((item, i) => (
           <details
             key={i}
-            className="group bg-cream rounded-lg border border-sand open:border-warm/40 transition-colors"
+            className="group bg-cream/60 rounded-sm border border-sand open:border-warm/40 transition-colors"
           >
-            <summary className="cursor-pointer px-5 py-3 font-medium text-ink list-none flex items-center justify-between">
+            <summary className="cursor-pointer px-5 py-3 font-serif font-medium text-ink list-none flex items-center justify-between">
               <span>
                 {item.question}
                 {item.questionZh && (
-                  <span className="text-warm text-sm ml-2">{item.questionZh}</span>
+                  <span className="text-warm text-sm ml-2 font-sans">{item.questionZh}</span>
                 )}
               </span>
               <span className="text-warm text-xl group-open:rotate-45 transition-transform">+</span>
