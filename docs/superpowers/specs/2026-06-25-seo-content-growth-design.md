@@ -89,20 +89,11 @@ Use the existing `JsonLd` component to add `FAQPage` structured data:
 ## Phase 2: Targeted Content Creation (Week 3-8)
 
 ### Objective
-Create 10-15 new articles targeting low-competition, high-intent keywords to build organic traffic.
+Create 7-8 new articles targeting low-competition, high-intent keywords to build organic traffic.
 
 ### Content Clusters
 
-#### Cluster A: AI Tools for China (Expats/Travelers)
-
-| Article Title | Target Keyword | Est. Difficulty |
-|---------------|----------------|-----------------|
-| "Best AI Translation Apps for Traveling in China (2026)" | AI translation China | Low |
-| "How to Use AI for Navigation in China" | AI navigation China | Low-Medium |
-| "AI Tools for Ordering Food in China" | AI food ordering China | Low |
-| "Best AI Travel Planners for China Trips" | AI travel planner China | Medium |
-
-#### Cluster B: Chinese Philosophy (Culture Enthusiasts)
+#### Cluster A: Chinese Philosophy (Culture Enthusiasts)
 
 | Article Title | Target Keyword | Est. Difficulty |
 |---------------|----------------|-----------------|
@@ -111,7 +102,7 @@ Create 10-15 new articles targeting low-competition, high-intent keywords to bui
 | "Wu Wei: The Chinese Philosophy of Effortless Action" | wu wei philosophy | Low |
 | "The Difference Between Yin and Yang (With Examples)" | difference yin yang | Low |
 
-#### Cluster C: Practical Guides (Both Audiences)
+#### Cluster B: Practical Guides (Both Audiences)
 
 | Article Title | Target Keyword | Est. Difficulty |
 |---------------|----------------|-----------------|
@@ -167,7 +158,7 @@ Create 10-15 new articles targeting low-competition, high-intent keywords to bui
 - Add "related articles" sections to increase time-on-site
 - Set up newsletter signup (leverage existing Resend integration)
 
-#### 3.4 Future Content Expansion (After Initial 10-15 Articles)
+#### 3.4 Future Content Expansion (After Initial 7-8 Articles)
 - Comparison pages ("ChatGPT vs. Chinese AI tools for travel")
 - "Best of" listicles that attract backlinks
 - Video content (YouTube embeds) for visual learners
@@ -196,8 +187,8 @@ Create 10-15 new articles targeting low-competition, high-intent keywords to bui
 
 1. **Week 1:** Fix robots.txt, audit/rewrite all page titles and meta descriptions
 2. **Week 2:** Add FAQ schema to key pages, improve OG images
-3. **Week 3-4:** Publish first 4 articles (2 from Cluster A, 2 from Cluster B)
-4. **Week 5-8:** Publish remaining 6-8 articles, optimize internal linking
+3. **Week 3-4:** Publish first 4 articles (Chinese Philosophy cluster)
+4. **Week 5-6:** Publish remaining 3-4 articles (Practical Guides cluster), optimize internal linking
 5. **Ongoing:** Maintain cadence, monitor performance, iterate
 
 ---
@@ -211,7 +202,7 @@ Create 10-15 new articles targeting low-competition, high-intent keywords to bui
 - `app/robots.txt` — Convert from directory to file
 - `app/sitemap.ts` — Add `lastmod` dates
 - `components/JsonLd.tsx` — Ensure FAQ schema support
-- New content files in `content/insights/` — 10-15 new articles
+- New content files in `content/insights/` — 7-8 new articles
 
 ---
 
