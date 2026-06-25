@@ -76,10 +76,10 @@ export default function Hero() {
             marginBottom: 24,
           }}
         >
-          AI × 东方智慧
+          AI × Eastern Wisdom
         </p>
 
-        {/* Chinese main title — serif large */}
+        {/* English main title — serif large */}
         <h1
           className="font-serif"
           style={{
@@ -91,10 +91,10 @@ export default function Hero() {
             letterSpacing: "0.04em",
           }}
         >
-          苏菲的东方之旅
+          Sophie&apos;s Journey East
         </h1>
 
-        {/* English subtitle — serif italic, subdued */}
+        {/* Chinese subtitle — serif, subdued */}
         <p
           className="font-serif"
           style={{
@@ -102,13 +102,12 @@ export default function Hero() {
             fontWeight: 400,
             color: "rgba(255,255,255,0.45)",
             marginBottom: 28,
-            fontStyle: "italic",
           }}
         >
-          Sophie&apos;s Journey East
+          苏菲的东方之旅
         </p>
 
-        {/* Functional description */}
+        {/* Functional description — English primary */}
         <p
           style={{
             fontSize: 17,
@@ -120,12 +119,12 @@ export default function Hero() {
             marginRight: "auto",
           }}
         >
-          AI 驱动的中国哲学探索 —— 从孔子到易经，
+          AI-powered Chinese philosophy exploration — from Confucius to the I Ching,
           <br />
-          三千年思想，通过 AI 对话重新唤醒。
+          3,000 years of thought, reawakened through AI conversation.
         </p>
 
-        {/* Poetic sub-text */}
+        {/* Poetic sub-text — Chinese secondary */}
         <p
           className="font-serif"
           style={{
@@ -158,10 +157,9 @@ export default function Hero() {
               fontWeight: 500,
               borderRadius: 4,
               textDecoration: "none",
-              fontFamily: '"Noto Sans SC", system-ui',
             }}
           >
-            开始旅程 →
+            Begin the Journey →
           </a>
           <Link
             href="/skills"
@@ -175,10 +173,9 @@ export default function Hero() {
               borderRadius: 4,
               border: "1px solid rgba(255,255,255,0.20)",
               textDecoration: "none",
-              fontFamily: '"Noto Sans SC", system-ui',
             }}
           >
-            浏览技能
+            Browse Skills
           </Link>
         </div>
       </div>
