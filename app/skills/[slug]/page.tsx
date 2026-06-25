@@ -25,12 +25,12 @@ export async function generateMetadata({
   const meta = allSkills.find((s) => s.slug === slug);
   if (!meta) return {};
   return {
-    title: `${meta.title} — GoEast.ai`,
-    description: `${meta.title} - ${meta.title_zh}. ${meta.tags.join(", ")}`,
+    title: `${meta.title}: AI Tool for ${meta.category} in China | GoEast.ai`,
+    description: `Learn how to use ${meta.title} for ${meta.category} tasks in China. Step-by-step guide with installation and usage tips.`,
     alternates: { canonical: `/skills/${slug}` },
     openGraph: {
-      title: `${meta.title} — GoEast.ai`,
-      description: `${meta.title} - ${meta.title_zh}`,
+      title: `${meta.title}: AI Tool for ${meta.category} in China | GoEast.ai`,
+      description: `${meta.title} - ${meta.title_zh}. Complete guide for using this AI tool in China.`,
       type: "article",
     },
   };

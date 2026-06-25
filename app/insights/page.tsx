@@ -9,11 +9,11 @@ import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Philosophical Insights — GoEast.ai",
-  description: "Explore Chinese philosophy in the modern world: Sunzi's strategy meets AI, Wuwei challenges hustle culture, and the I Ching guides entrepreneurs.",
+  title: "Chinese Philosophy Explained: Yin Yang, Wu Wei, Confucius | GoEast.ai",
+  description: "Explore Chinese philosophy in the modern world. Learn about yin yang, wu wei, Confucius leadership, and ancient wisdom for today. 探索现代世界中的中国哲学",
   alternates: { canonical: "/insights" },
   openGraph: {
-    title: "Philosophical Insights — GoEast.ai",
+    title: "Chinese Philosophy Explained: Yin Yang, Wu Wei, Confucius | GoEast.ai",
     description: "Chinese philosophy meets modern life: essays connecting ancient wisdom to contemporary challenges.",
     type: "website",
   },

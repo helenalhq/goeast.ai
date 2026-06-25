@@ -7,9 +7,9 @@ import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "All Skills — GoEast.ai",
+  title: "Top AI Apps for China: Translation, Travel, Shopping | GoEast.ai",
   description:
-    "Browse all curated AI skills for foreigners in China. 浏览精选的面向外国人的 AI 技能",
+    "Browse curated AI skills for foreigners in China. Find the best tools for translation, navigation, shopping, medical, and more. 浏览精选的面向外国人的 AI 技能",
   alternates: { canonical: "/skills" },
 };
 

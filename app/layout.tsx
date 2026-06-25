@@ -15,9 +15,9 @@ const inter = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "GoEast.ai — Sophie's Journey East | AI Skills for China",
+  title: "Best AI Tools for Traveling in China (2026 Guide) | GoEast.ai",
   description:
-    "Follow Sophie's Journey East through 3,000 years of Chinese philosophy. Plus curated AI skills for traveling and living in China.",
+    "Discover the best AI tools for traveling in China. From translation apps to navigation helpers, find everything you need for your trip.",
   metadataBase: new URL("https://www.goeast.ai"),
   verification: {
     google: "3z9kuvrOqe9ZRP7GWl7mi2AO4FERHhlnFe59ryDsAHY",
@@ -25,16 +25,16 @@ export const metadata: Metadata = {
   },
   alternates: { canonical: "/" },
   openGraph: {
-    title: "GoEast.ai — Sophie's Journey East | AI Skills for China",
+    title: "Best AI Tools for Traveling in China (2026 Guide) | GoEast.ai",
     description:
-      "Follow Sophie's Journey East through 3,000 years of Chinese philosophy. Plus curated AI skills for traveling and living in China.",
+      "Discover the best AI tools for traveling in China. From translation apps to navigation helpers, find everything you need for your trip.",
     url: "https://www.goeast.ai",
     siteName: "GoEast.ai",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "GoEast.ai — AI Skills for China",
+    title: "Best AI Tools for Traveling in China | GoEast.ai",
     description:
       "Curated AI skills for navigating life in China. Travel, medical, shopping, accommodation — powered by AI.",
   },

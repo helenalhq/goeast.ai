@@ -28,14 +28,14 @@ export async function generateMetadata({
   const meta = journeys.find((j) => j.slug === slug);
   if (!meta) return {};
   return {
-    title: `${meta.title} — Sophie's Journey — GoEast.ai`,
+    title: `${meta.title} — ${meta.philosopher} Philosophy | GoEast.ai`,
     description: meta.quote
-      ? `${meta.quote} — ${meta.quote_source}`
-      : `${meta.title} - ${meta.title_zh}`,
+      ? `"${meta.quote}" — Discover ${meta.philosopher}'s philosophy through Sophie's journey.`
+      : `Explore ${meta.philosopher || "Chinese"} philosophy through Sophie's journey. ${meta.title}`,
     alternates: { canonical: `/sophies-journey/${slug}` },
     openGraph: {
-      title: `${meta.title} — Sophie's Journey`,
-      description: meta.quote || `${meta.title} - ${meta.title_zh}`,
+      title: `${meta.title} — ${meta.philosopher} Philosophy | GoEast.ai`,
+      description: meta.quote || `${meta.title} - Discover ${meta.philosopher || "Chinese"} philosophy`,
       type: "article",
     },
   };

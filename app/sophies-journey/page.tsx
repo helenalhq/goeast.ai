@@ -8,14 +8,14 @@ import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Sophie's Journey East — GoEast.ai",
+  title: "Chinese Philosophy Through Stories: Laozi, Confucius, Zhuangzi | GoEast.ai",
   description:
-    "Having escaped the pages of a book, Sophie travels East and encounters China's greatest philosophers. A narrative exploration of Chinese thought.",
+    "Explore 3,000 years of Chinese philosophy through Sophie's journey. Discover wisdom from Laozi, Confucius, Zhuangzi, and more. 通过故事探索中国哲学",
   alternates: { canonical: "/sophies-journey" },
   openGraph: {
-    title: "Sophie's Journey East — GoEast.ai",
+    title: "Chinese Philosophy Through Stories: Laozi, Confucius, Zhuangzi | GoEast.ai",
     description:
-      "Having escaped the pages of a book, Sophie travels East and encounters China's greatest philosophers.",
+      "Explore 3,000 years of Chinese philosophy through Sophie's journey. Discover wisdom from Laozi, Confucius, Zhuangzi, and more.",
     type: "article",
   },
 };
