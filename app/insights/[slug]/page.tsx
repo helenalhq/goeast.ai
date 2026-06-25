@@ -26,11 +26,11 @@ export async function generateMetadata({
   if (!insight) return {};
   const philosopher = insight.philosopher_slug ? PHILOSOPHER_SLUGS[insight.philosopher_slug] : null;
   return {
-    title: `${insight.title} — GoEast.ai`,
-    description: `${philosopher?.name || 'Chinese philosophy'} meets modern life: ${insight.title}. ${insight.title_zh || ''}`,
+    title: `${insight.title} | Chinese Philosophy Guide | GoEast.ai`,
+    description: `${insight.title}. ${philosopher?.name ? `Learn about ${philosopher.name}'s philosophy and its modern applications.` : 'Explore Chinese philosophy concepts and their modern applications.'}`,
     alternates: { canonical: `/insights/${slug}` },
     openGraph: {
-      title: insight.title,
+      title: `${insight.title} | GoEast.ai`,
       description: `${philosopher?.name || 'Chinese philosophy'} meets modern life: ${insight.title}`,
       type: "article",
     },
