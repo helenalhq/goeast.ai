@@ -1,12 +1,29 @@
 import { createClient } from "@/lib/supabase/server";
 import { getSiteConfig } from "@/lib/config";
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
 import LogoutButton from "./logout-button";
 import UpgradeButton from "./upgrade-button";
 import CancelButton from "./cancel-button";
 import ResumeButton from "./resume-button";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Account - GoEast.ai",
+  description: "Manage your GoEast.ai account.",
+  alternates: { canonical: "/account" },
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noimageindex: true,
+    },
+  },
+};
 
 export default async function AccountPage() {
   const supabase = await createClient();

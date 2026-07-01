@@ -15,28 +15,60 @@ const inter = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Best AI Tools for Traveling in China (2026 Guide) | GoEast.ai",
+  title: "GoEast.ai | AI Tools for China Travel and Life",
   description:
-    "Discover the best AI tools for traveling in China. From translation apps to navigation helpers, find everything you need for your trip.",
+    "Bilingual guides to China travel, daily life, and Chinese philosophy, plus curated AI tools for payments, hospitals, transport, and translation.",
   metadataBase: new URL("https://www.goeast.ai"),
+  keywords: [
+    "AI tools for China",
+    "China travel guide",
+    "China payment setup",
+    "Alipay for foreigners",
+    "WeChat Pay guide",
+    "Chinese philosophy",
+    "I Ching",
+  ],
+  category: "education",
+  creator: "GoEast.ai",
+  publisher: "GoEast.ai",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   verification: {
     google: "3z9kuvrOqe9ZRP7GWl7mi2AO4FERHhlnFe59ryDsAHY",
     yandex: "7a0573508be2216f",
   },
   alternates: { canonical: "/" },
   openGraph: {
-    title: "Best AI Tools for Traveling in China (2026 Guide) | GoEast.ai",
+    title: "GoEast.ai | AI Tools for China Travel and Life",
     description:
-      "Discover the best AI tools for traveling in China. From translation apps to navigation helpers, find everything you need for your trip.",
+      "Bilingual guides and curated AI tools for foreigners in China: travel, payments, medical access, translation, and philosophy learning.",
     url: "https://www.goeast.ai",
     siteName: "GoEast.ai",
     type: "website",
+    images: [
+      {
+        url: "https://www.goeast.ai/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "GoEast.ai - AI tools for life in China",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Best AI Tools for Traveling in China | GoEast.ai",
+    title: "GoEast.ai | AI Tools for China Travel and Life",
     description:
-      "Curated AI skills for navigating life in China. Travel, medical, shopping, accommodation — powered by AI.",
+      "Bilingual guides and curated AI tools for travel, payments, medical support, and living in China.",
+    images: ["https://www.goeast.ai/opengraph-image"],
   },
 };
 

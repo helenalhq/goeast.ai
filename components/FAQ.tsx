@@ -1,5 +1,3 @@
-import JsonLd from "./JsonLd";
-
 type FAQItem = {
   question: string;
   answer: string;
@@ -9,16 +7,17 @@ type FAQItem = {
 
 export default function FAQ({
   items,
-  jsonLd,
+  jsonLd: _jsonLd,
 }: {
   items: FAQItem[];
-  jsonLd: Record<string, unknown>;
+  jsonLd?: Record<string, unknown> | null;
 }) {
+  void _jsonLd;
+
   if (items.length === 0) return null;
 
   return (
     <section className="mt-12 border-t border-sand pt-8">
-      <JsonLd data={jsonLd} />
       <h2 className="font-serif text-2xl font-bold text-ink mb-6">
         Frequently Asked Questions
         <span className="text-sm text-warm font-normal ml-2">常见问题</span>

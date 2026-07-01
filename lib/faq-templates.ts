@@ -179,17 +179,7 @@ export function generateFAQs(input: FAQInput): FAQItem[] {
   }
 }
 
-export function generateFAQJsonLd(faqs: FAQItem[]): Record<string, unknown> {
-  return {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqs.map((faq) => ({
-      "@type": "Question",
-      name: faq.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: faq.answer,
-      },
-    })),
-  };
+export function generateFAQJsonLd(_faqs: FAQItem[]): null {
+  void _faqs;
+  return null;
 }
