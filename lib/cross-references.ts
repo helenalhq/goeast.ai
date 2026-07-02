@@ -20,6 +20,55 @@ type CrossRefInput =
   | { type: "insight"; slug: string; philosopherSlug?: string; conceptSlugs?: string[] }
   | { type: "journey"; slug: string; philosopher?: string; school?: string };
 
+function toUnixTime(dateString?: string): number {
+  if (!dateString) return 0;
+  const parsed = Date.parse(dateString);
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+function getTitleTokens(title: string): Set<string> {
+  return new Set(
+    title
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, " ")
+      .split(/\s+/)
+      .filter((token) => token.length >= 4)
+  );
+}
+
+function getInsightSimilarityScore(
+  source: { title: string; philosopherSlug?: string; conceptSlugs?: string[] },
+  target: { title: string; philosopher_slug?: string; concept_slugs?: string[]; published_at: string }
+): number {
+  let score = 0;
+
+  if (source.philosopherSlug && target.philosopher_slug && source.philosopherSlug === target.philosopher_slug) {
+    score += 4;
+  }
+
+  const sourceConcepts = new Set(source.conceptSlugs ?? []);
+  const targetConcepts = new Set(target.concept_slugs ?? []);
+  let conceptOverlap = 0;
+  sourceConcepts.forEach((slug) => {
+    if (targetConcepts.has(slug)) conceptOverlap += 1;
+  });
+  score += conceptOverlap * 3;
+
+  const sourceTokens = getTitleTokens(source.title);
+  const targetTokens = getTitleTokens(target.title);
+  let tokenOverlap = 0;
+  sourceTokens.forEach((token) => {
+    if (targetTokens.has(token)) tokenOverlap += 1;
+  });
+  score += Math.min(3, tokenOverlap);
+
+  if (toUnixTime(target.published_at) > Date.now() - 1000 * 60 * 60 * 24 * 45) {
+    score += 1;
+  }
+
+  return score;
+}
+
 export function getRelatedContent(input: CrossRefInput): RelatedItem[] {
   const items: RelatedItem[] = [];
 
@@ -104,6 +153,9 @@ export function getRelatedContent(input: CrossRefInput): RelatedItem[] {
       break;
     }
     case "insight": {
+      const allInsights = getAllInsights();
+      const currentInsight = allInsights.find((item) => item.slug === input.slug);
+
       // Link to philosopher page
       if (input.philosopherSlug) {
         const meta = PHILOSOPHER_SLUGS[input.philosopherSlug];
@@ -127,11 +179,26 @@ export function getRelatedContent(input: CrossRefInput): RelatedItem[] {
         items.push(...concepts);
       }
 
-      // Link to other insights
-      const otherInsights = getAllInsights()
+      // Link to most relevant insights using a weighted similarity score.
+      const otherInsights = allInsights
         .filter((i) => i.slug !== input.slug)
-        .slice(0, 3)
-        .map((i) => ({ title: i.title, href: `/insights/${i.slug}`, type: "Insight" }));
+        .map((candidate) => ({
+          candidate,
+          score: getInsightSimilarityScore(
+            {
+              title: currentInsight?.title ?? input.slug.replace(/-/g, " "),
+              philosopherSlug: input.philosopherSlug,
+              conceptSlugs: input.conceptSlugs,
+            },
+            candidate
+          ),
+        }))
+        .sort((a, b) => {
+          if (b.score !== a.score) return b.score - a.score;
+          return toUnixTime(b.candidate.published_at) - toUnixTime(a.candidate.published_at);
+        })
+        .slice(0, 4)
+        .map(({ candidate }) => ({ title: candidate.title, href: `/insights/${candidate.slug}`, type: "Insight" }));
       items.push(...otherInsights);
       break;
     }
@@ -165,5 +232,6 @@ export function getRelatedContent(input: CrossRefInput): RelatedItem[] {
     }
   }
 
-  return items.slice(0, 5);
+  const deduped = items.filter((item, index) => items.findIndex((x) => x.href === item.href) === index);
+  return deduped.slice(0, 6);
 }

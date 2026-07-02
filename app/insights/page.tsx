@@ -21,6 +21,35 @@ export const metadata: Metadata = {
 
 export default function InsightsPage() {
   const insights = getAllInsights();
+  const ctaClusters = [
+    {
+      title: "Payments in China",
+      description: "Set up and compare the payment stack foreigners use daily.",
+      links: [
+        { href: "/insights/alipay-vs-wechat-pay-foreigner", label: "Alipay vs WeChat Pay for foreigners" },
+        { href: "/insights/wechat-pay-foreigner", label: "WeChat Pay setup guide (2026)" },
+        { href: "/skills/china-payment-setup", label: "China payment setup skill" },
+      ],
+    },
+    {
+      title: "Transport and Mobility",
+      description: "Move between cities and inside cities with fewer failures.",
+      links: [
+        { href: "/insights/china-high-speed-rail-12306-guide", label: "China high-speed rail booking workflow" },
+        { href: "/insights/didi-english-guide-china", label: "How to use DiDi without Chinese" },
+        { href: "/skills/china-local-travel-expert", label: "China local travel expert skill" },
+      ],
+    },
+    {
+      title: "Health and Safety",
+      description: "Prepare for hospital visits, translation, and connectivity fallback.",
+      links: [
+        { href: "/insights/china-hospital-foreigner-guide", label: "Hospital navigation guide for foreigners" },
+        { href: "/insights/best-translation-apps-china-travel", label: "Best translation apps for China travel" },
+        { href: "/insights/china-esim-foreigner-guide", label: "China eSIM setup and backup strategy" },
+      ],
+    },
+  ];
 
   return (
     <main>
@@ -51,6 +80,29 @@ export default function InsightsPage() {
       {/* CitationSnippet */}
       <section className="max-w-3xl mx-auto px-4 pt-8">
         <CitationSnippet text="Essays connecting Chinese philosophical concepts to modern life. Explore how Sunzi's strategy informs AI, how Wuwei challenges hustle culture, and how the I Ching guides decision-making." />
+      </section>
+
+      {/* Structured CTA internal links for high-intent search clusters */}
+      <section className="max-w-5xl mx-auto px-4 pt-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {ctaClusters.map((cluster) => (
+            <div key={cluster.title} className="bg-white rounded-xl border border-sand p-5">
+              <h2 className="text-base font-semibold text-ink mb-2">{cluster.title}</h2>
+              <p className="text-xs text-warm/80 mb-4">{cluster.description}</p>
+              <div className="space-y-2">
+                {cluster.links.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="block text-sm text-ink hover:text-china-red transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* Articles grid */}

@@ -223,6 +223,53 @@ export default function HomePage() {
         </section>
       )}
 
+      <section className="max-w-5xl mx-auto px-4 pb-8">
+        <div className="rounded-lg border border-sand bg-cream/50 p-6">
+          <h2 className="font-serif text-xl font-bold text-ink mb-2">Start With Your Use Case</h2>
+          <p className="text-sm text-warm mb-5">
+            Choose a search topic and jump directly to optimized landing guides.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <Link
+              href="/insights/alipay-vs-wechat-pay-foreigner"
+              className="rounded-md border border-sand bg-white px-4 py-3 text-sm text-ink hover:text-china-red transition-colors"
+            >
+              Mobile payments in China
+            </Link>
+            <Link
+              href="/insights/didi-english-guide-china"
+              className="rounded-md border border-sand bg-white px-4 py-3 text-sm text-ink hover:text-china-red transition-colors"
+            >
+              Transport without Chinese
+            </Link>
+            <Link
+              href="/insights/china-hospital-foreigner-guide"
+              className="rounded-md border border-sand bg-white px-4 py-3 text-sm text-ink hover:text-china-red transition-colors"
+            >
+              Hospital and medical workflow
+            </Link>
+            <Link
+              href="/insights/china-high-speed-rail-12306-guide"
+              className="rounded-md border border-sand bg-white px-4 py-3 text-sm text-ink hover:text-china-red transition-colors"
+            >
+              High-speed rail booking
+            </Link>
+            <Link
+              href="/insights/best-translation-apps-china-travel"
+              className="rounded-md border border-sand bg-white px-4 py-3 text-sm text-ink hover:text-china-red transition-colors"
+            >
+              Translation app stack
+            </Link>
+            <Link
+              href="/insights/china-esim-foreigner-guide"
+              className="rounded-md border border-sand bg-white px-4 py-3 text-sm text-ink hover:text-china-red transition-colors"
+            >
+              eSIM and connectivity setup
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Journey Timeline */}
       <section id="journey" className="max-w-4xl mx-auto px-4 py-16">
         <h2 className="font-serif text-2xl font-bold text-ink mb-2">The Journey</h2>
