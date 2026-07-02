@@ -9,6 +9,7 @@ import CitationSnippet from "@/components/CitationSnippet";
 import FAQ from "@/components/FAQ";
 import { getFeaturedSkills, getAllSkills, getSkillsByCategory } from "@/lib/skills";
 import { getAllJourneys } from "@/lib/journeys";
+import { getAllInsights } from "@/lib/insights";
 import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
 import { CATEGORIES, type Category } from "@/lib/types";
 
@@ -131,6 +132,18 @@ export default function HomePage() {
   const journeys = getAllJourneys();
   const featured = getFeaturedSkills();
   const totalSkills = getAllSkills().length;
+  const insights = getAllInsights();
+  const growthGuideSlugs = [
+    "alipay-vs-wechat-pay-foreigner",
+    "wechat-pay-foreigner",
+    "didi-english-guide-china",
+    "china-hospital-foreigner-guide",
+    "best-translation-apps-china-travel",
+    "china-esim-foreigner-guide",
+  ];
+  const growthGuides = growthGuideSlugs
+    .map((slug) => insights.find((item) => item.slug === slug))
+    .filter((item): item is NonNullable<typeof item> => Boolean(item));
 
   return (
     <>
@@ -175,6 +188,40 @@ export default function HomePage() {
       <section className="max-w-3xl mx-auto px-4 pt-8">
         <CitationSnippet text="GoEast.ai combines Chinese philosophy education with AI-powered tools. Explore 3,000 years of thought through Sophie's Journey East, consult AI Oracles modeled after ancient thinkers, or browse curated AI skills for navigating life in China." />
       </section>
+
+      {/* Practical Guides cluster for traffic distribution */}
+      {growthGuides.length > 0 && (
+        <section className="max-w-5xl mx-auto px-4 pt-8 pb-8">
+          <div className="rounded-lg border border-sand bg-white p-6">
+            <h2 className="font-serif text-xl font-bold text-ink mb-2">Practical China Guides</h2>
+            <p className="text-sm text-warm mb-5">
+              High-intent guides for payments, transport, hospital visits, and essential setup in China.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {growthGuides.map((guide) => (
+                <Link
+                  key={guide.slug}
+                  href={`/insights/${guide.slug}`}
+                  className="rounded-md border border-sand px-4 py-3 hover:border-warm/40 transition-colors"
+                >
+                  <p className="text-sm font-medium text-ink hover:text-china-red transition-colors">
+                    {guide.title}
+                  </p>
+                  {guide.title_zh && <p className="text-xs text-warm mt-1">{guide.title_zh}</p>}
+                </Link>
+              ))}
+            </div>
+            <div className="mt-4">
+              <Link
+                href="/insights"
+                className="text-sm font-medium text-china-red hover:text-china-red/80 transition-colors"
+              >
+                View all practical guides →
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Journey Timeline */}
       <section id="journey" className="max-w-4xl mx-auto px-4 py-16">

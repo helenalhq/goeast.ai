@@ -54,5 +54,11 @@ export function getAllInsights(): InsightMeta[] {
       const { content, content_zh, ...meta } = insight;
       return meta;
     })
-    .filter((i): i is InsightMeta => i !== null);
+    .filter((i): i is InsightMeta => i !== null)
+    .sort((a, b) => {
+      const aTime = Number.isNaN(Date.parse(a.published_at)) ? 0 : Date.parse(a.published_at);
+      const bTime = Number.isNaN(Date.parse(b.published_at)) ? 0 : Date.parse(b.published_at);
+      if (bTime !== aTime) return bTime - aTime;
+      return a.slug.localeCompare(b.slug);
+    });
 }
