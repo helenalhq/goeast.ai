@@ -6,6 +6,7 @@ import JsonLd from "@/components/JsonLd";
 import CitationSnippet from "@/components/CitationSnippet";
 import FAQ from "@/components/FAQ";
 import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
+import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -118,6 +119,26 @@ export default function IChingPage() {
           message="Want Zhou Gong to interpret your hexagram personally? Try the Oracle."
         />
       </div>
+
+      {/* Zi Wei Dou Shu Cross-Reference */}
+      <section className="max-w-3xl mx-auto px-4 mt-8">
+        <div className="p-6 bg-cream rounded-xl border border-sand">
+          <h2 className="text-xl font-bold text-ink mb-2">
+            Explore Zi Wei Dou Shu · 紫微斗数
+          </h2>
+          <p className="text-sm text-warm leading-relaxed mb-4">
+            While the I Ching reveals the dynamics of the present moment through hexagrams,
+            Zi Wei Dou Shu (Purple Star Astrology) maps your natal destiny through 14 major stars
+            across 12 life palaces. Together, they offer complementary perspectives on life.
+          </p>
+          <Link
+            href="/ziwei"
+            className="inline-block px-4 py-2 bg-ink text-white text-sm rounded-full hover:bg-ink/90 transition-colors"
+          >
+            Generate Your Natal Chart →
+          </Link>
+        </div>
+      </section>
 
       {/* FAQ */}
       {(() => {

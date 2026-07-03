@@ -1,5 +1,5 @@
 /**
- * In-memory rate limiter for the Oracle API
+ * In-memory rate limiter for AI API endpoints
  */
 
 interface RateLimitEntry {
@@ -7,7 +7,7 @@ interface RateLimitEntry {
   resetAt: number;
 }
 
-// Free tier: 3 requests per 24 hours per IP + fingerprint
+// Free tier (logged-in, unsubscribed): 3 requests per 24 hours per userId
 const FREE_TIER_LIMIT = 3;
 const FREE_TIER_WINDOW_MS = 24 * 60 * 60 * 1000; // 24 hours
 
@@ -31,14 +31,17 @@ function createFingerprint(ip: string, userAgent: string, acceptLanguage: string
 }
 
 /**
- * Check if a free tier user can make a request
+ * Check if a free tier user (logged-in but unsubscribed) can make a request.
+ * Keyed by userId to prevent bypass via IP/VPN rotation.
  */
 export function checkFreeLimit(
   ip: string,
   userAgent: string,
   acceptLanguage: string,
+  userId?: string,
 ): { allowed: boolean; remaining: number } {
-  const key = createFingerprint(ip, userAgent, acceptLanguage);
+  // Prefer userId-based limiting (cannot be bypassed)
+  const key = userId ? `free:${userId}` : createFingerprint(ip, userAgent, acceptLanguage);
   const now = Date.now();
   const entry = freeLimitMap.get(key);
 

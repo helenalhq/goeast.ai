@@ -5,6 +5,7 @@ import { getAllPhilosophers } from "@/lib/philosophers";
 import { getAllHexagrams } from "@/lib/iching-data";
 import { getAllGlossary } from "@/lib/glossary";
 import { getAllInsights } from "@/lib/insights";
+import { getAllStars, getAllPalaces } from "@/lib/ziwei-data";
 import { CATEGORIES } from "@/lib/types";
 
 export async function GET() {
@@ -51,7 +52,7 @@ export async function GET() {
     "",
     `- **Site**: GoEast.ai`,
     `- **URL**: https://www.goeast.ai`,
-    `- **Content**: ${allSkills.length} AI skills, ${journeys.length} journey chapters, ${philosophers.length} philosopher profiles, ${hexagrams.length} I Ching hexagrams, ${glossaryEntries.length} glossary entries, ${insights.length} insights articles`,
+    `- **Content**: ${allSkills.length} AI skills, ${journeys.length} journey chapters, ${philosophers.length} philosopher profiles, ${hexagrams.length} I Ching hexagrams, ${getAllStars().length} Zi Wei stars, ${getAllPalaces().length} Zi Wei palaces, ${glossaryEntries.length} glossary entries, ${insights.length} insights articles`,
     `- **Audience**: Foreigners interested in China — travelers, culture enthusiasts, AI tool users`,
     `- **Languages**: English and Chinese (bilingual content)`,
     `- **API**: GET /api/skills — JSON API with search, pagination, category filter`,
@@ -70,6 +71,9 @@ export async function GET() {
     "- Skills directory: https://www.goeast.ai/skills",
     "- Philosophers: https://www.goeast.ai/philosophers",
     "- I Ching: https://www.goeast.ai/iching",
+    "- Zi Wei Dou Shu: https://www.goeast.ai/ziwei",
+    "- Zi Wei Stars: https://www.goeast.ai/ziwei/stars",
+    "- Zi Wei Palaces: https://www.goeast.ai/ziwei/palaces",
     "- Glossary: https://www.goeast.ai/glossary",
     "- Insights: https://www.goeast.ai/insights",
     "- llms-full dump: https://www.goeast.ai/llms-full.txt",
@@ -138,6 +142,18 @@ export async function GET() {
     "| Title | Philosopher | Concepts | URL |",
     "|-------|-------------|----------|-----|",
     ...insightRows,
+    "",
+    "## Zi Wei Dou Shu — Purple Star Astrology (紫微斗数)",
+    "",
+    `Interactive natal chart generation and AI interpretation. ${getAllStars().length} major stars, ${getAllPalaces().length} palaces.`,
+    "",
+    "| Star | Chinese | Element | Category | URL |",
+    "|------|---------|---------|----------|-----|",
+    ...getAllStars().map(s => `| ${s.name_en} | ${s.name_zh} | ${s.element} | ${s.category} | /ziwei/stars/${s.slug} |`),
+    "",
+    "| Palace | Chinese | Life Area | URL |",
+    "|--------|---------|-----------|-----|",
+    ...getAllPalaces().map(p => `| ${p.name_en} | ${p.name_zh} | ${p.life_area_en} | /ziwei/palaces/${p.slug} |`),
     "",
     "## API",
     "",

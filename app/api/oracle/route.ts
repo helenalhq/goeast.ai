@@ -53,6 +53,18 @@ export async function POST(request: NextRequest) {
   // Check authorization via Supabase session
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
+
+  // Require login for all AI features
+  if (!user) {
+    return new Response(JSON.stringify({
+      error: "Please log in to use AI features.",
+      code: "LOGIN_REQUIRED",
+    }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   let isPaid = false;
 
   if (user) {
@@ -73,14 +85,14 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  // Free tier (anonymous or unsubscribed)
+  // Free tier (logged-in but unsubscribed) — rate limit by userId
   const isDev = process.env.NODE_ENV === "development";
 
   if (!isPaid && !isDev) {
     const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown";
     const ua = request.headers.get("user-agent") || "";
     const lang = request.headers.get("accept-language") || "";
-    const { allowed } = checkFreeLimit(ip, ua, lang);
+    const { allowed } = checkFreeLimit(ip, ua, lang, user.id);
 
     if (!allowed) {
       return new Response(JSON.stringify({

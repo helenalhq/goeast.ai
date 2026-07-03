@@ -545,6 +545,12 @@ export default function OracleOverlay({
   };
 
   const consult = async (question: string) => {
+    // Require login before using AI features
+    if (!user) {
+      window.location.href = "/login";
+      return;
+    }
+
     setPhase("loading");
     setErrorMsg("");
     setReading("");
@@ -562,7 +568,10 @@ export default function OracleOverlay({
         const contentType = res.headers.get("content-type") || "";
         if (contentType.includes("application/json")) {
           const data = await res.json();
-          if (data.code === "LIMIT_REACHED") {
+          if (data.code === "LOGIN_REQUIRED") {
+            window.location.href = "/login";
+            return;
+          } else if (data.code === "LIMIT_REACHED") {
             setErrorMsg("limit");
             setPhase("question");
           } else {

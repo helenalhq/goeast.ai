@@ -62,6 +62,12 @@ export default function Header() {
             I Ching
           </Link>
           <Link
+            href="/ziwei"
+            className="text-warm hover:text-china-red transition-colors"
+          >
+            Zi Wei
+          </Link>
+          <Link
             href="/glossary"
             className="text-warm hover:text-china-red transition-colors"
           >
