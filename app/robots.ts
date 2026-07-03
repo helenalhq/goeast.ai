@@ -13,6 +13,7 @@ export default function robots(): MetadataRoute.Robots {
           "GPTBot",
           "ChatGPT-User",
           "ClaudeBot",
+          "anthropic-ai",
           "PerplexityBot",
           "Google-Extended",
           "Applebot-Extended",

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import JsonLd from "@/components/JsonLd";
 
 export const metadata: Metadata = {
   title: "About — GoEast.ai",
@@ -10,6 +11,30 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-12">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "AboutPage",
+          name: "About GoEast.ai",
+          description: "Curated AI skills for foreigners in China — travel, medical, shopping, accommodation.",
+          url: "https://www.goeast.ai/about",
+          about: {
+            "@type": "Organization",
+            name: "GoEast.ai",
+            url: "https://www.goeast.ai",
+            description: "A curated directory of AI skills designed to help foreigners navigate life in China.",
+            knowsAbout: [
+              "China travel",
+              "Chinese philosophy",
+              "AI tools for China",
+              "WeChat Pay for foreigners",
+              "Alipay for foreigners",
+              "I Ching",
+              "Chinese medicine navigation",
+            ],
+          },
+        }}
+      />
       <h1 className="text-3xl font-bold text-ink mb-6">About GoEast.ai</h1>
       <div className="prose prose-warm max-w-none prose-headings:text-ink prose-headings:font-semibold prose-a:text-china-red">
         <p>

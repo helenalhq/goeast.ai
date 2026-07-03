@@ -1,21 +1,39 @@
 import { MetadataRoute } from "next";
-import { getSkillSlugs } from "@/lib/skills";
+import { getSkillSlugs, getSkillBySlug } from "@/lib/skills";
 import { getJourneySlugs } from "@/lib/journeys";
 import { getPhilosopherSlugs } from "@/lib/philosophers";
 import { CATEGORIES } from "@/lib/types";
 import { getAllHexagrams } from "@/lib/iching-data";
 import { getGlossarySlugs } from "@/lib/glossary";
-import { getInsightSlugs } from "@/lib/insights";
+import { getInsightSlugs, getInsightBySlug } from "@/lib/insights";
+import fs from "fs";
+import path from "path";
+
+/** Get the last modified date for a content file, with optional frontmatter date override */
+function getContentDate(slug: string, dir: string, frontmatterDate?: string): Date {
+  if (frontmatterDate) {
+    const parsed = new Date(frontmatterDate);
+    if (!isNaN(parsed.getTime())) return parsed;
+  }
+  const filePath = path.join(process.cwd(), "content", dir, `${slug}.md`);
+  if (fs.existsSync(filePath)) {
+    return fs.statSync(filePath).mtime;
+  }
+  return new Date();
+}
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://www.goeast.ai";
 
-  const skillPages = getSkillSlugs().map((slug) => ({
-    url: `${baseUrl}/skills/${slug}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-    priority: 0.8,
-  }));
+  const skillPages = getSkillSlugs().map((slug) => {
+    const skill = getSkillBySlug(slug);
+    return {
+      url: `${baseUrl}/skills/${slug}`,
+      lastModified: getContentDate(slug, "skills", skill?.updated_at),
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    };
+  });
 
   const categoryPages = CATEGORIES.map((cat) => ({
     url: `${baseUrl}/categories/${cat.id}`,
@@ -26,14 +44,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const journeyPages = getJourneySlugs().map((slug) => ({
     url: `${baseUrl}/sophies-journey/${slug}`,
-    lastModified: new Date(),
+    lastModified: getContentDate(slug, "journeys"),
     changeFrequency: "monthly" as const,
     priority: 0.8,
   }));
 
   const philosopherPages = getPhilosopherSlugs().map((slug) => ({
     url: `${baseUrl}/philosophers/${slug}`,
-    lastModified: new Date(),
+    lastModified: getContentDate(slug, "philosophers"),
     changeFrequency: "monthly" as const,
     priority: 0.8,
   }));
@@ -47,17 +65,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const glossaryPages = getGlossarySlugs().map((slug) => ({
     url: `${baseUrl}/glossary/${slug}`,
-    lastModified: new Date(),
+    lastModified: getContentDate(slug, "glossary"),
     changeFrequency: "monthly" as const,
     priority: 0.6,
   }));
 
-  const insightPages = getInsightSlugs().map((slug) => ({
-    url: `${baseUrl}/insights/${slug}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly" as const,
-    priority: 0.7,
-  }));
+  const insightPages = getInsightSlugs().map((slug) => {
+    const insight = getInsightBySlug(slug);
+    return {
+      url: `${baseUrl}/insights/${slug}`,
+      lastModified: getContentDate(slug, "insights", insight?.published_at),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    };
+  });
 
   return [
     {
