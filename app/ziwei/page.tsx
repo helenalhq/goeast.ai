@@ -154,7 +154,53 @@ export default function ZiweiPage() {
                 Explore all 12 palaces →
               </Link>
             </div>
+
+            <div>
+              <h3 className="text-lg font-semibold text-ink mb-3">Dual Star Combinations · 双星同宫</h3>
+              <p className="text-sm text-warm leading-relaxed mb-3">
+                When two major stars share the same palace, their energies combine to create unique
+                personality traits and life patterns. Explore all 24 classical dual-star combinations.
+              </p>
+              <Link
+                href="/ziwei/combinations"
+                className="text-sm text-china-red hover:underline"
+              >
+                Explore 24 combinations →
+              </Link>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold text-ink mb-3">Classical Patterns · 格局百科</h3>
+              <p className="text-sm text-warm leading-relaxed mb-3">
+                Patterns (格局) are specific star configurations that carry special meaning — from the
+                supremely auspicious to the cautionary. 37 classical patterns across 5 categories.
+              </p>
+              <Link
+                href="/ziwei/patterns"
+                className="text-sm text-china-red hover:underline"
+              >
+                Explore 37 patterns →
+              </Link>
+            </div>
           </div>
+        </section>
+
+        {/* Synastry CTA */}
+        <section className="mb-16 p-6 bg-gradient-to-br from-cream to-white rounded-xl border border-sand">
+          <h2 className="text-xl font-bold text-ink mb-3">
+            Synastry · 合盘分析
+          </h2>
+          <p className="text-sm text-warm leading-relaxed mb-4">
+            Compare two natal charts to explore relationship compatibility. Our AI-powered synastry
+            analysis examines how stars and palaces interact between two people — for romantic,
+            business, family, or friendship connections.
+          </p>
+          <Link
+            href="/ziwei/synastry"
+            className="inline-block px-4 py-2 bg-china-red text-white text-sm rounded-full hover:bg-china-red/90 transition-colors"
+          >
+            Try Synastry Analysis · 开始合盘 →
+          </Link>
         </section>
 
         {/* Connection to I Ching */}

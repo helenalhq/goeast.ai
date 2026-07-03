@@ -6,6 +6,8 @@ import { getAllHexagrams } from "@/lib/iching-data";
 import { getAllGlossary } from "@/lib/glossary";
 import { getAllInsights } from "@/lib/insights";
 import { getAllStars, getAllPalaces } from "@/lib/ziwei-data";
+import { getAllCombinations } from "@/lib/ziwei-combinations";
+import { getAllPatterns } from "@/lib/ziwei-patterns";
 import { CATEGORIES } from "@/lib/types";
 
 export async function GET() {
@@ -74,6 +76,9 @@ export async function GET() {
     "- Zi Wei Dou Shu: https://www.goeast.ai/ziwei",
     "- Zi Wei Stars: https://www.goeast.ai/ziwei/stars",
     "- Zi Wei Palaces: https://www.goeast.ai/ziwei/palaces",
+    "- Zi Wei Synastry: https://www.goeast.ai/ziwei/synastry",
+    "- Zi Wei Dual Stars: https://www.goeast.ai/ziwei/combinations",
+    "- Zi Wei Patterns: https://www.goeast.ai/ziwei/patterns",
     "- Glossary: https://www.goeast.ai/glossary",
     "- Insights: https://www.goeast.ai/insights",
     "- llms-full dump: https://www.goeast.ai/llms-full.txt",
@@ -145,7 +150,7 @@ export async function GET() {
     "",
     "## Zi Wei Dou Shu — Purple Star Astrology (紫微斗数)",
     "",
-    `Interactive natal chart generation and AI interpretation. ${getAllStars().length} major stars, ${getAllPalaces().length} palaces.`,
+    `Interactive natal chart generation and AI interpretation. ${getAllStars().length} major stars, ${getAllPalaces().length} palaces, ${getAllCombinations().length} dual-star combinations, ${getAllPatterns().length} classical patterns.`,
     "",
     "| Star | Chinese | Element | Category | URL |",
     "|------|---------|---------|----------|-----|",
@@ -154,6 +159,22 @@ export async function GET() {
     "| Palace | Chinese | Life Area | URL |",
     "|--------|---------|-----------|-----|",
     ...getAllPalaces().map(p => `| ${p.name_en} | ${p.name_zh} | ${p.life_area_en} | /ziwei/palaces/${p.slug} |`),
+    "",
+    "## Zi Wei Dual Star Combinations (双星同宫)",
+    "",
+    `Total: ${getAllCombinations().length} combinations`,
+    "",
+    "| Stars | Chinese | Nature | URL |",
+    "|-------|---------|--------|-----|",
+    ...getAllCombinations().map(c => `| ${c.star1_en} + ${c.star2_en} | ${c.star1_zh}${c.star2_zh} | ${c.nature_en} | /ziwei/combinations/${c.slug} |`),
+    "",
+    "## Zi Wei Classical Patterns (格局)",
+    "",
+    `Total: ${getAllPatterns().length} patterns`,
+    "",
+    "| Pattern | Chinese | Category | URL |",
+    "|---------|---------|----------|-----|",
+    ...getAllPatterns().map(p => `| ${p.name_en} | ${p.name_zh} | ${p.category} | /ziwei/patterns/${p.slug} |`),
     "",
     "## API",
     "",

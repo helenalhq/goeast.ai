@@ -7,6 +7,8 @@ import { getAllHexagrams } from "@/lib/iching-data";
 import { getGlossarySlugs } from "@/lib/glossary";
 import { getInsightSlugs, getInsightBySlug } from "@/lib/insights";
 import { getAllStars, getAllPalaces } from "@/lib/ziwei-data";
+import { getAllCombinations } from "@/lib/ziwei-combinations";
+import { getAllPatterns } from "@/lib/ziwei-patterns";
 import fs from "fs";
 import path from "path";
 
@@ -78,6 +80,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
+  const ziweiCombinationPages = getAllCombinations().map((c) => ({
+    url: `${baseUrl}/ziwei/combinations/${c.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  const ziweiPatternPages = getAllPatterns().map((p) => ({
+    url: `${baseUrl}/ziwei/patterns/${p.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
   const glossaryPages = getGlossarySlugs().map((slug) => ({
     url: `${baseUrl}/glossary/${slug}`,
     lastModified: getContentDate(slug, "glossary"),
@@ -119,6 +135,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...ichingHexagramPages,
     ...ziweiStarPages,
     ...ziweiPalacePages,
+    ...ziweiCombinationPages,
+    ...ziweiPatternPages,
     ...glossaryPages,
     ...insightPages,
     ...skillPages,
@@ -149,6 +167,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${baseUrl}/ziwei/palaces`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/ziwei/combinations`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/ziwei/patterns`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/ziwei/synastry`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
