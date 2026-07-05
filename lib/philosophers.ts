@@ -41,6 +41,8 @@ export function getPhilosopherBySlug(slug: string): PhilosopherDeep | null {
     modern_influence: data.modern_influence || "",
     modern_influence_zh: data.modern_influence_zh,
     journey_slug: data.journey_slug,
+    seo_title: data.seo_title,
+    seo_description: data.seo_description,
   };
 }
 

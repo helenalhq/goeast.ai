@@ -1,6 +1,8 @@
 ---
 slug: zhou-gong
 journey_slug: prologue-zhougong
+seo_title: "Zhou Gong (周公): Duke of Zhou, I Ching & Rites of China | GoEast"
+seo_description: "Discover Zhou Gong (周公), the Duke of Zhou who shaped the I Ching, Chinese rites, and the art of dream interpretation. Explore his life, ideas, and lasting influence."
 biography_zh: |
   周公，即姬旦，是西周初年最重要的政治家与思想家。他是周文王之第四子，周武王之弟。武王克商后，周公辅佐年幼的成王治理天下，平定三监之乱，营建东都洛邑，奠定了周朝八百年的基业。他制礼作乐，将殷商的祭祀文化转化为以德治国的人文秩序，被后世儒家尊为"元圣"。传说他曾为成王解梦，亦与《周易》的编纂密切相关——他将文王的八卦推演为六十四卦，使占卜从随机神谕升华为系统性的宇宙变化模型。周公的政治实践开创了"敬天保民"的传统，其影响贯穿了整个中华文明的政治伦理。
 modern_influence: |

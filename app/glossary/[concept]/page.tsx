@@ -25,13 +25,15 @@ export async function generateMetadata({
   const entry = getGlossaryBySlug(concept);
   if (!entry) return {};
   const defSnippet = entry.definition.slice(0, 150).replace(/\n/g, ' ').trim();
+  const title = entry.seo_title || `${entry.name} (${entry.name_zh}) — Chinese Philosophy Glossary — GoEast.ai`;
+  const description = entry.seo_description || `${entry.name} (${entry.name_zh}): ${defSnippet}...`;
   return {
-    title: `${entry.name} (${entry.name_zh}) — Chinese Philosophy Glossary — GoEast.ai`,
-    description: `${entry.name} (${entry.name_zh}): ${defSnippet}...`,
+    title,
+    description,
     alternates: { canonical: `/glossary/${concept}` },
     openGraph: {
-      title: `${entry.name} (${entry.name_zh}) — GoEast.ai`,
-      description: `${entry.name}: ${defSnippet}...`,
+      title: entry.seo_title || `${entry.name} (${entry.name_zh}) — GoEast.ai`,
+      description: entry.seo_description || `${entry.name}: ${defSnippet}...`,
       type: "article",
     },
   };

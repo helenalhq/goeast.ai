@@ -2,6 +2,8 @@
 slug: yin-yang
 name: Yin-Yang
 name_zh: 阴阳
+seo_title: "Yin-Yang (阴阳) Meaning, Symbol & Philosophy Explained | GoEast"
+seo_description: "What is yin-yang (阴阳)? Learn the meaning, symbol, and philosophy behind this core Chinese concept. Clear explanation with modern examples."
 school: various
 school_zh: 各家
 related_concepts: [qi, dao, ziran, zhongyong]

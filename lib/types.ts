@@ -64,6 +64,8 @@ export interface PhilosopherMeta {
   location?: string;
   location_zh?: string;
   portrait_slug?: string;
+  seo_title?: string;
+  seo_description?: string;
 }
 
 export interface PhilosopherDeep extends PhilosopherMeta {
@@ -215,6 +217,8 @@ export interface GlossaryEntryMeta {
   school: string;
   school_zh?: string;
   related_concepts: string[];
+  seo_title?: string;
+  seo_description?: string;
 }
 
 export interface GlossaryEntry extends GlossaryEntryMeta {

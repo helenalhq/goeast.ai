@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { getPhilosopherWithHtml, getPhilosopherSlugs } from "@/lib/philosophers";
+import { getPhilosopherWithHtml, getPhilosopherSlugs, getPhilosopherBySlug } from "@/lib/philosophers";
 import { SCHOOLS, getPhilosopherImage, PHILOSOPHER_SLUGS } from "@/lib/types";
 import { getAllGlossary } from "@/lib/glossary";
 import OracleCta from "@/components/OracleCta";
@@ -26,13 +26,16 @@ export async function generateMetadata({
   const { slug } = await params;
   const meta = PHILOSOPHER_SLUGS[slug];
   if (!meta) return {};
+  const philosopher = getPhilosopherBySlug(slug);
+  const title = philosopher?.seo_title || `${meta.name} (${meta.name_zh}) — Chinese Philosopher — GoEast.ai`;
+  const description = philosopher?.seo_description || `Explore ${meta.name}'s philosophy: core concepts, quotes, and modern influence. ${meta.era}.`;
   return {
-    title: `${meta.name} (${meta.name_zh}) — Chinese Philosopher — GoEast.ai`,
-    description: `Explore ${meta.name}'s philosophy: core concepts, quotes, and modern influence. ${meta.era}.`,
+    title,
+    description,
     alternates: { canonical: `/philosophers/${slug}` },
     openGraph: {
-      title: `${meta.name} (${meta.name_zh}) — GoEast.ai`,
-      description: `Explore ${meta.name}'s philosophy: core concepts, quotes, and modern influence.`,
+      title: philosopher?.seo_title || `${meta.name} (${meta.name_zh}) — GoEast.ai`,
+      description: philosopher?.seo_description || `Explore ${meta.name}'s philosophy: core concepts, quotes, and modern influence.`,
       type: "article",
     },
   };

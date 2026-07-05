@@ -33,6 +33,8 @@ export function getGlossaryBySlug(slug: string): GlossaryEntry | null {
     definition_zh: data.definition_zh,
     modern_application: data.modern_application || "",
     modern_application_zh: data.modern_application_zh,
+    seo_title: data.seo_title,
+    seo_description: data.seo_description,
   };
 }
 
