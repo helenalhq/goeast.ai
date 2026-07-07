@@ -12,6 +12,7 @@ import { getAllJourneys } from "@/lib/journeys";
 import { getAllInsights } from "@/lib/insights";
 import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
 import { CATEGORIES, type Category } from "@/lib/types";
+import { getAllStars, getAllPalaces } from "@/lib/ziwei-data";
 
 /* ── SVG icons for skill categories ── */
 function CategoryIcon({ id }: { id: string }) {
@@ -133,6 +134,8 @@ export default function HomePage() {
   const featured = getFeaturedSkills();
   const totalSkills = getAllSkills().length;
   const insights = getAllInsights();
+  const stars = getAllStars().slice(0, 7);
+  const palaces = getAllPalaces().slice(0, 6);
   const growthGuideSlugs = [
     "alipay-vs-wechat-pay-foreigner",
     "wechat-pay-foreigner",
@@ -338,6 +341,67 @@ export default function HomePage() {
               Explore the I Ching →
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* Zi Wei Dou Shu Entry */}
+      <section className="max-w-5xl mx-auto px-4 py-16 border-t border-sand">
+        <div className="text-center mb-8">
+          <p className="text-sm text-warm/60 mb-2 tracking-wide uppercase">Purple Star Astrology · 紫微斗数</p>
+          <h2 className="font-serif text-2xl font-bold text-ink mb-3">Zi Wei Dou Shu · 紫微斗数</h2>
+          <p className="text-warm max-w-2xl mx-auto">
+            Map your destiny through 14 major stars across 12 life palaces. The most sophisticated system of Chinese astrology, now with AI interpretation.
+          </p>
+        </div>
+        <div className="grid md:grid-cols-2 gap-8 mb-8">
+          <div>
+            <h3 className="text-sm font-semibold text-ink mb-3 uppercase tracking-wide">The 14 Major Stars · 十四主星</h3>
+            <div className="flex flex-wrap gap-2">
+              {stars.map((star) => (
+                <Link
+                  key={star.slug}
+                  href={`/ziwei/stars/${star.slug}`}
+                  className="text-sm px-3 py-1.5 rounded-full bg-cream border border-sand text-warm hover:text-china-red hover:border-china-red/30 transition-colors"
+                >
+                  {star.name_en.split(" (")[0]} · {star.name_zh}
+                </Link>
+              ))}
+              <Link href="/ziwei/stars" className="text-sm px-3 py-1.5 rounded-full text-china-red hover:underline">
+                View all 14 →
+              </Link>
+            </div>
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-ink mb-3 uppercase tracking-wide">The 12 Life Palaces · 十二宫位</h3>
+            <div className="flex flex-wrap gap-2">
+              {palaces.map((palace) => (
+                <Link
+                  key={palace.slug}
+                  href={`/ziwei/palaces/${palace.slug}`}
+                  className="text-sm px-3 py-1.5 rounded-full bg-cream border border-sand text-warm hover:text-china-red hover:border-china-red/30 transition-colors"
+                >
+                  {palace.name_en} · {palace.name_zh}
+                </Link>
+              ))}
+              <Link href="/ziwei/palaces" className="text-sm px-3 py-1.5 rounded-full text-china-red hover:underline">
+                View all 12 →
+              </Link>
+            </div>
+          </div>
+        </div>
+        <div className="text-center flex gap-3 justify-center">
+          <Link
+            href="/ziwei"
+            className="inline-block px-7 py-3 bg-china-red text-white font-medium text-sm rounded-sm hover:bg-china-red/90 transition-colors no-underline"
+          >
+            Generate Your Chart →
+          </Link>
+          <Link
+            href="/ziwei/combinations"
+            className="inline-block px-7 py-3 bg-ink text-white font-medium text-sm rounded-sm hover:bg-ink/90 transition-colors no-underline"
+          >
+            Dual-Star Combinations →
+          </Link>
         </div>
       </section>
 

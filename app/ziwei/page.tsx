@@ -4,6 +4,9 @@ import ZiweiChart from "@/components/ZiweiChart";
 import JsonLd from "@/components/JsonLd";
 import FAQ from "@/components/FAQ";
 import { generateFAQJsonLd } from "@/lib/faq-templates";
+import { getAllStars, getAllPalaces } from "@/lib/ziwei-data";
+import { getAllCombinations } from "@/lib/ziwei-combinations";
+import { getAllPatterns } from "@/lib/ziwei-patterns";
 
 export const metadata: Metadata = {
   title: "Zi Wei Dou Shu — Purple Star Astrology Chart & AI Reading — GoEast.ai",
@@ -59,6 +62,10 @@ const FAQ_ITEMS = [
 
 export default function ZiweiPage() {
   const faqJsonLd = generateFAQJsonLd(FAQ_ITEMS);
+  const stars = getAllStars();
+  const palaces = getAllPalaces();
+  const combinations = getAllCombinations().slice(0, 8);
+  const patterns = getAllPatterns().slice(0, 6);
 
   return (
     <article>
@@ -133,6 +140,17 @@ export default function ZiweiPage() {
                 to the warrior courage of Qi Sha (七杀). Their placement in your chart reveals your
                 core personality, talents, and life trajectory.
               </p>
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {stars.slice(0, 7).map((star) => (
+                  <Link
+                    key={star.slug}
+                    href={`/ziwei/stars/${star.slug}`}
+                    className="text-xs px-2 py-1 bg-cream border border-sand rounded-full text-warm hover:text-china-red hover:border-china-red/30 transition-colors"
+                  >
+                    {star.name_zh} {star.name_en.split(" (")[0]}
+                  </Link>
+                ))}
+              </div>
               <Link
                 href="/ziwei/stars"
                 className="text-sm text-china-red hover:underline"
@@ -147,6 +165,17 @@ export default function ZiweiPage() {
                 The 12 palaces represent different domains of life — career, wealth, relationships,
                 health, and more. The stars within each palace shape your experiences in that life area.
               </p>
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {palaces.slice(0, 6).map((palace) => (
+                  <Link
+                    key={palace.slug}
+                    href={`/ziwei/palaces/${palace.slug}`}
+                    className="text-xs px-2 py-1 bg-cream border border-sand rounded-full text-warm hover:text-china-red hover:border-china-red/30 transition-colors"
+                  >
+                    {palace.name_zh} {palace.name_en}
+                  </Link>
+                ))}
+              </div>
               <Link
                 href="/ziwei/palaces"
                 className="text-sm text-china-red hover:underline"
@@ -161,6 +190,17 @@ export default function ZiweiPage() {
                 When two major stars share the same palace, their energies combine to create unique
                 personality traits and life patterns. Explore all 24 classical dual-star combinations.
               </p>
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {combinations.map((c) => (
+                  <Link
+                    key={c.slug}
+                    href={`/ziwei/combinations/${c.slug}`}
+                    className="text-xs px-2 py-1 bg-cream border border-sand rounded-full text-warm hover:text-china-red hover:border-china-red/30 transition-colors"
+                  >
+                    {c.star1_zh}+{c.star2_zh}
+                  </Link>
+                ))}
+              </div>
               <Link
                 href="/ziwei/combinations"
                 className="text-sm text-china-red hover:underline"
@@ -175,6 +215,17 @@ export default function ZiweiPage() {
                 Patterns (格局) are specific star configurations that carry special meaning — from the
                 supremely auspicious to the cautionary. 37 classical patterns across 5 categories.
               </p>
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {patterns.map((p) => (
+                  <Link
+                    key={p.slug}
+                    href={`/ziwei/patterns/${p.slug}`}
+                    className="text-xs px-2 py-1 bg-cream border border-sand rounded-full text-warm hover:text-china-red hover:border-china-red/30 transition-colors"
+                  >
+                    {p.name_zh}
+                  </Link>
+                ))}
+              </div>
               <Link
                 href="/ziwei/patterns"
                 className="text-sm text-china-red hover:underline"

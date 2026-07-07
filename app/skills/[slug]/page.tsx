@@ -24,14 +24,16 @@ export async function generateMetadata({
   const allSkills = getAllSkills();
   const meta = allSkills.find((s) => s.slug === slug);
   if (!meta) return {};
+  const tagList = meta.tags.slice(0, 3).join(", ");
   return {
-    title: `${meta.title}: AI Tool for ${meta.category} in China | GoEast.ai`,
-    description: `Learn how to use ${meta.title} for ${meta.category} tasks in China. Step-by-step guide with installation and usage tips.`,
-    alternates: { canonical: `/skills/${slug}` },
+    title: `${meta.title} — AI Skill for Foreigners in China | GoEast.ai`,
+    description: `${meta.title} (${meta.title_zh}): AI-powered guide covering ${tagList} for foreigners in China. Step-by-step bilingual instructions for ${meta.category} tasks.`,
+    alternates: { canonical: `https://www.goeast.ai/skills/${slug}` },
     openGraph: {
       title: `${meta.title}: AI Tool for ${meta.category} in China | GoEast.ai`,
-      description: `${meta.title} - ${meta.title_zh}. Complete guide for using this AI tool in China.`,
+      description: `${meta.title} - ${meta.title_zh}. Complete bilingual guide for using this AI tool in China.`,
       type: "article",
+      url: `https://www.goeast.ai/skills/${slug}`,
     },
   };
 }
