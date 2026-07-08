@@ -116,11 +116,26 @@ function generateJourneyFAQs(journey: Journey): FAQItem[] {
 }
 
 function generateInsightFAQs(insight: Insight): FAQItem[] {
+  if (insight.faqs && insight.faqs.length > 0) {
+    return insight.faqs.map((faq) => ({
+      question: faq.question,
+      answer: faq.answer,
+      questionZh: faq.question_zh,
+      answerZh: faq.answer_zh,
+    }));
+  }
+
+  const plainContent = insight.content.replace(/<[^>]*>/g, "").slice(0, 240).trim();
   return [
     {
-      question: `What is this article about?`,
-      answer: `${insight.title}. ${insight.content.replace(/<[^>]*>/g, "").slice(0, 200).trim()}`,
-      questionZh: insight.title_zh ? `这篇文章讲了什么？` : undefined,
+      question: `What is ${insight.title}?`,
+      answer: `${insight.title} is a bilingual guide from GoEast.ai. ${plainContent}`,
+      questionZh: insight.title_zh ? `什么是${insight.title_zh}？` : undefined,
+    },
+    {
+      question: `Why does ${insight.title} matter today?`,
+      answer: `It connects Chinese philosophy and practical guidance to modern questions in travel, work, decision-making, and cross-cultural understanding.`,
+      questionZh: insight.title_zh ? `为什么${insight.title_zh}在今天仍有价值？` : undefined,
     },
   ];
 }

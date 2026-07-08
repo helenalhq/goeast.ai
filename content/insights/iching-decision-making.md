@@ -11,6 +11,24 @@ content_zh: |
   阴/阳不是简单的二元对立，而是动态互补的力量——每一方都包含对方的种子，并在适当条件下转化为对方。这正是创业环境的真实写照：风险中孕育机遇，优势中潜藏弱点，稳定中酝酿变革。命（ming）不是宿命论，而是对时机、趋势和深层规律的认知——知道何时行动，何时等待，何时改变方向。
 
   易经的六十四卦构成了一个完整的情境分类系统，每一卦描述一种特定的动态模式及其最佳应对策略。创业者可以用它来诊断当前处境、预见可能演变、选择最合时宜的行动。这不是占卜的神秘，而是模式识别的智慧。
+takeaways:
+  - The I Ching is a pattern-recognition framework, not fortune-telling.
+  - Yin-yang describes interdependent forces, not binary opposites.
+  - Ming means reading the momentum of a situation before acting.
+  - The 64 hexagrams form a taxonomy of situational responses.
+faqs:
+  - question: Is the I Ching a form of divination?
+    answer: It can be used that way, but its deeper value is as a structured decision-making framework for complex, uncertain situations.
+    question_zh: 《易经》是占卜吗？
+    answer_zh: 它可以用于占卜，但其深层价值在于作为复杂不确定情境下的结构化决策框架。
+  - question: What does yin-yang mean for entrepreneurs?
+    answer: Every advantage contains vulnerability, and every threat contains opportunity. Yin-yang trains you to see both poles simultaneously.
+    question_zh: 阴阳对创业者意味着什么？
+    answer_zh: 每个优势都蕴含弱点，每个威胁都蕴含机会。阴阳训练你同时看到两极。
+  - question: How do entrepreneurs use the I Ching?
+    answer: Describe the situation in yin-yang terms, match it to a hexagram, and apply the counsel as a situational response, not a prediction.
+    question_zh: 创业者如何使用《易经》？
+    answer_zh: 用阴阳术语描述情境，匹配到对应卦象，然后将卦辞作为情境回应来应用，而非预测。
 ---
 
 ## The Oracle That Never Sleeps

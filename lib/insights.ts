@@ -29,6 +29,8 @@ export function getInsightBySlug(slug: string): Insight | null {
     philosopher_slug: data.philosopher_slug,
     concept_slugs: data.concept_slugs || [],
     published_at: data.published_at || "",
+    takeaways: Array.isArray(data.takeaways) ? data.takeaways : undefined,
+    faqs: Array.isArray(data.faqs) ? data.faqs : undefined,
     content,
     content_zh: data.content_zh,
   };

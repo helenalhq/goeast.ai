@@ -11,6 +11,24 @@ content_zh: |
   从日本侘寂到苹果产品的直觉交互，从北欧家具的功能纯净到中国园林的留白意境，最好的设计都在践行老子"大巧若拙"的理念。他们不是在减少元素，而是在剥离多余，让核心自然浮现。
 
   本文追踪了道家美学如何穿越千年，在当代产品设计、建筑与用户体验中继续塑造我们对"好设计"的定义。
+takeaways:
+  - Dao in design means aligning with how people naturally think and move.
+  - Wuwei design recedes into the background so users can focus on their goals.
+  - Pu (uncarved block) favors restraint and functional simplicity over decoration.
+  - Minimalism works when it serves function, not when it is an aesthetic pose.
+faqs:
+  - question: What is Daoist design?
+    answer: Design that aligns with natural human perception, physical interaction, and cognitive patterns rather than imposing form from outside.
+    question_zh: 什么是道家设计？
+    answer_zh: 道家设计是指与自然的人类感知、身体互动和认知模式保持一致，而非从外部强加形式。
+  - question: How does Wu Wei apply to UX?
+    answer: Interfaces should present the right option at the right moment without forcing the user to think about the system itself.
+    question_zh: 无为如何应用于用户体验？
+    answer_zh: 界面应在正确的时刻呈现正确的选项，而不让用户去思考系统本身。
+  - question: What is Pu in design?
+    answer: The uncarved block—preserving raw potential by avoiding unnecessary embellishment and feature creep.
+    question_zh: 设计中的"朴"是什么？
+    answer_zh: 朴即未经雕琢的木头，通过避免不必要的装饰和功能膨胀来保留原始潜力。
 ---
 
 ## When Less Is Not Just More — It Is Dao

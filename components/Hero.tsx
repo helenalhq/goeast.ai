@@ -70,28 +70,28 @@ export default function Hero() {
           className="font-mono"
           style={{
             fontSize: 11,
-            letterSpacing: "0.3em",
+            letterSpacing: "0.2em",
             textTransform: "uppercase",
             color: "rgba(255,255,255,0.35)",
             marginBottom: 24,
           }}
         >
-          AI × Eastern Wisdom
+          Sophie&apos;s Journey East · 苏菲的东方之旅
         </p>
 
         {/* English main title — serif large */}
         <h1
           className="font-serif"
           style={{
-            fontSize: "clamp(36px, 6vw, 60px)",
+            fontSize: "clamp(34px, 5.5vw, 56px)",
             fontWeight: 700,
             color: "#fff",
             lineHeight: 1.2,
             marginBottom: 8,
-            letterSpacing: "0.04em",
+            letterSpacing: "0.02em",
           }}
         >
-          Sophie&apos;s Journey East
+          AI Chinese Philosophy &amp; Practical China Guides
         </h1>
 
         {/* Chinese subtitle — serif, subdued */}
@@ -104,7 +104,7 @@ export default function Hero() {
             marginBottom: 28,
           }}
         >
-          苏菲的东方之旅
+          人工智能驱动的中国哲学与中国实用指南
         </p>
 
         {/* Functional description — English primary */}

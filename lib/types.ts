@@ -228,6 +228,13 @@ export interface GlossaryEntry extends GlossaryEntryMeta {
   modern_application_zh?: string;
 }
 
+export interface InsightFAQ {
+  question: string;
+  answer: string;
+  question_zh?: string;
+  answer_zh?: string;
+}
+
 export interface InsightMeta {
   slug: string;
   title: string;
@@ -235,6 +242,8 @@ export interface InsightMeta {
   philosopher_slug?: string;
   concept_slugs?: string[];
   published_at: string;
+  takeaways?: string[];
+  faqs?: InsightFAQ[];
 }
 
 export interface Insight extends InsightMeta {

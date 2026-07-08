@@ -106,6 +106,24 @@ content_zh: |
   - [无为的概念](/glossary/wuwei)
   - [自然的含义](/glossary/ziran)
   - [阴阳详解](/insights/yin-yang-explained)
+takeaways:
+  - Wu Wei is not laziness; it is aligned, timely action that works with natural patterns.
+  - Water is the central metaphor—soft overcomes hard by flowing around obstacles.
+  - Modern psychology's "flow state" closely mirrors Wu Wei.
+  - Wu Wei applies to leadership, creativity, decision-making, and daily stress.
+faqs:
+  - question: Does Wu Wei mean doing nothing?
+    answer: No. Wu Wei means not forcing action. It is about acting in alignment with the natural flow—sometimes decisively, sometimes by waiting.
+    question_zh: 无为意味着什么都不做吗？
+    answer_zh: 不是。无为是不强行作为，是在适当时机以适当方式行动。
+  - question: How can I practice Wu Wei at work?
+    answer: Observe before reacting, remove unnecessary effort, create conditions for flow, and intervene only when necessary.
+    question_zh: 如何在工作中实践无为？
+    answer_zh: 在反应前先观察，减少不必要的努力，创造心流条件，只在必要时介入。
+  - question: Is Wu Wei compatible with ambition?
+    answer: Yes. Wu Wei is about pursuing goals with wisdom and efficiency, not giving them up. The most successful people often achieve more by forcing less.
+    question_zh: 无为与雄心壮志兼容吗？
+    answer_zh: 兼容。无为不是放弃目标，而是以更智慧、更少阻力的方式实现目标。
 ---
 
 # Wu Wei: The Chinese Philosophy of Effortless Action

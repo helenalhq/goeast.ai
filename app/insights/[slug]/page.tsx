@@ -25,9 +25,12 @@ export async function generateMetadata({
   const insight = getInsightBySlug(slug);
   if (!insight) return {};
   const philosopher = insight.philosopher_slug ? PHILOSOPHER_SLUGS[insight.philosopher_slug] : null;
+  const description = insight.takeaways?.length
+    ? `${insight.title}. ${insight.takeaways[0]}`
+    : `${insight.title}. ${philosopher?.name ? `Learn about ${philosopher.name}'s philosophy and its modern applications.` : 'Explore Chinese philosophy concepts and their modern applications.'}`;
   return {
-    title: `${insight.title} | Chinese Philosophy Guide | GoEast.ai`,
-    description: `${insight.title}. ${philosopher?.name ? `Learn about ${philosopher.name}'s philosophy and its modern applications.` : 'Explore Chinese philosophy concepts and their modern applications.'}`,
+    title: `${insight.title} | GoEast.ai`,
+    description,
     alternates: { canonical: `/insights/${slug}` },
     openGraph: {
       title: `${insight.title} | GoEast.ai`,
@@ -101,6 +104,21 @@ export default async function InsightDetailPage({
         </nav>
 
         <CitationSnippet text={generateCitationSnippet({ type: "insight", data: insight })} />
+
+        {/* Key Takeaways */}
+        {insight.takeaways && insight.takeaways.length > 0 && (
+          <section className="mb-10 p-5 bg-cream rounded-lg border border-sand">
+            <h2 className="text-sm font-semibold text-ink mb-3 uppercase tracking-wide">Key Takeaways</h2>
+            <ul className="space-y-2">
+              {insight.takeaways.map((item, i) => (
+                <li key={i} className="flex gap-3 text-sm text-ink/80 leading-relaxed">
+                  <span className="text-china-red font-serif font-bold">•</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         {/* Content */}
         <div className="prose prose-warm max-w-none mb-10" dangerouslySetInnerHTML={{ __html: insight.content }} />

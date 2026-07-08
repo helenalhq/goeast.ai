@@ -15,9 +15,9 @@ const inter = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "GoEast.ai | AI Tools for China Travel and Life",
+  title: "GoEast.ai | AI Chinese Philosophy, I Ching & China Travel Guides",
   description:
-    "Bilingual guides to China travel, daily life, and Chinese philosophy, plus curated AI tools for payments, hospitals, transport, and translation.",
+    "Explore Chinese philosophy with AI, consult the I Ching, and get practical China travel guides for payments, transport, hospitals, and daily life. Bilingual English-Chinese.",
   metadataBase: new URL("https://www.goeast.ai"),
   keywords: [
     "AI tools for China",
@@ -27,6 +27,9 @@ export const metadata: Metadata = {
     "WeChat Pay guide",
     "Chinese philosophy",
     "I Ching",
+    "wu wei",
+    "laozi",
+    "confucius",
   ],
   category: "education",
   creator: "GoEast.ai",
@@ -48,9 +51,9 @@ export const metadata: Metadata = {
   },
   alternates: { canonical: "/" },
   openGraph: {
-    title: "GoEast.ai | AI Tools for China Travel and Life",
+    title: "GoEast.ai | AI Chinese Philosophy, I Ching & China Travel Guides",
     description:
-      "Bilingual guides and curated AI tools for foreigners in China: travel, payments, medical access, translation, and philosophy learning.",
+      "Bilingual AI guides for Chinese philosophy, I Ching consultation, and practical life in China: travel, payments, medical access, and translation.",
     url: "https://www.goeast.ai",
     siteName: "GoEast.ai",
     type: "website",
@@ -65,9 +68,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "GoEast.ai | AI Tools for China Travel and Life",
+    title: "GoEast.ai | AI Chinese Philosophy, I Ching & China Travel Guides",
     description:
-      "Bilingual guides and curated AI tools for travel, payments, medical support, and living in China.",
+      "Bilingual AI guides for Chinese philosophy, I Ching, and practical life in China: travel, payments, medical support, and translation.",
     images: ["https://www.goeast.ai/opengraph-image"],
   },
 };
