@@ -22,6 +22,8 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-4 py-4 flex flex-wrap justify-center gap-5">
         <Link href="/about" className="text-xs text-warm/60 hover:text-warm transition-colors no-underline">About</Link>
         <Link href="/contact" className="text-xs text-warm/60 hover:text-warm transition-colors no-underline">Contact</Link>
+        <Link href="/privacy" className="text-xs text-warm/60 hover:text-warm transition-colors no-underline">Privacy Policy</Link>
+        <Link href="/terms" className="text-xs text-warm/60 hover:text-warm transition-colors no-underline">Terms of Service</Link>
         <Link href="/llms.txt" className="text-xs text-warm/60 hover:text-warm transition-colors no-underline">For Agents</Link>
         <Link href="/api/skills" className="text-xs text-warm/60 hover:text-warm transition-colors no-underline">API</Link>
         <a href="https://www.chinamed.cc" target="_blank" rel="noopener noreferrer" className="text-xs text-warm/60 hover:text-warm transition-colors no-underline">
