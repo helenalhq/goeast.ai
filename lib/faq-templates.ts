@@ -22,7 +22,8 @@ type FAQInput =
   | { type: "glossary_listing" }
   | { type: "insights_listing" }
   | { type: "china_travel_guide" }
-  | { type: "chinese_philosophy_guide" };
+  | { type: "chinese_philosophy_guide" }
+  | { type: "relocation_to_china" };
 
 function generateSkillFAQs(skill: Skill): FAQItem[] {
   return [
@@ -201,6 +202,11 @@ export function generateFAQs(input: FAQInput): FAQItem[] {
       { question: "What is Chinese philosophy?", answer: "Chinese philosophy is a broad tradition of thought spanning roughly 3,000 years, including Confucianism, Daoism, Legalism, Mohism, Buddhism in China, and later schools such as Neo-Confucianism. It addresses ethics, politics, cosmology, and personal cultivation.", questionZh: "什么是中国哲学？", answerZh: "中国哲学是跨越约三千年的广泛思想传统，包括儒家、道家、法家、墨家、中国佛教以及后来的理学等学派。它关注伦理、政治、宇宙论和个人修养。" },
       { question: "Who are the most important Chinese philosophers?", answer: "The most influential thinkers include Confucius, Laozi, Sunzi, Mencius, Zhuangzi, Han Fei, Mozi, Xunzi, and later Wang Yangming and Zhu Xi.", questionZh: "最重要的中国哲学家有哪些？", answerZh: "最具影响力的思想家包括孔子、老子、孙子、孟子、庄子、韩非、墨子、荀子，以及后来的王阳明和朱熹。" },
       { question: "How can Chinese philosophy help modern life?", answer: "Chinese philosophy offers frameworks for decision-making, leadership, conflict resolution, and personal well-being. Concepts like Wu Wei (effortless action), Yin Yang balance, and Sunzi's strategic thinking are widely applied in business, psychology, and design today.", questionZh: "中国哲学如何帮助现代生活？", answerZh: "中国哲学为决策、领导力、冲突解决和个人福祉提供框架。无为、阴阳平衡、孙子的战略思想等概念如今广泛应用于商业、心理学和设计领域。" },
+    ];
+    case "relocation_to_china": return [
+      { question: "What visa do I need to relocate to China?", answer: "Most long-term relocations require a Z visa (work) converted to a residence permit, an M visa for business, or a family reunion visa. Check the latest requirements before applying.", questionZh: "移居中国需要什么签证？", answerZh: "大多数长期移居需要 Z 签证（工作）转换为居留许可，商务移居使用 M 签证，家庭团聚使用 Q 签证。申请前请确认最新要求。" },
+      { question: "Can foreigners use mobile payments in China?", answer: "Yes. Foreigners can verify Alipay and WeChat Pay with a passport and link an international Visa, Mastercard, or JCB card. A Chinese bank account makes rent and salary handling easier.", questionZh: "外国人可以在中国使用移动支付吗？", answerZh: "可以。外国人可以使用护照验证支付宝和微信支付，并绑定国际 Visa、Mastercard 或 JCB 卡。中国银行账户会让房租和工资处理更方便。" },
+      { question: "How do I find housing as a foreigner in China?", answer: "Use local rental platforms, expat groups, or relocation agents. Prioritize neighborhoods near your workplace or school, verify landlord ownership documents, and confirm utility and internet setup before signing.", questionZh: "外国人在中国如何找房？", answerZh: "可以使用本地租房平台、外籍社区群或移居中介。优先选择离工作地点或学校近的社区，签约前核实房东产权文件，并确认水电和宽带设置。" },
     ];
     case "insights_listing": return [
       { question: "What topics do GoEast.ai Insights cover?", answer: "GoEast.ai Insights cover Chinese philosophy (Wu Wei, Yin Yang, Confucius, Laozi, I Ching), practical China travel guides (payments, transport, hospitals, eSIM), and how ancient wisdom applies to modern work and life.", questionZh: "GoEast.ai 的 Insights 涵盖哪些主题？", answerZh: "GoEast.ai 的 Insights 涵盖中国哲学（无为、阴阳、孔子、老子、易经）、实用中国旅行指南（支付、交通、医院、eSIM），以及古代智慧如何应用于现代工作和生活。" },

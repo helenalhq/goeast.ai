@@ -1,6 +1,6 @@
 ---
 slug: fengshui-harmony
-title: "Fengshui: Environmental Harmony or Superstition?"
+title: "Feng Shui Explained: Principles, History & Modern Science"
 title_zh: "风水：环境和谐还是迷信？"
 philosopher_slug: zhou-gong
 concept_slugs: [fengshui, qi, yin-yang]

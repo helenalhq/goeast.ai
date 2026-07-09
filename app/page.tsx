@@ -194,7 +194,7 @@ export default function HomePage() {
 
       {/* Hub page shortcuts for broad search intent */}
       <section className="max-w-5xl mx-auto px-4 pt-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Link
             href="/china-travel-guide"
             className="rounded-lg border border-sand bg-white p-5 hover:border-warm/40 transition-colors group"
@@ -217,6 +217,18 @@ export default function HomePage() {
             <p className="text-xs text-warm mb-1">中国哲学指南</p>
             <p className="text-sm text-warm/80">
               Confucius, Laozi, Sunzi, Yin Yang, Wu Wei, and how ancient wisdom applies to modern life.
+            </p>
+          </Link>
+          <Link
+            href="/relocation-to-china"
+            className="rounded-lg border border-sand bg-white p-5 hover:border-warm/40 transition-colors group"
+          >
+            <h2 className="font-serif text-lg font-bold text-ink group-hover:text-china-red transition-colors mb-1">
+              Relocation to China
+            </h2>
+            <p className="text-xs text-warm mb-1">移居中国指南</p>
+            <p className="text-sm text-warm/80">
+              Visa, housing, bank account, healthcare, and first-30-day setup for moving to China.
             </p>
           </Link>
         </div>

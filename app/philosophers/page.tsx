@@ -9,12 +9,18 @@ import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Chinese Philosophers — GoEast.ai",
-  description: "Explore 3,000 years of Chinese philosophy. Deep profiles of 11 great thinkers from Laozi to Wang Yangming, with core concepts, quotes, and modern influence.",
-  alternates: { canonical: "/philosophers" },
+  title: "Chinese Philosophers: Confucius, Laozi, Sunzi & 8 More | GoEast.ai",
+  description: "Meet 11 great Chinese philosophers from Confucius and Laozi to Wang Yangming. Explore their ideas, core concepts, famous quotes, and modern influence.",
+  alternates: {
+    canonical: "/philosophers",
+    languages: {
+      en: "https://www.goeast.ai/philosophers",
+      "x-default": "https://www.goeast.ai/philosophers",
+    },
+  },
   openGraph: {
-    title: "Chinese Philosophers — GoEast.ai",
-    description: "Explore 3,000 years of Chinese philosophy through 11 great thinkers.",
+    title: "Chinese Philosophers: Confucius, Laozi, Sunzi & 8 More | GoEast.ai",
+    description: "Meet 11 great Chinese philosophers and explore their ideas, core concepts, and modern influence.",
     type: "website",
   },
 };

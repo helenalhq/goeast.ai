@@ -1,6 +1,6 @@
 ---
 slug: yin-yang-explained
-title: "Yin Yang Explained: What It Really Means (Simple Guide)"
+title: "Yin Yang Explained: Symbol, Meaning & Real-Life Examples"
 title_zh: "阴阳详解：真正的含义（简单指南）"
 philosopher_slug: laozi
 concept_slugs: [yin-yang, qi, dao]

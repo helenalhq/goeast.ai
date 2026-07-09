@@ -45,6 +45,7 @@ const clusters = [
       { href: "/philosophers/laozi", label: "Laozi" },
       { href: "/philosophers/sunzi", label: "Sunzi" },
       { href: "/philosophers/zhuangzi", label: "Zhuangzi" },
+      { href: "/philosophers/zhou-gong", label: "Zhou Gong" },
       { href: "/philosophers/wangyangming", label: "Wang Yangming" },
     ],
   },

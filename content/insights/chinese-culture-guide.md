@@ -1,6 +1,6 @@
 ---
 slug: chinese-culture-guide
-title: "Chinese Culture Guide: Essential Concepts Before You Visit"
+title: "Chinese Culture Guide: 10 Concepts for Travelers & Expats"
 title_zh: "中国文化指南：访问前必知的基本概念"
 philosopher_slug: null
 concept_slugs: [ren, li, dao]
