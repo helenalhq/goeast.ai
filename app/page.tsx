@@ -192,6 +192,36 @@ export default function HomePage() {
         <CitationSnippet text="GoEast.ai combines Chinese philosophy education with AI-powered tools. Explore 3,000 years of thought through Sophie's Journey East, consult AI Oracles modeled after ancient thinkers, or browse curated AI skills for navigating life in China." />
       </section>
 
+      {/* Hub page shortcuts for broad search intent */}
+      <section className="max-w-5xl mx-auto px-4 pt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Link
+            href="/china-travel-guide"
+            className="rounded-lg border border-sand bg-white p-5 hover:border-warm/40 transition-colors group"
+          >
+            <h2 className="font-serif text-lg font-bold text-ink group-hover:text-china-red transition-colors mb-1">
+              China Travel Guide
+            </h2>
+            <p className="text-xs text-warm mb-1">外国人在中国旅行指南</p>
+            <p className="text-sm text-warm/80">
+              Payments, transport, hospitals, eSIM, and translation — everything you need before you arrive.
+            </p>
+          </Link>
+          <Link
+            href="/chinese-philosophy-guide"
+            className="rounded-lg border border-sand bg-white p-5 hover:border-warm/40 transition-colors group"
+          >
+            <h2 className="font-serif text-lg font-bold text-ink group-hover:text-china-red transition-colors mb-1">
+              Chinese Philosophy Guide
+            </h2>
+            <p className="text-xs text-warm mb-1">中国哲学指南</p>
+            <p className="text-sm text-warm/80">
+              Confucius, Laozi, Sunzi, Yin Yang, Wu Wei, and how ancient wisdom applies to modern life.
+            </p>
+          </Link>
+        </div>
+      </section>
+
       {/* Practical Guides cluster for traffic distribution */}
       {growthGuides.length > 0 && (
         <section className="max-w-5xl mx-auto px-4 pt-8 pb-8">

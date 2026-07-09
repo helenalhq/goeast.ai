@@ -6,8 +6,10 @@ export default function Footer() {
     <footer className="border-t border-sand mt-16">
       {/* Row 1: Main navigation */}
       <div className="max-w-6xl mx-auto px-4 py-8 flex flex-wrap justify-center gap-6">
+        <Link href="/chinese-philosophy-guide" className="text-sm text-ink hover:text-china-red transition-colors no-underline">Philosophy Guide</Link>
         <Link href="/philosophers" className="text-sm text-ink hover:text-china-red transition-colors no-underline">Philosophers</Link>
         <Link href="/iching" className="text-sm text-ink hover:text-china-red transition-colors no-underline">I Ching</Link>
+        <Link href="/china-travel-guide" className="text-sm text-ink hover:text-china-red transition-colors no-underline">China Travel Guide</Link>
         <Link href="/glossary" className="text-sm text-ink hover:text-china-red transition-colors no-underline">Glossary</Link>
         <Link href="/insights" className="text-sm text-ink hover:text-china-red transition-colors no-underline">Insights</Link>
         <Link href="/skills" className="text-sm text-ink hover:text-china-red transition-colors no-underline">Skills</Link>

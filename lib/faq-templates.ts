@@ -20,7 +20,9 @@ type FAQInput =
   | { type: "philosophers_listing" }
   | { type: "iching_listing" }
   | { type: "glossary_listing" }
-  | { type: "insights_listing" };
+  | { type: "insights_listing" }
+  | { type: "china_travel_guide" }
+  | { type: "chinese_philosophy_guide" };
 
 function generateSkillFAQs(skill: Skill): FAQItem[] {
   return [
@@ -190,6 +192,16 @@ export function generateFAQs(input: FAQInput): FAQItem[] {
     case "philosophers_listing": return [];
     case "iching_listing": return [];
     case "glossary_listing": return generateListingFAQs("glossary_listing");
+    case "china_travel_guide": return [
+      { question: "What should foreigners prepare before traveling to China?", answer: "Install Alipay and WeChat Pay, buy a China eSIM or local SIM plan, download offline translation packs, save hospital options, and install DiDi and a maps app.", questionZh: "外国人来中国旅行前应准备什么？", answerZh: "安装支付宝和微信支付，购买中国 eSIM 或本地 SIM 套餐，下载离线翻译包，保存医院选项，并安装滴滴和地图应用。" },
+      { question: "Can foreigners use mobile payments in China?", answer: "Yes. Foreigners can verify Alipay and WeChat Pay with a passport and link an international Visa, Mastercard, or JCB card. A Chinese bank card offers the best experience if available.", questionZh: "外国人可以在中国使用移动支付吗？", answerZh: "可以。外国人可以使用护照验证支付宝和微信支付，并绑定国际 Visa、Mastercard 或 JCB 卡。如果有中国银行卡，体验会更佳。" },
+      { question: "Is it safe to go to a Chinese hospital as a foreigner?", answer: "Yes, especially at Grade 3A hospitals in major cities. Bring your passport, insurance details, and a bilingual symptom list. International clinics and VIP departments often have English-speaking staff.", questionZh: "外国人去中国医院安全吗？", answerZh: "安全，尤其是在大城市的三甲医院。携带护照、保险详情和双语症状清单。国际诊所和特需门诊通常有英语工作人员。" },
+    ];
+    case "chinese_philosophy_guide": return [
+      { question: "What is Chinese philosophy?", answer: "Chinese philosophy is a broad tradition of thought spanning roughly 3,000 years, including Confucianism, Daoism, Legalism, Mohism, Buddhism in China, and later schools such as Neo-Confucianism. It addresses ethics, politics, cosmology, and personal cultivation.", questionZh: "什么是中国哲学？", answerZh: "中国哲学是跨越约三千年的广泛思想传统，包括儒家、道家、法家、墨家、中国佛教以及后来的理学等学派。它关注伦理、政治、宇宙论和个人修养。" },
+      { question: "Who are the most important Chinese philosophers?", answer: "The most influential thinkers include Confucius, Laozi, Sunzi, Mencius, Zhuangzi, Han Fei, Mozi, Xunzi, and later Wang Yangming and Zhu Xi.", questionZh: "最重要的中国哲学家有哪些？", answerZh: "最具影响力的思想家包括孔子、老子、孙子、孟子、庄子、韩非、墨子、荀子，以及后来的王阳明和朱熹。" },
+      { question: "How can Chinese philosophy help modern life?", answer: "Chinese philosophy offers frameworks for decision-making, leadership, conflict resolution, and personal well-being. Concepts like Wu Wei (effortless action), Yin Yang balance, and Sunzi's strategic thinking are widely applied in business, psychology, and design today.", questionZh: "中国哲学如何帮助现代生活？", answerZh: "中国哲学为决策、领导力、冲突解决和个人福祉提供框架。无为、阴阳平衡、孙子的战略思想等概念如今广泛应用于商业、心理学和设计领域。" },
+    ];
     case "insights_listing": return [
       { question: "What topics do GoEast.ai Insights cover?", answer: "GoEast.ai Insights cover Chinese philosophy (Wu Wei, Yin Yang, Confucius, Laozi, I Ching), practical China travel guides (payments, transport, hospitals, eSIM), and how ancient wisdom applies to modern work and life.", questionZh: "GoEast.ai 的 Insights 涵盖哪些主题？", answerZh: "GoEast.ai 的 Insights 涵盖中国哲学（无为、阴阳、孔子、老子、易经）、实用中国旅行指南（支付、交通、医院、eSIM），以及古代智慧如何应用于现代工作和生活。" },
       { question: "Are the China travel guides updated for 2026?", answer: "Yes. Our practical guides for payments, high-speed rail, hospital visits, translation apps, and eSIM are reviewed and updated to reflect 2026 app versions, regulations, and on-the-ground workflows.", questionZh: "中国旅行指南是否已更新至2026年？", answerZh: "是的。我们的支付、高铁、就医、翻译应用和 eSIM 实用指南均经过审核和更新，以反映2026年的应用版本、法规和实际流程。" },
