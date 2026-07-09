@@ -23,6 +23,20 @@ faqs:
     answer: International clinics and VIP departments of major hospitals often have English-speaking staff. Use hospital apps or expat forums to locate them.
     question_zh: 如何在中国找到会说英语的医生？
     answer_zh: 国际诊所和大型医院的特需门诊通常有英语工作人员。可通过医院应用或外籍社区论坛查找。
+how_to:
+  name: "Navigate a Chinese Hospital as a Foreigner"
+  description: "Prepare documents, choose the right department, and complete a hospital visit with less stress."
+  steps:
+    - name: "Prepare your documents"
+      text: "Bring your passport, insurance card, and a bilingual list of symptoms and medications."
+    - name: "Choose the right entry point"
+      text: "Use outpatient for mild issues, emergency for urgent cases, and the nearest ER for life-threatening situations."
+    - name: "Register and select a department"
+      text: "Complete registration online or on-site, then pick the correct department for your symptoms."
+    - name: "Consult, test, and pay"
+      text: "See the doctor, complete any requested tests, and pay at the hospital's payment points."
+    - name: "Save follow-up details"
+      text: "Photograph prescriptions, confirm dosage, and schedule any follow-up before leaving."
 ---
 
 # How Foreigners Can Navigate Hospitals in China (2026 Practical Guide)

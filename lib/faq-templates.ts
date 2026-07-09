@@ -190,7 +190,11 @@ export function generateFAQs(input: FAQInput): FAQItem[] {
     case "philosophers_listing": return [];
     case "iching_listing": return [];
     case "glossary_listing": return generateListingFAQs("glossary_listing");
-    case "insights_listing": return [];
+    case "insights_listing": return [
+      { question: "What topics do GoEast.ai Insights cover?", answer: "GoEast.ai Insights cover Chinese philosophy (Wu Wei, Yin Yang, Confucius, Laozi, I Ching), practical China travel guides (payments, transport, hospitals, eSIM), and how ancient wisdom applies to modern work and life.", questionZh: "GoEast.ai 的 Insights 涵盖哪些主题？", answerZh: "GoEast.ai 的 Insights 涵盖中国哲学（无为、阴阳、孔子、老子、易经）、实用中国旅行指南（支付、交通、医院、eSIM），以及古代智慧如何应用于现代工作和生活。" },
+      { question: "Are the China travel guides updated for 2026?", answer: "Yes. Our practical guides for payments, high-speed rail, hospital visits, translation apps, and eSIM are reviewed and updated to reflect 2026 app versions, regulations, and on-the-ground workflows.", questionZh: "中国旅行指南是否已更新至2026年？", answerZh: "是的。我们的支付、高铁、就医、翻译应用和 eSIM 实用指南均经过审核和更新，以反映2026年的应用版本、法规和实际流程。" },
+      { question: "Can I use these insights for commercial or educational purposes?", answer: "You may link to and quote our insights with attribution. For commercial licensing or republication, please contact us through the contact page.", questionZh: "我可以将这些洞察用于商业或教育目的吗？", answerZh: "你可以链接和引用我们的洞察内容，请注明出处。如需商业授权或转载，请通过联系页面与我们联系。" },
+    ];
   }
 }
 

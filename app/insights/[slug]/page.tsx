@@ -71,6 +71,23 @@ export default async function InsightDetailPage({
           },
         }}
       />
+      {insight.how_to && (
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "HowTo",
+            name: insight.how_to.name,
+            description: insight.how_to.description,
+            totalTime: "PT30M",
+            step: insight.how_to.steps.map((step, index) => ({
+              "@type": "HowToStep",
+              position: index + 1,
+              name: step.name,
+              text: step.text,
+            })),
+          }}
+        />
+      )}
       <JsonLd
         data={{
           "@context": "https://schema.org",

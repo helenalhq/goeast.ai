@@ -167,6 +167,20 @@ faqs:
     answer: Check card linkage, retry with a different card, ensure your account is active, and keep Alipay ready as a fallback.
     question_zh: 微信支付失败怎么办？
     answer_zh: 检查银行卡绑定，换卡重试，确保账户活跃，并准备好支付宝作为备用方案。
+how_to:
+  name: "Set Up WeChat Pay as a Foreigner in China"
+  description: "Download WeChat, verify your identity with a passport, link a bank card, and start paying in China."
+  steps:
+    - name: "Download and register WeChat"
+      text: "Install WeChat from the official app store and register with a phone number that can receive SMS verification."
+    - name: "Open the Wallet section"
+      text: "Go to Me > Services > Wallet to access WeChat Pay."
+    - name: "Complete real-name verification"
+      text: "Select passport as your document type, upload a clear photo, and fill in your personal details exactly as shown on your passport."
+    - name: "Link a bank card"
+      text: "Add a Visa, Mastercard, JCB, or Chinese bank card and confirm the verification code."
+    - name: "Make a small test payment"
+      text: "Send a tiny transfer or make a small purchase to confirm the card works before relying on it."
 ---
 
 # How to Set Up WeChat Pay as a Foreigner in China (2026)

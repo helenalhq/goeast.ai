@@ -23,6 +23,20 @@ faqs:
     answer: Google services are blocked in China. Use alternative translation apps that work without Google infrastructure.
     question_zh: 在中国可以用 Google 翻译吗？
     answer_zh: Google 服务在中国被屏蔽。请使用不依赖 Google 基础设施的替代翻译应用。
+how_to:
+  name: "Build a Reliable Translation App Stack for China Travel"
+  description: "Choose, download, and configure translation apps so they work offline and cover conversation, camera, and phrasebook needs."
+  steps:
+    - name: "Pick a primary conversation app"
+      text: "Choose an app with strong two-way Chinese voice translation and download offline Chinese before your trip."
+    - name: "Add a camera/OCR translator"
+      text: "Install a second app that translates menus, signs, and pharmacy labels by taking a photo."
+    - name: "Create a personal phrasebook"
+      text: "Save 20-30 mission-critical phrases (transport, food, payment, medical) in your notes app for offline access."
+    - name: "Test before you travel"
+      text: "Turn off mobile data and verify all apps work in airplane mode so you know they function without internet."
+    - name: "Use the right tool for each scenario"
+      text: "Use voice for conversations, camera for printed text, and your phrasebook for repeated high-stakes phrases."
 ---
 
 # Best Translation Apps for China Travel (2026): What Actually Works

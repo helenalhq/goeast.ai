@@ -9,12 +9,18 @@ import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Chinese Philosophy Explained: Yin Yang, Wu Wei, Confucius | GoEast.ai",
-  description: "Explore Chinese philosophy in the modern world. Learn about yin yang, wu wei, Confucius leadership, and ancient wisdom for today. 探索现代世界中的中国哲学",
-  alternates: { canonical: "/insights" },
+  title: "China Travel Guides & Chinese Philosophy | GoEast.ai Insights",
+  description: "Practical China travel guides (payments, transport, hospitals, eSIM) and Chinese philosophy essays (Wu Wei, Yin Yang, I Ching, Confucius). Bilingual English-Chinese.",
+  alternates: {
+    canonical: "/insights",
+    languages: {
+      "en": "https://www.goeast.ai/insights",
+      "x-default": "https://www.goeast.ai/insights",
+    },
+  },
   openGraph: {
-    title: "Chinese Philosophy Explained: Yin Yang, Wu Wei, Confucius | GoEast.ai",
-    description: "Chinese philosophy meets modern life: essays connecting ancient wisdom to contemporary challenges.",
+    title: "China Travel Guides & Chinese Philosophy | GoEast.ai Insights",
+    description: "Practical guides for life in China and essays connecting ancient Chinese wisdom to modern challenges.",
     type: "website",
   },
 };

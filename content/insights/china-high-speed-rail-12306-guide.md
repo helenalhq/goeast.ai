@@ -23,6 +23,20 @@ faqs:
     answer: Check that your name and document formatting match exactly, try an alternative train, and keep a backup payment method active.
     question_zh: 如果订票失败该怎么办？
     answer_zh: 检查姓名和证件格式是否完全一致，尝试其他车次，并保持备用支付方式可用。
+how_to:
+  name: "Book China High-Speed Rail Tickets as a Foreigner"
+  description: "Use the 12306 app or website to book high-speed rail tickets and board confidently in China."
+  steps:
+    - name: "Create a 12306 account"
+      text: "Register with your passport and complete passenger identity verification before booking."
+    - name: "Search and select a train"
+      text: "Choose a date and route, then pick a departure window with alternative trains ready."
+    - name: "Verify passenger details"
+      text: "Ensure your passport name matches exactly to avoid ticket pickup issues."
+    - name: "Pay immediately"
+      text: "Complete payment right after selection; unpaid bookings expire quickly."
+    - name: "Save booking details offline"
+      text: "Screenshot the train number, departure time, and seat class before leaving Wi-Fi."
 ---
 
 # China High-Speed Rail for Foreigners (2026): 12306 Booking and Travel Workflow

@@ -23,6 +23,20 @@ faqs:
     answer: eSIM is faster to set up before travel. A local SIM may offer better coverage in remote areas. Many travelers use both for redundancy.
     question_zh: 在中国应该用 eSIM 还是本地 SIM 卡？
     answer_zh: eSIM 在出行前设置更快。本地 SIM 卡在偏远地区覆盖可能更好。许多旅行者两者兼用以确保冗余。
+how_to:
+  name: "Set Up China eSIM Before You Arrive"
+  description: "Buy, install, and activate an eSIM profile so you have mobile data as soon as you land in China."
+  steps:
+    - name: "Check phone compatibility"
+      text: "Confirm your phone supports eSIM and is carrier-unlocked before purchasing a plan."
+    - name: "Buy a China eSIM plan"
+      text: "Choose a plan with enough data for your trip length and buy it from a reputable provider."
+    - name: "Install the eSIM profile"
+      text: "Scan the QR code or use the provider's app to add the eSIM to your phone before departure."
+    - name: "Save setup instructions offline"
+      text: "Keep the QR code, APN settings, and activation steps in your notes app as a backup."
+    - name: "Activate on arrival"
+      text: "Turn on the eSIM data line after landing and confirm connectivity by opening maps or a messaging app."
 ---
 
 # China eSIM Guide for Foreigners (2026): Setup, Limits, and Best Use Cases

@@ -235,6 +235,17 @@ export interface InsightFAQ {
   answer_zh?: string;
 }
 
+export interface InsightHowToStep {
+  name: string;
+  text: string;
+}
+
+export interface InsightHowTo {
+  name: string;
+  description: string;
+  steps: InsightHowToStep[];
+}
+
 export interface InsightMeta {
   slug: string;
   title: string;
@@ -244,6 +255,7 @@ export interface InsightMeta {
   published_at: string;
   takeaways?: string[];
   faqs?: InsightFAQ[];
+  how_to?: InsightHowTo;
 }
 
 export interface Insight extends InsightMeta {

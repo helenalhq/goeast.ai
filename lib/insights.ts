@@ -31,6 +31,7 @@ export function getInsightBySlug(slug: string): Insight | null {
     published_at: data.published_at || "",
     takeaways: Array.isArray(data.takeaways) ? data.takeaways : undefined,
     faqs: Array.isArray(data.faqs) ? data.faqs : undefined,
+    how_to: data.how_to && typeof data.how_to === "object" && Array.isArray(data.how_to.steps) ? data.how_to : undefined,
     content,
     content_zh: data.content_zh,
   };

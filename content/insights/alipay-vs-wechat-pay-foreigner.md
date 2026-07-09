@@ -23,6 +23,20 @@ faqs:
     answer: Common causes include name/document mismatch, unsupported cards, inactive accounts, and regional merchant edge cases.
     question_zh: 外国人支付为什么会失败？
     answer_zh: 常见原因包括姓名/证件不匹配、不支持的银行卡、账户不活跃以及地区商户的特殊情况。
+how_to:
+  name: "Set Up Mobile Payments in China as a Foreigner"
+  description: "Install and verify Alipay and WeChat Pay so you can pay like a local in China."
+  steps:
+    - name: "Install both apps"
+      text: "Download Alipay and WeChat from the official app stores before you arrive."
+    - name: "Complete real-name verification"
+      text: "Submit your passport and ensure the name matches exactly across all documents."
+    - name: "Link a payment method"
+      text: "Add an international Visa, Mastercard, or JCB card, or a Chinese bank card if available."
+    - name: "Test with a small transaction"
+      text: "Send a small payment or buy something inexpensive in each app to confirm it works."
+    - name: "Keep both apps active"
+      text: "Run one low-value transaction monthly in each app so they remain usable as backups."
 ---
 
 # Alipay vs WeChat Pay for Foreigners in China: Which Should You Use in 2026?
