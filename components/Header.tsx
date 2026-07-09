@@ -91,6 +91,12 @@ export default function Header() {
           >
             About
           </Link>
+          <Link
+            href="/pricing"
+            className="text-warm hover:text-china-red transition-colors"
+          >
+            Pricing
+          </Link>
 
           {user ? (
             <div className="relative" ref={menuRef}>

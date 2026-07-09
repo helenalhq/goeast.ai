@@ -25,7 +25,9 @@ export default function UpgradeButton() {
   return (
     <div className="border-t border-sand pt-4">
       <p className="text-sm text-warm mb-3">
-        Upgrade for unlimited oracle consultations with every philosopher.
+        Upgrade to GoEast.ai Pro for 10 AI Oracle consultations per day, deep
+        interpretations, full Zi Wei Dou Shu analysis, and priority access to
+        new features.
       </p>
       <button
         onClick={handleUpgrade}
@@ -33,7 +35,7 @@ export default function UpgradeButton() {
         className="inline-block px-6 py-2.5 rounded-lg text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 cursor-pointer"
         style={{ backgroundColor: "#c0392b" }}
       >
-        {loading ? "Redirecting..." : "Unlock Unlimited · $4.99/month"}
+        {loading ? "Redirecting..." : "Upgrade to Pro · $4.99/month"}
       </button>
     </div>
   );

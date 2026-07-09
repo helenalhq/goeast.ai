@@ -21,6 +21,7 @@ export default function Footer() {
       {/* Row 2: Secondary links */}
       <div className="max-w-6xl mx-auto px-4 py-4 flex flex-wrap justify-center gap-5">
         <Link href="/about" className="text-xs text-warm/60 hover:text-warm transition-colors no-underline">About</Link>
+        <Link href="/pricing" className="text-xs text-warm/60 hover:text-warm transition-colors no-underline">Pricing</Link>
         <Link href="/contact" className="text-xs text-warm/60 hover:text-warm transition-colors no-underline">Contact</Link>
         <Link href="/privacy" className="text-xs text-warm/60 hover:text-warm transition-colors no-underline">Privacy Policy</Link>
         <Link href="/terms" className="text-xs text-warm/60 hover:text-warm transition-colors no-underline">Terms of Service</Link>
