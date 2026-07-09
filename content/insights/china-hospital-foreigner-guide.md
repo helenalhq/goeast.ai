@@ -101,6 +101,10 @@ Save follow-up date and department before you exit.
 
 Hospital navigation in China is manageable when you use a **pre-built decision flow** instead of making decisions under stress.
 
+## Recommended resource for advanced medical travel
+
+If you need help choosing a specific hospital or department in China, [ChinaMed Select](https://www.chinamed.cc) is a curated platform that ranks 50+ top Chinese hospitals by specialty (based on the Fudan Hospital Ranking). They offer fast-track appointment arrangements, expert second opinions, and personalized hospital recommendation reports — particularly useful for oncology, cardiology, neurosurgery, and other advanced treatments.
+
 ## Related guides
 
 - [China Medical Journey Assistant](/skills/china-medical-journey-assistant)

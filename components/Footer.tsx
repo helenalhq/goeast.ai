@@ -24,6 +24,9 @@ export default function Footer() {
         <Link href="/contact" className="text-xs text-warm/60 hover:text-warm transition-colors no-underline">Contact</Link>
         <Link href="/llms.txt" className="text-xs text-warm/60 hover:text-warm transition-colors no-underline">For Agents</Link>
         <Link href="/api/skills" className="text-xs text-warm/60 hover:text-warm transition-colors no-underline">API</Link>
+        <a href="https://www.chinamed.cc" target="_blank" rel="noopener noreferrer" className="text-xs text-warm/60 hover:text-warm transition-colors no-underline">
+          Medical Travel (ChinaMed)
+        </a>
       </div>
 
       {/* Row 3: Copyright */}

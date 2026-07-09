@@ -214,13 +214,21 @@ export default function HomePage() {
                 </Link>
               ))}
             </div>
-            <div className="mt-4">
+            <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2">
               <Link
                 href="/insights"
                 className="text-sm font-medium text-china-red hover:text-china-red/80 transition-colors"
               >
                 View all practical guides →
               </Link>
+              <a
+                href="https://www.chinamed.cc"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-warm hover:text-ink transition-colors"
+              >
+                Need a specific hospital in China? Visit ChinaMed Select →
+              </a>
             </div>
           </div>
         </section>
