@@ -25,12 +25,18 @@ export async function generateMetadata({
   const h = getHexagramBySlug(hexagram);
   if (!h) return {};
   return {
-    title: `Hexagram ${h.number}: ${h.name} (${h.name_zh}) — I Ching — GoEast.ai`,
-    description: `Hexagram ${h.number}: ${h.name} (${h.name_zh}) — ${h.judgment_en.slice(0, 120)}`,
-    alternates: { canonical: `/iching/${hexagram}` },
+    title: `Hexagram ${h.number}: ${h.name} Meaning (${h.name_zh}) | I Ching | GoEast.ai`,
+    description: `Hexagram ${h.number}: ${h.name} (${h.name_zh}) meaning and interpretation from the I Ching Book of Changes. ${h.judgment_en.slice(0, 120)}`,
+    alternates: {
+      canonical: `/iching/${hexagram}`,
+      languages: {
+        en: `https://www.goeast.ai/iching/${hexagram}`,
+        "x-default": `https://www.goeast.ai/iching/${hexagram}`,
+      },
+    },
     openGraph: {
-      title: `Hexagram ${h.number}: ${h.name} (${h.name_zh})`,
-      description: `Hexagram ${h.number}: ${h.name} — ${h.judgment_en.slice(0, 120)}`,
+      title: `Hexagram ${h.number}: ${h.name} Meaning (${h.name_zh}) | I Ching`,
+      description: `Hexagram ${h.number}: ${h.name} (${h.name_zh}) meaning and interpretation from the I Ching Book of Changes.`,
       type: "article",
     },
   };

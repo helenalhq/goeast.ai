@@ -17,12 +17,18 @@ export async function generateMetadata({
   const s = getStarBySlug(star);
   if (!s) return {};
   return {
-    title: `${s.name_en} (${s.name_zh}) — Zi Wei Dou Shu Star — GoEast.ai`,
-    description: `${s.name_en} (${s.name_zh}): ${s.description_en.slice(0, 150)}`,
-    alternates: { canonical: `/ziwei/stars/${star}` },
+    title: `${s.name_en} (${s.name_zh}) Meaning in Zi Wei Dou Shu | GoEast.ai`,
+    description: `${s.name_en} (${s.name_zh}) meaning in Zi Wei Dou Shu (Purple Star Astrology): ${s.description_en.slice(0, 150)}`,
+    alternates: {
+      canonical: `/ziwei/stars/${star}`,
+      languages: {
+        en: `https://www.goeast.ai/ziwei/stars/${star}`,
+        "x-default": `https://www.goeast.ai/ziwei/stars/${star}`,
+      },
+    },
     openGraph: {
-      title: `${s.name_en} (${s.name_zh})`,
-      description: s.description_en.slice(0, 150),
+      title: `${s.name_en} (${s.name_zh}) Meaning in Zi Wei Dou Shu`,
+      description: `${s.name_en} (${s.name_zh}) meaning in Zi Wei Dou Shu (Purple Star Astrology).`,
       type: "article",
     },
   };

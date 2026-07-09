@@ -9,6 +9,7 @@ export default function Footer() {
         <Link href="/chinese-philosophy-guide" className="text-sm text-ink hover:text-china-red transition-colors no-underline">Philosophy Guide</Link>
         <Link href="/philosophers" className="text-sm text-ink hover:text-china-red transition-colors no-underline">Philosophers</Link>
         <Link href="/iching" className="text-sm text-ink hover:text-china-red transition-colors no-underline">I Ching</Link>
+        <Link href="/ziwei" className="text-sm text-ink hover:text-china-red transition-colors no-underline">Zi Wei</Link>
         <Link href="/china-travel-guide" className="text-sm text-ink hover:text-china-red transition-colors no-underline">China Travel Guide</Link>
         <Link href="/relocation-to-china" className="text-sm text-ink hover:text-china-red transition-colors no-underline">Relocation</Link>
         <Link href="/glossary" className="text-sm text-ink hover:text-china-red transition-colors no-underline">Glossary</Link>

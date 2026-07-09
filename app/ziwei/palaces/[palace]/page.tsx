@@ -17,12 +17,18 @@ export async function generateMetadata({
   const p = getPalaceBySlug(palace);
   if (!p) return {};
   return {
-    title: `${p.name_en} (${p.name_zh}) — Zi Wei Dou Shu Palace — GoEast.ai`,
-    description: `${p.name_en} (${p.name_zh}): ${p.description_en.slice(0, 150)}`,
-    alternates: { canonical: `/ziwei/palaces/${palace}` },
+    title: `${p.name_en} Palace (${p.name_zh}) Meaning in Zi Wei Dou Shu | GoEast.ai`,
+    description: `${p.name_en} Palace (${p.name_zh}) meaning in Zi Wei Dou Shu (Purple Star Astrology): ${p.description_en.slice(0, 150)}`,
+    alternates: {
+      canonical: `/ziwei/palaces/${palace}`,
+      languages: {
+        en: `https://www.goeast.ai/ziwei/palaces/${palace}`,
+        "x-default": `https://www.goeast.ai/ziwei/palaces/${palace}`,
+      },
+    },
     openGraph: {
-      title: `${p.name_en} (${p.name_zh})`,
-      description: p.description_en.slice(0, 150),
+      title: `${p.name_en} Palace (${p.name_zh}) Meaning in Zi Wei Dou Shu`,
+      description: `${p.name_en} Palace (${p.name_zh}) meaning in Zi Wei Dou Shu (Purple Star Astrology).`,
       type: "article",
     },
   };

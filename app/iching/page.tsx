@@ -10,12 +10,18 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "I Ching — Book of Changes — GoEast.ai",
-  description: "Explore the I Ching (易经), the ancient Book of Changes. Interactive trigram chart, free coin-cast divination, and all 64 hexagram meanings.",
-  alternates: { canonical: "/iching" },
+  title: "I Ching Online: 64 Hexagrams Meanings, Divination & Trigrams | GoEast.ai",
+  description: "Free online I Ching (易经) Book of Changes: cast coins for instant divination, explore all 64 hexagram meanings, and study the eight trigrams with bilingual guidance.",
+  alternates: {
+    canonical: "/iching",
+    languages: {
+      en: "https://www.goeast.ai/iching",
+      "x-default": "https://www.goeast.ai/iching",
+    },
+  },
   openGraph: {
-    title: "I Ching — Book of Changes — GoEast.ai",
-    description: "Explore the I Ching: interactive divination, 64 hexagram meanings, and AI-powered interpretations.",
+    title: "I Ching Online: 64 Hexagrams Meanings, Divination & Trigrams | GoEast.ai",
+    description: "Free online I Ching divination and meanings for all 64 hexagrams, with bilingual English-Chinese guidance.",
     type: "website",
   },
 };
@@ -63,6 +69,7 @@ export default function IChingPage() {
             The I Ching (易经), or Book of Changes, is one of the oldest texts in the world, originating
             in China over 3,000 years ago. It consists of 64 hexagrams — patterns of six broken (yin ━ ━)
             and unbroken (yang ━━━) lines — each representing a fundamental situation or process of change.
+            Learn more about the <Link href="/glossary/yin-yang" className="text-china-red hover:underline">Yin Yang</Link> philosophy behind these lines.
           </p>
           <p>
             Tradition holds that the hexagrams were first organized by Zhou Gong (周公) and later annotated

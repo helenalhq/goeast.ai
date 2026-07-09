@@ -9,9 +9,9 @@ import { getAllCombinations } from "@/lib/ziwei-combinations";
 import { getAllPatterns } from "@/lib/ziwei-patterns";
 
 export const metadata: Metadata = {
-  title: "Zi Wei Dou Shu — Purple Star Astrology Chart & AI Reading — GoEast.ai",
+  title: "Zi Wei Dou Shu (Purple Star Astrology): Free Natal Chart & Reading | GoEast.ai",
   description:
-    "Generate your Zi Wei Dou Shu (紫微斗数) natal chart instantly and receive AI-powered bilingual interpretation. The most sophisticated system of Chinese astrology, now accessible in English and Chinese.",
+    "Free Zi Wei Dou Shu (紫微斗数) natal chart calculator with AI-powered bilingual reading. Explore 14 major stars, 12 palaces, dual-star combinations, and classical patterns.",
   keywords: [
     "Zi Wei Dou Shu",
     "紫微斗数",
@@ -22,11 +22,17 @@ export const metadata: Metadata = {
     "AI interpretation",
     "destiny reading",
   ],
-  alternates: { canonical: "/ziwei" },
+  alternates: {
+    canonical: "/ziwei",
+    languages: {
+      en: "https://www.goeast.ai/ziwei",
+      "x-default": "https://www.goeast.ai/ziwei",
+    },
+  },
   openGraph: {
-    title: "Zi Wei Dou Shu — Purple Star Astrology",
+    title: "Zi Wei Dou Shu (Purple Star Astrology): Free Natal Chart & Reading | GoEast.ai",
     description:
-      "Generate your natal chart and receive AI interpretation based on thousand-year-old Chinese astrology.",
+      "Free Zi Wei Dou Shu natal chart calculator with AI-powered bilingual reading. Explore stars, palaces, combinations, and patterns.",
     type: "website",
     url: "https://www.goeast.ai/ziwei",
   },

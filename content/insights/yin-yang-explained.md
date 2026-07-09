@@ -1,6 +1,6 @@
 ---
 slug: yin-yang-explained
-title: "Yin Yang Explained: Symbol, Meaning & Real-Life Examples"
+title: "What Is Yin Yang? Meaning, Symbol & Real-Life Examples"
 title_zh: "阴阳详解：真正的含义（简单指南）"
 philosopher_slug: laozi
 concept_slugs: [yin-yang, qi, dao]
@@ -311,6 +311,7 @@ No, Yin Yang is a philosophical concept, not a religion. It's used in Daoism, Tr
 
 ## Related
 
+- [Yin-Yang Glossary: Full Definition & Philosophy](/glossary/yin-yang)
 - [Laozi and Daoist Philosophy](/sophies-journey/ch01-laozi)
 - [The Concept of Qi](/glossary/qi)
 - [The Meaning of Dao](/glossary/dao)
