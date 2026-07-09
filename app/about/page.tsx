@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import JsonLd from "@/components/JsonLd";
 
 export const metadata: Metadata = {
-  title: "About — GoEast.ai",
+  title: "About GoEast.ai — AI China Travel Guides & Chinese Philosophy",
   description:
-    "About GoEast.ai — curated AI skills for foreigners in China",
+    "GoEast.ai publishes bilingual guides to China travel, payments, healthcare, and Chinese philosophy. Edited by a team with years of experience living in China and deep knowledge of Chinese thought.",
   alternates: { canonical: "/about" },
 };
 
@@ -16,21 +16,24 @@ export default function AboutPage() {
           "@context": "https://schema.org",
           "@type": "AboutPage",
           name: "About GoEast.ai",
-          description: "Curated AI skills for foreigners in China — travel, medical, shopping, accommodation.",
+          description: "Bilingual guides to China travel, payments, healthcare, and Chinese philosophy.",
           url: "https://www.goeast.ai/about",
+          lastReviewed: "2026-07-07",
           about: {
             "@type": "Organization",
             name: "GoEast.ai",
             url: "https://www.goeast.ai",
-            description: "A curated directory of AI skills designed to help foreigners navigate life in China.",
+            description: "Bilingual guides and AI tools for foreigners living in or visiting China, plus Chinese philosophy education.",
+            founder: { "@type": "Person", name: "GoEast Editorial Team" },
             knowsAbout: [
-              "China travel",
+              "China travel for foreigners",
               "Chinese philosophy",
+              "Alipay and WeChat Pay setup",
+              "China high-speed rail booking",
+              "China hospital navigation",
+              "I Ching and divination",
+              "Wu wei and Daoist philosophy",
               "AI tools for China",
-              "WeChat Pay for foreigners",
-              "Alipay for foreigners",
-              "I Ching",
-              "Chinese medicine navigation",
             ],
           },
         }}
@@ -71,6 +74,32 @@ export default function AboutPage() {
           the AI specialized knowledge — for example, how to navigate Chinese
           hospitals, search Baidu, or plan a trip along the Silk Road. Skills
           are installed with a single command and work immediately.
+        </p>
+
+        <h2>Editorial Standards</h2>
+        <p>
+          Every guide on GoEast.ai is written and reviewed by our editorial
+          team, which includes people who have lived in China for extended
+          periods and have deep familiarity with local systems, language, and
+          culture. Our China travel guides are updated at least once a year to
+          reflect changes in apps, regulations, and on-the-ground realities.
+          Our Chinese philosophy content is reviewed for accuracy against
+          classical texts and established scholarly sources.
+        </p>
+        <p>
+          When you see a &quot;Last reviewed&quot; date on an article, it means
+          the content was checked against current information at that time.
+          We also welcome corrections and suggestions from readers via our{" "}
+          <a href="/contact">contact page</a>.
+        </p>
+
+        <h2>The Team</h2>
+        <p>
+          GoEast.ai is maintained by the <strong>GoEast Editorial Team</strong>
+          — a small group of writers, researchers, and engineers passionate
+          about bridging Chinese culture and modern technology. Our combined
+          experience includes years of living and working in China, academic
+          study of Chinese philosophy, and building AI-powered tools.
         </p>
 
         <h2>Contributing</h2>

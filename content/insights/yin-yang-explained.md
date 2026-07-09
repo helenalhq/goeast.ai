@@ -113,6 +113,24 @@ content_zh: |
   - [老子与道家哲学](/sophies-journey/ch01-laozi)
   - [气的概念](/glossary/qi)
   - [道的含义](/glossary/dao)
+takeaways:
+  - Yin-yang is not a binary of good vs. evil—it describes interdependent, complementary forces.
+  - Each side contains the seed of the other; opposites transform into each other over time.
+  - Yin-yang applies to health, leadership, relationships, and creative work.
+  - Balance is dynamic, not static—yin-yang is about flow, not fixed proportions.
+faqs:
+  - question: What does yin-yang actually mean?
+    answer: Yin-yang describes how opposite forces are interconnected and complementary. It is a model of dynamic balance, not a moral binary.
+    question_zh: 阴阳到底是什么意思？
+    answer_zh: 阴阳描述对立力量如何相互关联、相互补充。它是动态平衡的模型，而非道德二元论。
+  - question: Is yin-yang a religious concept?
+    answer: No. Yin-yang is a philosophical and cosmological framework used in Chinese medicine, martial arts, strategy, and design—not tied to any specific religion.
+    question_zh: 阴阳是宗教概念吗？
+    answer_zh: 不是。阴阳是哲学和宇宙论框架，用于中医、武术、策略和设计等领域，不隶属于特定宗教。
+  - question: How can I apply yin-yang in daily life?
+    answer: Notice where you are over-emphasizing one pole—work vs. rest, action vs. reflection—and adjust toward balance rather than extremes.
+    question_zh: 如何在日常生活中应用阴阳？
+    answer_zh: 观察自己是否过度偏向某一极——工作与休息、行动与反思——并调整向平衡靠拢，而非走向极端。
 ---
 
 # Yin Yang Explained: What It Really Means (Simple Guide)

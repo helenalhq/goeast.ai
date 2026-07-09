@@ -5,6 +5,24 @@ title_zh: "中国旅行最佳翻译应用（2026）：真正好用的选择"
 philosopher_slug: null
 concept_slugs: []
 published_at: 2026-07-01
+takeaways:
+  - Translation quality directly affects transport, food orders, payments, and medical communication.
+  - Offline mode is essential—assume you will lose connectivity at critical moments.
+  - Camera translation is the most useful feature for menus, signs, and pharmacy labels.
+  - No single app covers all scenarios; use a stack of 2–3 apps for reliability.
+faqs:
+  - question: Which translation app works best in China?
+    answer: A combination of apps works best. Use one with strong offline Chinese and another with reliable camera translation for menus and signs.
+    question_zh: 在中国哪个翻译应用最好用？
+    answer_zh: 组合使用效果最好。一个具备强大的离线中文能力，另一个有可靠的拍照翻译功能用于菜单和标识。
+  - question: Do translation apps work without internet in China?
+    answer: Only if you download offline language packs in advance. Always prepare offline mode before traveling.
+    question_zh: 翻译应用在中国没有网络能用吗？
+    answer_zh: 只有提前下载离线语言包才可以。出行前务必准备好离线模式。
+  - question: Can I use Google Translate in China?
+    answer: Google services are blocked in China. Use alternative translation apps that work without Google infrastructure.
+    question_zh: 在中国可以用 Google 翻译吗？
+    answer_zh: Google 服务在中国被屏蔽。请使用不依赖 Google 基础设施的替代翻译应用。
 ---
 
 # Best Translation Apps for China Travel (2026): What Actually Works

@@ -62,8 +62,13 @@ export default async function InsightDetailPage({
           url: `https://www.goeast.ai/insights/${insight.slug}`,
           datePublished: insight.published_at,
           dateModified: insight.published_at,
-          author: philosopher ? { "@type": "Person", name: philosopher.name } : undefined,
-          publisher: { "@type": "Organization", name: "GoEast.ai", url: "https://www.goeast.ai" },
+          author: { "@type": "Organization", name: "GoEast Editorial Team" },
+          publisher: {
+            "@type": "Organization",
+            name: "GoEast.ai",
+            url: "https://www.goeast.ai",
+            logo: { "@type": "ImageObject", url: "https://www.goeast.ai/images/logo.png" },
+          },
         }}
       />
       <JsonLd
@@ -90,6 +95,12 @@ export default async function InsightDetailPage({
           {insight.title_zh && (
             <p className="text-lg text-warm">{insight.title_zh}</p>
           )}
+          <p className="text-xs text-warm/60 mt-4">
+            By <span className="text-ink/70">GoEast Editorial Team</span>
+            {insight.published_at && (
+              <> · Last reviewed <time dateTime={insight.published_at}>{new Date(insight.published_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</time></>
+            )}
+          </p>
         </div>
       </section>
 

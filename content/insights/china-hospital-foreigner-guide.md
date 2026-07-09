@@ -5,6 +5,24 @@ title_zh: "外国人在中国就医全流程（2026 实操指南）"
 philosopher_slug: null
 concept_slugs: []
 published_at: 2026-07-01
+takeaways:
+  - Hospital visits in China are manageable with a repeatable workflow prepared in advance.
+  - Keep passport copies, allergy info in Chinese, and 2–3 hospital options saved by district.
+  - For urgent but stable cases, choose a major hospital with strong emergency intake.
+  - Translation apps for medical terms are essential—prepare one before you need care.
+faqs:
+  - question: Can foreigners go to public hospitals in China?
+    answer: Yes, public hospitals accept foreigners. Bring your passport for registration and be prepared for Chinese-language intake.
+    question_zh: 外国人可以去中国的公立医院吗？
+    answer_zh: 可以。公立医院接受外国人，需携带护照登记，并准备好面对中文流程。
+  - question: Do I need insurance to see a doctor in China?
+    answer: International insurance is strongly recommended. Most Chinese hospitals do not bill foreign insurers directly, so expect to pay upfront and claim later.
+    question_zh: 在中国看病需要保险吗？
+    answer_zh: 强烈建议购买国际保险。大多数中国医院不直接与外国保险公司结算，需先自费后理赔。
+  - question: How do I find an English-speaking doctor in China?
+    answer: International clinics and VIP departments of major hospitals often have English-speaking staff. Use hospital apps or expat forums to locate them.
+    question_zh: 如何在中国找到会说英语的医生？
+    answer_zh: 国际诊所和大型医院的特需门诊通常有英语工作人员。可通过医院应用或外籍社区论坛查找。
 ---
 
 # How Foreigners Can Navigate Hospitals in China (2026 Practical Guide)

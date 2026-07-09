@@ -149,6 +149,24 @@ content_zh: |
   - [支付宝集成专家](/skills/alipay-integration-expert)
   - [中国旅行指南](/skills/travel-in-china)
   - [外国人在中国的AI应用](/insights/ai-apps-expats-china)
+takeaways:
+  - WeChat Pay is essential for daily life in China, from street vendors to group transfers.
+  - Setup requires passport verification, card linking, and a small test transaction.
+  - Keep Alipay as a backup—merchant terminals can fail intermittently on either app.
+  - Name and document formatting must match exactly to avoid verification rejection.
+faqs:
+  - question: How long does WeChat Pay verification take for foreigners?
+    answer: Identity verification typically takes 1–3 business days. Complete it as early as possible to avoid payment delays.
+    question_zh: 外国人微信支付验证需要多久？
+    answer_zh: 身份验证通常需要1-3个工作日。尽早完成以避免支付延迟。
+  - question: Which foreign cards work with WeChat Pay?
+    answer: Visa, Mastercard, and JCB cards are supported. A Chinese bank card offers the smoothest experience if you have one.
+    question_zh: 哪些外国卡支持微信支付？
+    answer_zh: 支持 Visa、Mastercard 和 JCB 卡。如果有中国银行卡，体验会更顺畅。
+  - question: What should I do if WeChat Pay fails?
+    answer: Check card linkage, retry with a different card, ensure your account is active, and keep Alipay ready as a fallback.
+    question_zh: 微信支付失败怎么办？
+    answer_zh: 检查银行卡绑定，换卡重试，确保账户活跃，并准备好支付宝作为备用方案。
 ---
 
 # How to Set Up WeChat Pay as a Foreigner in China (2026)

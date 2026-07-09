@@ -5,6 +5,24 @@ title_zh: "外国人中国 eSIM 指南（2026）：开通、限制与最佳用�
 philosopher_slug: null
 concept_slugs: []
 published_at: 2026-07-01
+takeaways:
+  - eSIM is the fastest way for foreigners to get mobile data in China before landing.
+  - All payment apps, maps, and ride-hailing tools depend on stable mobile connectivity.
+  - Combine eSIM with a local SIM or Wi-Fi for redundancy in coverage gaps.
+  - Check your phone's eSIM compatibility and carrier unlock status before departure.
+faqs:
+  - question: Can foreigners use eSIM in China?
+    answer: Yes, if your phone supports eSIM and is carrier-unlocked. Several providers offer China-specific data plans that activate on arrival.
+    question_zh: 外国人可以在中国使用 eSIM 吗？
+    answer_zh: 可以，前提是手机支持 eSIM 且已解锁。多家供应商提供抵达即激活的中国专用数据套餐。
+  - question: Does eSIM work with Google services blocked in China?
+    answer: eSIM provides data connectivity, but Google services remain blocked. You will still need a VPN or alternative apps for Google-dependent workflows.
+    question_zh: eSIM 在中国能用被屏蔽的 Google 服务吗？
+    answer_zh: eSIM 提供数据连接，但 Google 服务仍被屏蔽。你仍需要 VPN 或替代应用来使用 Google 相关功能。
+  - question: Should I get eSIM or a local SIM card in China?
+    answer: eSIM is faster to set up before travel. A local SIM may offer better coverage in remote areas. Many travelers use both for redundancy.
+    question_zh: 在中国应该用 eSIM 还是本地 SIM 卡？
+    answer_zh: eSIM 在出行前设置更快。本地 SIM 卡在偏远地区覆盖可能更好。许多旅行者两者兼用以确保冗余。
 ---
 
 # China eSIM Guide for Foreigners (2026): Setup, Limits, and Best Use Cases

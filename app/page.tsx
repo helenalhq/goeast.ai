@@ -226,6 +226,44 @@ export default function HomePage() {
         </section>
       )}
 
+      {/* Philosophy in Practice — cross-cluster internal links */}
+      <section className="max-w-5xl mx-auto px-4 pb-8">
+        <div className="rounded-lg border border-sand bg-white p-6">
+          <h2 className="font-serif text-xl font-bold text-ink mb-2">Chinese Philosophy in Practice</h2>
+          <p className="text-sm text-warm mb-5">
+            Ancient ideas applied to modern decisions, leadership, creativity, and daily life.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {[
+              { slug: "wu-wei-philosophy", label: "Wu Wei: Effortless Action" },
+              { slug: "yin-yang-explained", label: "Yin Yang Explained" },
+              { slug: "iching-decision-making", label: "I Ching for Entrepreneurs" },
+              { slug: "dao-of-design", label: "The Dao of Design" },
+              { slug: "wuwei-hustle-culture", label: "Wuwei vs. Hustle Culture" },
+              { slug: "sunzi-strategy-ai", label: "Sunzi, Strategy & AI" },
+            ].map((item) => (
+              <Link
+                key={item.slug}
+                href={`/insights/${item.slug}`}
+                className="rounded-md border border-sand px-4 py-3 hover:border-warm/40 transition-colors"
+              >
+                <p className="text-sm font-medium text-ink hover:text-china-red transition-colors">
+                  {item.label}
+                </p>
+              </Link>
+            ))}
+          </div>
+          <div className="mt-4">
+            <Link
+              href="/insights"
+              className="text-sm font-medium text-china-red hover:text-china-red/80 transition-colors"
+            >
+              View all philosophy insights →
+            </Link>
+          </div>
+        </div>
+      </section>
+
       <section className="max-w-5xl mx-auto px-4 pb-8">
         <div className="rounded-lg border border-sand bg-cream/50 p-6">
           <h2 className="font-serif text-xl font-bold text-ink mb-2">Start With Your Use Case</h2>
