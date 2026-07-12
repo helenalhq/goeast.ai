@@ -5,6 +5,25 @@ title_zh: "不会中文怎么在中国用滴滴？2026 外国人实操指南"
 philosopher_slug: null
 concept_slugs: []
 published_at: 2026-07-01
+takeaways:
+  - DiDi has an English interface accessible through the Alipay mini-program.
+  - Pre-save your destinations in Chinese characters to avoid address confusion.
+  - DiDi is 30-50% cheaper than taxis and eliminates the language barrier.
+  - Always confirm the car's license plate and model before getting in.
+  - Keep Alipay or WeChat Pay set up — DiDi uses these for payment.
+faqs:
+  - question: Can I use DiDi without speaking Chinese?
+    answer: Yes. The DiDi mini-program within Alipay has an English interface. You enter destinations by pin on the map, so Chinese text is optional.
+    question_zh: 不会中文能用滴滴吗？
+    answer_zh: 可以。支付宝内的滴滴小程序有英文界面，通过在地图上钉点输入目的地，不需要中文。
+  - question: How much cheaper is DiDi than a taxi in China?
+    answer: DiDi is typically 30-50% cheaper than hailing a taxi on the street, with transparent pricing shown before you confirm the ride.
+    question_zh: 滴滴比出租车便宜多少？
+    answer_zh: 滴滴通常比街边打车便宜30-50%，且价格在确认前透明显示。
+  - question: What payment methods does DiDi accept?
+    answer: DiDi uses Alipay or WeChat Pay. Set up either before your first ride. No cash is needed.
+    question_zh: 滴滴支持什么支付方式？
+    answer_zh: 滴滴使用支付宝或微信支付。第一次打车前先设置好任一支付工具，无需现金。
 ---
 
 # How to Use DiDi in China Without Chinese (2026 Foreigner Guide)

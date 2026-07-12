@@ -138,11 +138,16 @@ export default function HomePage() {
   const palaces = getAllPalaces().slice(0, 6);
   const growthGuideSlugs = [
     "alipay-vs-wechat-pay-foreigner",
+    "top-10-apps-for-china-travel",
     "wechat-pay-foreigner",
+    "china-vpn-travel-guide",
+    "china-esim-foreigner-guide",
     "didi-english-guide-china",
     "china-hospital-foreigner-guide",
     "best-translation-apps-china-travel",
-    "china-esim-foreigner-guide",
+    "best-time-to-visit-china",
+    "google-maps-in-china-alternatives",
+    "china-food-delivery-foreigner-guide",
   ];
   const growthGuides = growthGuideSlugs
     .map((slug) => insights.find((item) => item.slug === slug))
@@ -287,7 +292,9 @@ export default function HomePage() {
             {[
               { slug: "wu-wei-philosophy", label: "Wu Wei: Effortless Action" },
               { slug: "yin-yang-explained", label: "Yin Yang Explained" },
+              { slug: "taoism-vs-confucianism", label: "Taoism vs Confucianism" },
               { slug: "iching-decision-making", label: "I Ching for Entrepreneurs" },
+              { slug: "chinese-horoscope-vs-western-astrology", label: "Chinese vs Western Astrology" },
               { slug: "dao-of-design", label: "The Dao of Design" },
               { slug: "wuwei-hustle-culture", label: "Wuwei vs. Hustle Culture" },
               { slug: "sunzi-strategy-ai", label: "Sunzi, Strategy & AI" },

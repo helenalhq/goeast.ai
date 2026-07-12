@@ -200,6 +200,16 @@ export function getRelatedContent(input: CrossRefInput): RelatedItem[] {
         .slice(0, 4)
         .map(({ candidate }) => ({ title: candidate.title, href: `/insights/${candidate.slug}`, type: "Insight" }));
       items.push(...otherInsights);
+
+      // Add hub page links based on content type
+      const isTravelContent = !input.philosopherSlug && (!input.conceptSlugs || input.conceptSlugs.length === 0);
+      const isPhilosophyContent = !!input.philosopherSlug || (input.conceptSlugs && input.conceptSlugs.length > 0);
+      if (isTravelContent) {
+        items.push({ title: "China Travel Guide", href: "/china-travel-guide", type: "Guide" });
+      }
+      if (isPhilosophyContent) {
+        items.push({ title: "Chinese Philosophy Guide", href: "/chinese-philosophy-guide", type: "Guide" });
+      }
       break;
     }
     case "hexagram": {

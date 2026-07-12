@@ -17,8 +17,8 @@ export async function generateMetadata({
   const s = getStarBySlug(star);
   if (!s) return {};
   return {
-    title: `${s.name_en} (${s.name_zh}) Meaning in Zi Wei Dou Shu | GoEast.ai`,
-    description: `${s.name_en} (${s.name_zh}) meaning in Zi Wei Dou Shu (Purple Star Astrology): ${s.description_en.slice(0, 150)}`,
+    title: `${s.name_en} (${s.name_zh}) Meaning in Zi Wei Dou Shu | Purple Star Astrology | GoEast.ai`,
+    description: `${s.name_en} (${s.name_zh}) meaning in Zi Wei Dou Shu (紫微斗数): element ${s.element}, ${s.yin_yang} ${s.category} star. Learn how this star shapes your destiny in Chinese Purple Star Astrology.`,
     alternates: {
       canonical: `/ziwei/stars/${star}`,
       languages: {

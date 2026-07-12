@@ -28,6 +28,7 @@ export async function generateMetadata({
   const description = insight.takeaways?.length
     ? `${insight.title}. ${insight.takeaways[0]}`
     : `${insight.title}. ${philosopher?.name ? `Learn about ${philosopher.name}'s philosophy and its modern applications.` : 'Explore Chinese philosophy concepts and their modern applications.'}`;
+  const ogImageUrl = `https://www.goeast.ai/insights/opengraph-image`;
   return {
     title: `${insight.title} | GoEast.ai`,
     description,
@@ -36,6 +37,16 @@ export async function generateMetadata({
       title: `${insight.title} | GoEast.ai`,
       description: `${philosopher?.name || 'Chinese philosophy'} meets modern life: ${insight.title}`,
       type: "article",
+      images: [{ url: ogImageUrl, width: 1200, height: 630 }],
+      publishedTime: insight.published_at || undefined,
+      modifiedTime: insight.published_at || undefined,
+      siteName: "GoEast.ai",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${insight.title} | GoEast.ai`,
+      description,
+      images: [ogImageUrl],
     },
   };
 }
@@ -58,16 +69,23 @@ export default async function InsightDetailPage({
           "@context": "https://schema.org",
           "@type": "Article",
           headline: insight.title,
-          description: `Explore ${philosopher?.name || 'Chinese philosophy'} in the modern world.`,
+          description: insight.takeaways?.length
+            ? `${insight.title}. ${insight.takeaways[0]}`
+            : `Explore ${philosopher?.name || 'Chinese philosophy'} in the modern world.`,
           url: `https://www.goeast.ai/insights/${insight.slug}`,
-          datePublished: insight.published_at,
-          dateModified: insight.published_at,
-          author: { "@type": "Organization", name: "GoEast Editorial Team" },
+          image: `https://www.goeast.ai/insights/opengraph-image`,
+          datePublished: insight.published_at || undefined,
+          dateModified: insight.published_at || undefined,
+          author: { "@type": "Organization", name: "GoEast Editorial Team", url: "https://www.goeast.ai/about" },
           publisher: {
             "@type": "Organization",
             name: "GoEast.ai",
             url: "https://www.goeast.ai",
             logo: { "@type": "ImageObject", url: "https://www.goeast.ai/images/logo.png" },
+          },
+          mainEntityOfPage: {
+            "@type": "WebPage",
+            "@id": `https://www.goeast.ai/insights/${insight.slug}`,
           },
         }}
       />
