@@ -3,6 +3,7 @@ import Link from "next/link";
 import ZiweiChart from "@/components/ZiweiChart";
 import JsonLd from "@/components/JsonLd";
 import FAQ from "@/components/FAQ";
+import EmailCapture from "@/components/EmailCapture";
 import { generateFAQJsonLd } from "@/lib/faq-templates";
 import { getAllStars, getAllPalaces } from "@/lib/ziwei-data";
 import { getAllCombinations } from "@/lib/ziwei-combinations";
@@ -130,6 +131,15 @@ export default function ZiweiPage() {
         {/* Chart Generator */}
         <section className="mb-16">
           <ZiweiChart />
+        </section>
+
+        {/* Email Capture for chart users */}
+        <section className="mb-16">
+          <EmailCapture
+            title="Get Weekly Astrology Insights"
+            subtitle="Subscribe for weekly Zi Wei Dou Shu insights, I Ching readings, and Chinese philosophy guides — delivered free to your inbox."
+            source="ziwei_page"
+          />
         </section>
 
         {/* About Section */}

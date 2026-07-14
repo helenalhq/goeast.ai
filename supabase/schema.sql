@@ -106,3 +106,31 @@ $$ language plpgsql security definer;
 create trigger on_profile_link_subs
   after insert on public.profiles
   for each row execute procedure public.link_orphaned_subscriptions();
+
+-- ============================================
+-- Newsletter subscribers table: email capture for lead generation
+-- ============================================
+create table if not exists public.newsletter_subscribers (
+  id uuid primary key default uuid_generate_v4(),
+  email text not null unique,
+  source text not null default 'website',
+  status text not null default 'active'
+    check (status in ('active', 'unsubscribed', 'bounced')),
+  user_id uuid references public.profiles(id) on delete set null,
+  subscribed_at timestamptz not null default now(),
+  unsubscribed_at timestamptz
+);
+
+create index if not exists idx_newsletter_email on public.newsletter_subscribers(email);
+create index if not exists idx_newsletter_status on public.newsletter_subscribers(status);
+
+-- Allow anonymous INSERT (for public signup) but restrict SELECT/UPDATE/DELETE
+alter table public.newsletter_subscribers enable row level security;
+
+create policy "Anyone can subscribe"
+  on public.newsletter_subscribers for insert
+  with check (true);
+
+create policy "Users can view own subscription"
+  on public.newsletter_subscribers for select
+  using (auth.uid() = user_id);

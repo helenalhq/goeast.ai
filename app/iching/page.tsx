@@ -5,6 +5,7 @@ import OracleCta from "@/components/OracleCta";
 import JsonLd from "@/components/JsonLd";
 import CitationSnippet from "@/components/CitationSnippet";
 import FAQ from "@/components/FAQ";
+import EmailCapture from "@/components/EmailCapture";
 import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -96,6 +97,15 @@ export default function IChingPage() {
           Cast the coins six times to build your hexagram. Free — no account required.
         </p>
         <IChingDivination hexagrams={hexagrams} />
+      </section>
+
+      {/* Email Capture for non-divination users */}
+      <section className="max-w-3xl mx-auto px-4 pb-8">
+        <EmailCapture
+          title="Get Your Daily I Ching Reading"
+          subtitle="Join our newsletter for weekly I Ching insights, Chinese philosophy, and practical China life guides."
+          source="iching_page"
+        />
       </section>
 
       {/* 64 Hexagram Index */}

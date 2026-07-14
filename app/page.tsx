@@ -239,6 +239,27 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Daily I Ching banner */}
+      <section className="max-w-5xl mx-auto px-4 pt-6">
+        <Link
+          href="/daily-iching"
+          className="block rounded-lg border border-sand bg-gradient-to-r from-cream/60 to-white p-5 hover:border-warm/40 transition-colors group"
+        >
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-xs text-warm/60 mb-1 tracking-wide uppercase">New · 每日一卦</p>
+              <h2 className="font-serif text-lg font-bold text-ink group-hover:text-china-red transition-colors mb-1">
+                Daily I Ching Reading
+              </h2>
+              <p className="text-sm text-warm/80">
+                Today&apos;s hexagram from the Book of Changes — a daily moment of ancient wisdom.
+              </p>
+            </div>
+            <span className="text-2xl text-warm/40 group-hover:text-china-red transition-colors flex-shrink-0">☰</span>
+          </div>
+        </Link>
+      </section>
+
       {/* Practical Guides cluster for traffic distribution */}
       {growthGuides.length > 0 && (
         <section className="max-w-5xl mx-auto px-4 pt-8 pb-8">

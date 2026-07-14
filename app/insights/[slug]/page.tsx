@@ -5,6 +5,7 @@ import { PHILOSOPHER_SLUGS } from "@/lib/types";
 import OracleCta from "@/components/OracleCta";
 import JsonLd from "@/components/JsonLd";
 import CitationSnippet from "@/components/CitationSnippet";
+import EmailCapture from "@/components/EmailCapture";
 import { generateCitationSnippet } from "@/lib/citation-snippets";
 import FAQ from "@/components/FAQ";
 import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
@@ -223,6 +224,15 @@ export default async function InsightDetailPage({
           philosopherNameZh={philosopher?.name_zh}
           schoolId={philosopher?.school}
         />
+
+        {/* Email Capture */}
+        <div className="mt-10">
+          <EmailCapture
+            title="Join 500+ Readers Exploring Chinese Culture"
+            subtitle="Get weekly insights on Chinese philosophy, I Ching, practical China life guides, and more — delivered free to your inbox."
+            source={`insight_${insight.slug}`}
+          />
+        </div>
       </div>
     </article>
   );

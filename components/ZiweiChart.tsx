@@ -4,6 +4,8 @@ import { useState } from "react";
 import { astro } from "iztro";
 import { getHourLabel } from "@/lib/ziwei-prompts";
 import ZiweiInterpretation from "./ZiweiInterpretation";
+import ShareButtons from "./ShareButtons";
+import EmailCapture from "./EmailCapture";
 
 interface Palace {
   name: string;
@@ -315,6 +317,23 @@ export default function ZiweiChart() {
             gender={gender}
             astrolabeData={astrolabeData}
           />
+
+          {/* Share + Email Capture */}
+          <div className="mt-6 pt-6 border-t border-sand">
+            <ShareButtons
+              title="My Zi Wei Dou Shu Natal Chart — GoEast.ai"
+              label="Share your chart"
+            />
+          </div>
+          <div className="mt-6">
+            <EmailCapture
+              title="Save Your Chart & Get Weekly Astrology Insights"
+              subtitle="Subscribe for weekly Zi Wei Dou Shu insights, Chinese astrology guides, and I Ching readings."
+              source="ziwei_chart"
+              variant="inline"
+              leadMagnet="Free bonus: China Travel Checklist PDF"
+            />
+          </div>
         </div>
       )}
     </div>

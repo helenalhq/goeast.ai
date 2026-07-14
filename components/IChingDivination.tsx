@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { HexagramData } from "@/lib/types";
 import Link from "next/link";
+import ShareButtons from "@/components/ShareButtons";
+import EmailCapture from "@/components/EmailCapture";
 
 interface CoinCast {
   values: [number, number, number]; // 3 coins, each 2 or 3
@@ -132,6 +134,23 @@ export default function IChingDivination({ hexagrams }: { hexagrams: HexagramDat
             >
               Cast Again
             </button>
+          </div>
+
+          {/* Share + Email Capture */}
+          <div className="mt-6 pt-6 border-t border-sand">
+            <ShareButtons
+              title={`I Ching Reading: Hexagram ${result.number} ${result.name} (${result.name_zh}) — GoEast.ai`}
+              label="Share your reading"
+            />
+          </div>
+          <div className="mt-6">
+            <EmailCapture
+              title="Get Your Daily I Ching Reading"
+              subtitle="Subscribe for weekly I Ching insights, Chinese philosophy, and practical China life guides."
+              source="iching_result"
+              variant="inline"
+              leadMagnet="Free bonus: China Travel Checklist PDF"
+            />
           </div>
         </div>
       )}
