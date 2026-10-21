@@ -13,6 +13,17 @@ import { getAllInsights } from "@/lib/insights";
 import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
 import { CATEGORIES, type Category } from "@/lib/types";
 import { getAllStars, getAllPalaces } from "@/lib/ziwei-data";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "/",
+    languages: {
+      en: "https://www.goeast.ai/",
+      "x-default": "https://www.goeast.ai/",
+    },
+  },
+};
 
 /* ── SVG icons for skill categories ── */
 function CategoryIcon({ id }: { id: string }) {

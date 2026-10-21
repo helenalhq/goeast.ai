@@ -14,6 +14,13 @@ export const metadata: Metadata = {
     "紫微斗数合盘",
     "命盘对比",
   ],
+  alternates: {
+    canonical: "/ziwei/synastry",
+    languages: {
+      en: "https://www.goeast.ai/ziwei/synastry",
+      "x-default": "https://www.goeast.ai/ziwei/synastry",
+    },
+  },
 };
 
 const FAQ_ITEMS = [
@@ -47,7 +54,7 @@ export default function ZiweiSynastryPage() {
     alternateName: "紫微斗数合盘分析",
     description:
       "Compare two natal charts for relationship compatibility using traditional Zi Wei Dou Shu astrology with AI-powered interpretation.",
-    url: "https://goeast.ai/ziwei/synastry",
+    url: "https://www.goeast.ai/ziwei/synastry",
     applicationCategory: "LifestyleApplication",
     operatingSystem: "Web",
     offers: {

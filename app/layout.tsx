@@ -49,13 +49,6 @@ export const metadata: Metadata = {
     google: "3z9kuvrOqe9ZRP7GWl7mi2AO4FERHhlnFe59ryDsAHY",
     yandex: "7a0573508be2216f",
   },
-  alternates: {
-    canonical: "/",
-    languages: {
-      "en": "https://www.goeast.ai/",
-      "x-default": "https://www.goeast.ai/",
-    },
-  },
   openGraph: {
     title: "GoEast.ai | AI Chinese Philosophy, I Ching & China Travel Guides",
     description:
