@@ -204,8 +204,6 @@ content_zh: |
   - [中国哲学洞见](/insights)
 ---
 
-# Chinese Culture Guide: Essential Concepts Before You Visit
-
 Understanding Chinese culture is crucial for successful travel and life in China. This guide covers the essential concepts every visitor should know.
 
 ## Why Understanding Culture Matters
