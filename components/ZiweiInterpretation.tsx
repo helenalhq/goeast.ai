@@ -43,7 +43,9 @@ export default function ZiweiInterpretation({
 
   const handleInterpret = async () => {
     // Require login before using AI features
-    if (!isLoggedIn) {
+    // Wait for the auth check: null (in flight) falls through to the API,
+    // which answers 401 LOGIN_REQUIRED if the user is truly signed out.
+    if (isLoggedIn === false) {
       window.location.href = loginUrlWithNext();
       return;
     }
