@@ -1064,8 +1064,8 @@ export default function OracleOverlay({
                         {unlocking
                           ? "Redirecting..."
                           : user
-                            ? "Unlock Deep Features · $4.99/mo"
-                            : "Sign In to Unlock Deep Features"}
+                            ? "Unlock Deep Readings · $4.99/mo"
+                            : "Sign In to Unlock Deep Readings"}
                       </button>
                     </>
                   )}
@@ -1344,7 +1344,7 @@ export default function OracleOverlay({
                     fontFamily: SERIF,
                   }}
                 >
-                  {unlocking ? "Redirecting..." : "Unlock Deep Features · $4.99/mo"}
+                  {unlocking ? "Redirecting..." : "Unlock Deep Readings · $4.99/mo"}
                 </button>
               )}
             </div>

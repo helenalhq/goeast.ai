@@ -6,7 +6,7 @@ This document describes exactly what Pro ($4.99/month) unlocks, faithful to the 
 
 | Capability | Free | Pro |
 |---|---|---|
-| Oracle consultation | Standard reading (~600–800 words/philosopher) | Deep reading (~2× length, ~1200–1600 words) |
+| Oracle consultation | Standard reading (300–800 words depending on philosopher) | Deep reading (~2× length) |
 | I Ching casting | Same hexagram engine, same output | Same — no difference |
 | Zi Wei chart calculation | Same chart | Same — no difference |
 | Zi Wei AI reading | Standard interpretation (token budget 3000) | Deep mode: decades & timing, palace interactions, reflection (token budget 6000) |
@@ -21,7 +21,7 @@ This document describes exactly what Pro ($4.99/month) unlocks, faithful to the 
   - "GOING DEEPER" section: a second angle on the question
   - 3 REFLECTION questions (instead of 2–3)
   - One follow-up invitation
-  - ~2× length (maxWords ×2; token budget roughly 1200 → 2400)
+  - ~2× length (maxWords ×2; token budget 450–1200 free → 900–2400 deep depending on philosopher)
 - **Zi Wei reading** — Pro adds:
   - DECADES & TIMING (大限流年) section
   - PALACE INTERACTIONS (宫位互参) section

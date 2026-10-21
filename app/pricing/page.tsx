@@ -124,8 +124,8 @@ export default function PricingPage() {
             <ul className="space-y-1 text-warm">
               <li>• Traditional teaching, quoted from the classic</li>
               <li>• AI interpretation of your question</li>
-              <li>• 2–3 reflection questions</li>
-              <li>• Up to ~800 words</li>
+              <li>• I Ching consults end with reflection questions</li>
+              <li>• 300–800 words depending on philosopher</li>
             </ul>
           </div>
           <div className="p-4 bg-white rounded-lg border-2 border-china-red">
