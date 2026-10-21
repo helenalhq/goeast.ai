@@ -15,5 +15,9 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.redirect(`${origin}/login?error=auth`);
+  // Keep the validated return target through the failure path so a retry
+  // (e.g. from pricing) doesn't lose the destination.
+  return NextResponse.redirect(
+    `${origin}/login?error=auth&next=${encodeURIComponent(next)}`
+  );
 }
