@@ -7,6 +7,7 @@ import ReactMarkdown from "react-markdown";
 import Link from "next/link";
 import { loginUrlWithNext } from "@/lib/auth-redirect";
 import { saveDraft, loadDraft } from "@/lib/draft";
+import { logEvent } from "@/lib/analytics";
 
 type RelationshipType = "romantic" | "business" | "parent-child" | "friendship";
 
@@ -156,6 +157,8 @@ export default function ZiweiSynastry() {
     setLoading(true);
     setError("");
     setInterpretation("");
+
+    logEvent("synastry_analysis_started");
 
     try {
       const response = await fetch("/api/ziwei/synastry", {

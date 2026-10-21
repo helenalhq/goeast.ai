@@ -6,6 +6,7 @@ import { getOraclePortrait } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
 import { loginUrlWithNext } from "@/lib/auth-redirect";
 import { saveDraft, loadDraft, clearDraft } from "@/lib/draft";
+import { logEvent } from "@/lib/analytics";
 import {
   ICHING_CONTEXT_DRAFT_KEY,
   validateIchingContext,
@@ -524,6 +525,7 @@ export default function OracleOverlay({
       );
       if (savedCtx) {
         setIchingCtx(savedCtx);
+        logEvent("oracle_opened_with_hexagram", { mode: savedCtx.mode });
       }
     }
   }, [draftKey, slug]);
@@ -556,6 +558,7 @@ export default function OracleOverlay({
       window.location.href = loginUrlWithNext();
       return;
     }
+    logEvent("upgrade_clicked", { from: "oracle" });
     setUnlocking(true);
     try {
       const res = await fetch("/api/checkout", {
@@ -582,6 +585,11 @@ export default function OracleOverlay({
     setErrorMsg("");
     setReading("");
 
+    logEvent("oracle_consult_started", {
+      philosopher: slug,
+      with_context: !!(slug === "prologue-zhougong" && ichingCtx),
+    });
+
     try {
       const res = await fetch("/api/oracle", {
         method: "POST",
@@ -604,6 +612,7 @@ export default function OracleOverlay({
             return;
           } else if (data.code === "LIMIT_REACHED") {
             setErrorMsg("limit");
+            logEvent("oracle_limit_reached", { subscribed: isSubscribed });
             setPhase("question");
           } else {
             setErrorMsg(data.error || "Something went wrong");
@@ -642,6 +651,7 @@ export default function OracleOverlay({
             clearDraft(draftKey);
             clearDraft(ICHING_CONTEXT_DRAFT_KEY);
             setIchingCtx(null);
+            logEvent("oracle_reading_delivered", { philosopher: slug });
             break;
           }
           try {

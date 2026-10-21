@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { logEvent } from "@/lib/analytics";
 
 export default function PricingClient({
   paymentEnabled,
@@ -23,6 +24,7 @@ export default function PricingClient({
 
   const handleUpgrade = async () => {
     setLoading(true);
+    logEvent("upgrade_clicked", { from: "pricing" });
     try {
       const res = await fetch("/api/checkout", { method: "POST" });
       const data = await res.json();

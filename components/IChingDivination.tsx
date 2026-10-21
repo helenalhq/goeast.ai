@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { saveDraft, loadDraft, clearDraft } from "@/lib/draft";
 import { buildIchingContext, ICHING_CONTEXT_DRAFT_KEY } from "@/lib/iching-context";
+import { logEvent } from "@/lib/analytics";
 import { HexagramData } from "@/lib/types";
 import Link from "next/link";
 import ShareButtons from "@/components/ShareButtons";
@@ -62,6 +63,9 @@ export default function IChingDivination({ hexagrams }: { hexagrams: HexagramDat
     saveDraft(CAST_DRAFT_KEY, newCasts);
 
     if (newCasts.length === 6) {
+      logEvent("iching_cast_completed", {
+        has_changing: newCasts.some((c) => c.changing),
+      });
       const binary = newCasts.map((c) => c.binary).join("");
       const hexagram = hexagrams.find((h) => h.binary === binary);
       setResult(hexagram || null);

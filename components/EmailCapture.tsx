@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { logEvent } from "@/lib/analytics";
 
 interface EmailCaptureProps {
   /** Heading text shown above the input */
@@ -50,6 +51,7 @@ export default function EmailCapture({
 
       if (res.ok && data.success) {
         setStatus("success");
+        logEvent("newsletter_subscribed", { source });
         setMessage(data.alreadySubscribed ? "You're already subscribed!" : "Subscribed — you're on the list.");
         setEmail("");
       } else {

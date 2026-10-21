@@ -105,6 +105,9 @@ export async function POST(request: NextRequest) {
         expiresAt,
         metadataUserId,
       );
+      console.log(
+        JSON.stringify({ event: "subscription_activated", subscription_id: subscriptionId }),
+      );
       break;
     }
     case "subscription.scheduled_cancel": {
@@ -116,10 +119,16 @@ export async function POST(request: NextRequest) {
     }
     case "subscription.canceled": {
       await cancelSubscription(supabase, subscriptionId, "cancelled");
+      console.log(
+        JSON.stringify({ event: "subscription_cancelled", subscription_id: subscriptionId }),
+      );
       break;
     }
     case "subscription.expired": {
       await cancelSubscription(supabase, subscriptionId, "expired");
+      console.log(
+        JSON.stringify({ event: "subscription_cancelled", subscription_id: subscriptionId }),
+      );
       break;
     }
     default:

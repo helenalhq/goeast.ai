@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { astro } from "iztro";
 import { saveDraft, loadDraft, clearDraft } from "@/lib/draft";
 import { getHourLabel } from "@/lib/ziwei-prompts";
+import { logEvent } from "@/lib/analytics";
 import ZiweiInterpretation from "./ZiweiInterpretation";
 import ShareButtons from "./ShareButtons";
 import EmailCapture from "./EmailCapture";
@@ -94,6 +95,7 @@ export default function ZiweiChart() {
       const genderZh = gender === "male" ? "男" : "女";
       const result = astro.bySolar(birthDate, birthHour, genderZh, true, "zh-CN");
       const extracted = extractPalaces(result);
+      logEvent("ziwei_chart_generated");
       setPalaces(extracted);
       setAstrolabeData(result);
       setShowChart(true);

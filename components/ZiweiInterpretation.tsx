@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { loginUrlWithNext } from "@/lib/auth-redirect";
+import { logEvent } from "@/lib/analytics";
 
 interface ZiweiInterpretationProps {
   birthDate: string;
@@ -54,6 +55,8 @@ export default function ZiweiInterpretation({
     setError("");
     setInterpretation("");
     setStarted(true);
+
+    logEvent("ziwei_reading_started");
 
     try {
       const response = await fetch("/api/ziwei/interpret", {

@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { logEvent } from "@/lib/analytics";
 
 export default function UpgradeButton() {
   const [loading, setLoading] = useState(false);
 
   const handleUpgrade = async () => {
     setLoading(true);
+    logEvent("upgrade_clicked", { from: "account" });
     try {
       const res = await fetch("/api/checkout", { method: "POST" });
       const data = await res.json();

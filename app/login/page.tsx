@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { sanitizeNextPath } from "@/lib/auth-redirect";
+import { logEvent } from "@/lib/analytics";
 import { useRouter, useSearchParams } from "next/navigation";
 
 function LoginForm() {
@@ -17,6 +18,14 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+
+  const loggedReturnTarget = useRef(false);
+  useEffect(() => {
+    if (!loggedReturnTarget.current && next !== "/account") {
+      loggedReturnTarget.current = true;
+      logEvent("login_with_return_target", {});
+    }
+  }, [next]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
