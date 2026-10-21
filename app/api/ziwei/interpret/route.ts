@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
 
   // Serialize astrolabe data for prompt
   const astrolabeJson = JSON.parse(JSON.stringify(astrolabe));
-  const systemPrompt = getSystemPrompt(lang);
+  const systemPrompt = getSystemPrompt(lang, { deep: isPaid });
   const userMessage = formatAstrolabeForPrompt(astrolabeJson, {
     birthDate,
     birthHour: hour,
@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
         { role: "system", content: systemPrompt },
         { role: "user", content: userMessage },
       ],
-      max_completion_tokens: 3000,
+      max_completion_tokens: isPaid ? 6000 : 3000,
       temperature: 0.7,
       stream: true,
     });

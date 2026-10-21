@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import OpenAI from "openai";
 import { astro } from "iztro";
 import { getSynastrySystemPrompt, formatSynastryForPrompt, RelationshipType } from "@/lib/ziwei-synastry";
+import { ZIWEI_DEEP_ADDENDUM } from "@/lib/ziwei-prompts";
 import { checkFreeLimit, checkAuthUserRateLimit } from "@/lib/rate-limit";
 import { getSubscriptionByUserId } from "@/lib/creem";
 import { createClient } from "@/lib/supabase/server";
@@ -160,7 +161,9 @@ export async function POST(request: NextRequest) {
   const astrolabeAJson = JSON.parse(JSON.stringify(astrolabeA));
   const astrolabeBJson = JSON.parse(JSON.stringify(astrolabeB));
 
-  const systemPrompt = getSynastrySystemPrompt(lang);
+  const systemPrompt = isPaid
+    ? getSynastrySystemPrompt(lang) + ZIWEI_DEEP_ADDENDUM
+    : getSynastrySystemPrompt(lang);
   const userMessage = formatSynastryForPrompt(astrolabeAJson, astrolabeBJson, {
     personA: { birthDate: personA.birthDate, birthHour: hourA, gender: personA.gender },
     personB: { birthDate: personB.birthDate, birthHour: hourB, gender: personB.gender },
@@ -177,7 +180,7 @@ export async function POST(request: NextRequest) {
         { role: "system", content: systemPrompt },
         { role: "user", content: userMessage },
       ],
-      max_completion_tokens: 4000,
+      max_completion_tokens: isPaid ? 8000 : 4000,
       temperature: 0.7,
       stream: true,
     });

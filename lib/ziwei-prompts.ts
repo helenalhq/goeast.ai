@@ -85,6 +85,17 @@ export const ZIWEI_SYSTEM_PROMPT_ZH = `你是紫微斗数大师，精通这门�
 - 将挑战框架为成长机会，而非定数。
 - 强调命运可通过个人修行来影响。`;
 
+/** Appended for Pro readings: deeper structure, roughly double the depth.
+ *  Free readings are unchanged. */
+export const ZIWEI_DEEP_ADDENDUM = `
+
+DEEP READING MODE (Pro):
+In addition to the standard sections:
+- Add "DECADES & TIMING (大限流年)" — a plain-language overview of the current decade (大限) and year (流年) themes shown in the chart data, framed as tendencies to work with, not fixed events.
+- Add "PALACE INTERACTIONS (宫位互参)" — connect at least two palace trios (e.g., 命宫–财帛宫–事业宫) and explain the interplay.
+- End with "REFLECTION" — 3 open questions for self-cultivation.
+Same rules apply: entertainment, cultural education, and reflection only; no medical/legal/financial directives; never frame challenges as doom.`;
+
 export function formatAstrolabeForPrompt(astrolabeData: Record<string, unknown>, request: ZiweiInterpretRequest): string {
   const genderLabel = request.gender === "male" ? "Male (男)" : "Female (女)";
   const hourLabel = getHourLabel(request.birthHour, "en");
@@ -100,12 +111,17 @@ ${JSON.stringify(astrolabeData, null, 2)}
 Please provide a comprehensive interpretation of this natal chart.`;
 }
 
-export function getSystemPrompt(language: "en" | "zh" | "both"): string {
+export function getSystemPrompt(
+  language: "en" | "zh" | "both",
+  opts?: { deep?: boolean }
+): string {
+  let base: string;
   if (language === "zh") {
-    return ZIWEI_SYSTEM_PROMPT_ZH;
+    base = ZIWEI_SYSTEM_PROMPT_ZH;
+  } else if (language === "both") {
+    base = ZIWEI_SYSTEM_PROMPT + `\n\nIMPORTANT: Provide your response in BILINGUAL format. For each section, write the English version first, then the Chinese version (中文版) immediately below it. Use clear section dividers.`;
+  } else {
+    base = ZIWEI_SYSTEM_PROMPT;
   }
-  if (language === "both") {
-    return ZIWEI_SYSTEM_PROMPT + `\n\nIMPORTANT: Provide your response in BILINGUAL format. For each section, write the English version first, then the Chinese version (中文版) immediately below it. Use clear section dividers.`;
-  }
-  return ZIWEI_SYSTEM_PROMPT;
+  return opts?.deep ? base + ZIWEI_DEEP_ADDENDUM : base;
 }
