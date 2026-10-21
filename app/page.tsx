@@ -357,7 +357,7 @@ export default function HomePage() {
         <div className="rounded-lg border border-sand bg-cream/50 p-6">
           <h2 className="font-serif text-xl font-bold text-ink mb-2">Start With Your Use Case</h2>
           <p className="text-sm text-warm mb-5">
-            Choose a search topic and jump directly to optimized landing guides.
+            Choose a topic and jump straight into the guide.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <Link
