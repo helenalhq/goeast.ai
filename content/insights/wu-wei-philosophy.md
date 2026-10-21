@@ -4,11 +4,11 @@ title: "Wu Wei: The Chinese Philosophy of Effortless Action"
 title_zh: "无为： effortless action 的中国哲学"
 philosopher_slug: laozi
 concept_slugs: [wuwei, dao, ziran]
-published_at: 2026-06-30
+published_at: 2026-10-22
 content_zh: |
   无为是道家哲学的核心概念，常被误解为"什么都不做"。实际上，它指的是顺应自然、不强行干预的智慧。
 
-  ## 什么是无为？
+  ## 无为究竟是什么？
 
   无为字面意思是"不做"，但更准确的理解是"不强行作为"或"自然而然地行动"。
 
@@ -44,7 +44,7 @@ content_zh: |
   - 行动：当条件成熟时
   - 放手：当事情需要自然发展时
 
-  ## 实际应用
+  ## 无为在现代工作与生活中
 
   ### 决策中的无为
   - 知道何时不做决定
@@ -113,24 +113,24 @@ takeaways:
   - Wu Wei applies to leadership, creativity, decision-making, and daily stress.
 faqs:
   - question: Does Wu Wei mean doing nothing?
-    answer: No. Wu Wei means not forcing action. It is about acting in alignment with the natural flow—sometimes decisively, sometimes by waiting.
+    answer: No. Wu Wei is not laziness or inaction—it requires keen awareness of when to act and when to refrain, moving with the natural flow instead of forcing outcomes.
     question_zh: 无为意味着什么都不做吗？
-    answer_zh: 不是。无为是不强行作为，是在适当时机以适当方式行动。
+    answer_zh: 不是。无为不是懒惰或不作为——它需要敏锐觉察何时行动、何时静待，顺应自然而非强行推进。
   - question: How can I practice Wu Wei at work?
-    answer: Observe before reacting, remove unnecessary effort, create conditions for flow, and intervene only when necessary.
+    answer: Observe before reacting—notice where you are forcing outcomes. Delegate rather than micromanage, protect uninterrupted blocks for deep work, and step in only when the team truly needs it.
     question_zh: 如何在工作中实践无为？
-    answer_zh: 在反应前先观察，减少不必要的努力，创造心流条件，只在必要时介入。
+    answer_zh: 先观察再反应，留意你在哪些地方强行推进。授权而非事必躬亲，为深度工作保留不被打断的时间，只在团队真正需要时介入。
   - question: Is Wu Wei compatible with ambition?
-    answer: Yes. Wu Wei is about pursuing goals with wisdom and efficiency, not giving them up. The most successful people often achieve more by forcing less.
+    answer: Yes. Wu Wei means pursuing goals with less friction, not abandoning them—choosing battles wisely and acting at the right time. The most successful people often achieve more by forcing less.
     question_zh: 无为与雄心壮志兼容吗？
-    answer_zh: 兼容。无为不是放弃目标，而是以更智慧、更少阻力的方式实现目标。
+    answer_zh: 兼容。无为是以更少阻力追求目标，而非放弃目标——明智地选择战场，在恰当时机行动。
 ---
 
 # Wu Wei: The Chinese Philosophy of Effortless Action
 
 Wu Wei (无为) is one of the most profound yet misunderstood concepts in Chinese philosophy. Literally translated as "non-action" or "not doing," it actually refers to the wisdom of aligning with the natural flow of life rather than forcing outcomes.
 
-## What is Wu Wei?
+## What Wu Wei Actually Means
 
 Wu Wei doesn't mean doing nothing. It means:
 - **Not forcing** — allowing things to unfold naturally
@@ -189,7 +189,7 @@ When facing resistance, ask: "Am I rowing against the current, or can I adjust m
 - The situation needs time
 - Your ego is driving the action
 
-## Practical Applications
+## Wu Wei in Modern Work and Life
 
 ### In Decision Making
 
