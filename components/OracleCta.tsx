@@ -36,7 +36,7 @@ export default function OracleCta({
       >
         Consult the Oracle →
       </Link>
-      <p className="text-xs text-warm/50 mt-2">Free: 3 consultations per day · Pro: 10 per day + deep features</p>
+      <p className="text-xs text-warm/50 mt-2">Free: 3 consultations per day · Pro: 10 per day + deep readings</p>
     </div>
   );
 }

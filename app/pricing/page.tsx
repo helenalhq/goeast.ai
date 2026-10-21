@@ -22,10 +22,9 @@ export default function PricingPage() {
   ];
 
   const proFeatures = [
-    "10 AI Oracle consultations per day",
-    "Deep interpretations and extended sessions",
-    "Full Zi Wei Dou Shu chart analysis",
-    "Priority access to new AI tools",
+    "10 AI consultations per day (free: 3)",
+    "Deep readings — ~2× length with Going Deeper, reflection prompts & follow-ups",
+    "Zi Wei deep mode: timing (大限流年) & palace-interaction analysis",
     "Cancel anytime",
   ];
 
@@ -115,6 +114,34 @@ export default function PricingPage() {
           <PricingClient paymentEnabled={config.paymentEnabled} />
         </div>
       </div>
+
+      {/* What Pro actually adds — faithful to the implementation (docs/entitlements.md) */}
+      <section className="mb-12 p-6 bg-cream rounded-xl border border-sand">
+        <h2 className="text-lg font-semibold text-ink mb-3">What a Pro reading adds</h2>
+        <div className="grid md:grid-cols-2 gap-4 text-sm">
+          <div className="p-4 bg-white rounded-lg border border-sand">
+            <p className="font-medium text-ink mb-2">Free reading</p>
+            <ul className="space-y-1 text-warm">
+              <li>• Traditional teaching, quoted from the classic</li>
+              <li>• AI interpretation of your question</li>
+              <li>• 2–3 reflection questions</li>
+              <li>• Up to ~800 words</li>
+            </ul>
+          </div>
+          <div className="p-4 bg-white rounded-lg border-2 border-china-red">
+            <p className="font-medium text-china-red mb-2">Pro deep reading — everything in Free, plus</p>
+            <ul className="space-y-1 text-warm">
+              <li>• “Going Deeper”: a second angle on your question</li>
+              <li>• Zi Wei: decade &amp; year timing, palace interactions</li>
+              <li>• 3 reflection questions + one follow-up invitation</li>
+              <li>• Up to ~2× the length</li>
+            </ul>
+          </div>
+        </div>
+        <p className="text-xs text-warm/60 mt-3">
+          Same engine, same sources — Pro readings go deeper and longer, and you get 10 per day instead of 3.
+        </p>
+      </section>
 
       <div className="text-center text-sm text-warm">
         <p>

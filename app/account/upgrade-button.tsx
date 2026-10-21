@@ -25,9 +25,9 @@ export default function UpgradeButton() {
   return (
     <div className="border-t border-sand pt-4">
       <p className="text-sm text-warm mb-3">
-        Upgrade to GoEast.ai Pro for 10 AI Oracle consultations per day, deep
-        interpretations, full Zi Wei Dou Shu analysis, and priority access to
-        new features.
+        Upgrade to GoEast.ai Pro for 10 AI consultations per day and deep
+        readings (~2× length + reflection prompts), including Zi Wei timing
+        and palace-interaction analysis.
       </p>
       <button
         onClick={handleUpgrade}

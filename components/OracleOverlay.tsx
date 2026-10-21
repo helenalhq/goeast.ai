@@ -1027,7 +1027,7 @@ export default function OracleOverlay({
                         className="text-white/60 text-sm leading-relaxed mb-2"
                         style={{ fontFamily: SERIF }}
                       >
-                        You&apos;ve used all 3 free consultations today. Pro unlocks deep features and 10 per day:
+                        You&apos;ve used all 3 free consultations today. Pro unlocks deep readings (~2× length) and 10 per day:
                       </p>
                       <ul
                         className="text-white/40 text-xs leading-relaxed space-y-1 mb-3"
