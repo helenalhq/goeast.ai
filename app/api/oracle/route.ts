@@ -4,6 +4,7 @@ import { getOraclePrompt } from "@/lib/oracle-prompts";
 import { checkFreeLimit, checkAuthUserRateLimit } from "@/lib/rate-limit";
 import { getSubscriptionByUserId } from "@/lib/creem";
 import { createClient } from "@/lib/supabase/server";
+import { validateIchingContext, buildIchingContextBlock, type IchingConsultationContext } from "@/lib/iching-context";
 
 const openai = new OpenAI({
   apiKey: process.env.AZURE_OPENAI_API_KEY,
@@ -19,7 +20,7 @@ const VALID_SLUGS = [
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { philosopher, question } = body;
+  const { philosopher, question, ichingContext } = body;
 
   if (!philosopher || !question || typeof question !== "string" || question.trim().length === 0) {
     return new Response(JSON.stringify({ error: "philosopher and question are required" }), {
@@ -48,6 +49,24 @@ export async function POST(request: NextRequest) {
       status: 404,
       headers: { "Content-Type": "application/json" },
     });
+  }
+
+  // I Ching cast context (Zhou Gong only). Numbers validated; names resolved server-side.
+  let validatedIchingContext: IchingConsultationContext | null = null;
+  if (ichingContext !== undefined) {
+    if (philosopher !== "prologue-zhougong") {
+      return new Response(JSON.stringify({ error: "ichingContext is only supported for Zhou Gong" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    validatedIchingContext = validateIchingContext(ichingContext);
+    if (!validatedIchingContext) {
+      return new Response(JSON.stringify({ error: "Invalid I Ching context" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
   }
 
   // Check authorization via Supabase session
@@ -108,14 +127,23 @@ export async function POST(request: NextRequest) {
 
   const MODEL = process.env.AZURE_OPENAI_MODEL || "gpt-5.4-mini";
 
+  const finalPrompt = getOraclePrompt(philosopher, { deep: isPaid });
+  if (!finalPrompt) {
+    return new Response(JSON.stringify({ error: "Philosopher not available for consultation" }), {
+      status: 404,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+  const contextBlock = validatedIchingContext ? buildIchingContextBlock(validatedIchingContext) : "";
+
   try {
     const stream = await openai.chat.completions.create({
       model: MODEL,
       messages: [
-        { role: "system", content: promptConfig.system },
+        { role: "system", content: finalPrompt.system + contextBlock },
         { role: "user", content: question.trim() },
       ],
-      max_completion_tokens: Math.round(promptConfig.maxWords * 1.5),
+      max_completion_tokens: Math.round(finalPrompt.maxWords * 1.5),
       temperature: 0.8,
       stream: true,
     });
