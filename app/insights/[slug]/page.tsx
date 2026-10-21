@@ -227,7 +227,7 @@ export default async function InsightDetailPage({
           />
         ) : (
           <div className="mt-12 p-6 bg-cream/60 rounded-sm text-center">
-            <p className="font-serif text-ink text-lg mb-4">Keep planning your trip to China?</p>
+            <p className="font-serif text-ink text-lg mb-4">Explore more China guides</p>
             <div className="flex flex-wrap justify-center gap-3">
               <Link
                 href="/china-travel-guide"
