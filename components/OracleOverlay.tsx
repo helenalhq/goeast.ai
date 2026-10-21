@@ -6,7 +6,11 @@ import { getOraclePortrait } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
 import { loginUrlWithNext } from "@/lib/auth-redirect";
 import { saveDraft, loadDraft, clearDraft } from "@/lib/draft";
-import { ICHING_CONTEXT_DRAFT_KEY, type IchingConsultationContext } from "@/lib/iching-context";
+import {
+  ICHING_CONTEXT_DRAFT_KEY,
+  validateIchingContext,
+  type IchingConsultationContext,
+} from "@/lib/iching-context";
 import { getHexagramByNumber } from "@/lib/iching-data";
 import type { User } from "@supabase/supabase-js";
 import ReactMarkdown from "react-markdown";
@@ -512,14 +516,13 @@ export default function OracleOverlay({
     setInput(typeof savedDraft === "string" ? savedDraft : "");
     // Restore the I Ching cast context (Zhou Gong only) so a refresh
     // mid-question keeps the user's cast alongside the question draft.
+    // Reuse the server validator: a corrupt/out-of-range draft must not
+    // render a broken card ("Hexagram undefined").
     if (slug === "prologue-zhougong") {
-      const savedCtx = loadDraft<IchingConsultationContext>(ICHING_CONTEXT_DRAFT_KEY);
-      if (
-        savedCtx &&
-        (savedCtx.mode === "cast" || savedCtx.mode === "study") &&
-        typeof savedCtx.hexagramNumber === "number" &&
-        Array.isArray(savedCtx.changingLines)
-      ) {
+      const savedCtx = validateIchingContext(
+        loadDraft<IchingConsultationContext>(ICHING_CONTEXT_DRAFT_KEY)
+      );
+      if (savedCtx) {
         setIchingCtx(savedCtx);
       }
     }
@@ -944,7 +947,16 @@ export default function OracleOverlay({
                 {config.scenarios.map((s, i) => (
                   <button
                     key={i}
-                    onClick={() => consult(s.question)}
+                    onClick={() =>
+                      consult(
+                        // With a real cast restored, the "cast a hexagram"
+                        // scenario should interpret the existing cast, not
+                        // ask to throw again.
+                        ichingCtx && s.question.toLowerCase().includes("cast a hexagram")
+                          ? "Interpret the hexagram I cast for my current situation"
+                          : s.question
+                      )
+                    }
                     className="w-full text-left flex items-center gap-3 px-4 py-3 rounded-r-lg group cursor-pointer transition-all duration-300 hover:translate-x-1"
                     style={{
                       background: `linear-gradient(135deg, rgba(${accent},0.08) 0%, rgba(${accent},0.02) 100%)`,
@@ -1094,7 +1106,7 @@ export default function OracleOverlay({
                           clearDraft(ICHING_CONTEXT_DRAFT_KEY);
                           setIchingCtx(null);
                         }}
-                        className="text-white/40 hover:text-white/80 text-xs flex-shrink-0"
+                        className="text-white/40 hover:text-white/80 text-xs flex-shrink-0 p-2 -m-2"
                         aria-label="Remove hexagram context"
                       >
                         ✕
