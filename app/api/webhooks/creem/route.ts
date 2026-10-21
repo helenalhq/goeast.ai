@@ -3,22 +3,26 @@ import { createClient } from "@supabase/supabase-js";
 import crypto from "crypto";
 import { activateSubscription, cancelSubscription } from "@/lib/creem";
 
-const CREEM_WEBHOOK_SECRET = process.env.CREEM_WEBHOOK_SECRET || "";
-
-function verifySignature(body: string, signature: string): boolean {
-  if (!CREEM_WEBHOOK_SECRET) return false;
+function verifySignature(secret: string, body: string, signature: string): boolean {
   const computed = crypto
-    .createHmac("sha256", CREEM_WEBHOOK_SECRET)
+    .createHmac("sha256", secret)
     .update(body)
     .digest("hex");
   return computed === signature;
 }
 
 export async function POST(request: NextRequest) {
+  // Fail closed: no signing secret configured → never process events.
+  const secret = process.env.CREEM_WEBHOOK_SECRET;
+  if (!secret) {
+    console.error("creem webhook: CREEM_WEBHOOK_SECRET not configured — rejecting event");
+    return new Response("Webhook not configured", { status: 500 });
+  }
+
   const body = await request.text();
   const signature = request.headers.get("creem-signature") || "";
 
-  if (CREEM_WEBHOOK_SECRET && !verifySignature(body, signature)) {
+  if (!verifySignature(secret, body, signature)) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
@@ -47,14 +51,14 @@ export async function POST(request: NextRequest) {
   let expiresAt: Date;
 
   if (eventType === "checkout.completed") {
-    subscriptionId = obj.subscription?.id;
-    customerId = obj.customer?.id;
-    customerEmail = obj.customer?.email;
+    subscriptionId = obj.subscription?.id ?? obj.id;
+    customerId = obj.customer?.id ?? obj.customer_id;
+    customerEmail = obj.customer?.email ?? obj.customer_email;
     metadataUserId = obj.metadata?.userId;
   } else {
     subscriptionId = obj.id;
-    customerId = obj.customer?.id;
-    customerEmail = obj.customer?.email;
+    customerId = obj.customer?.id ?? obj.customer_id;
+    customerEmail = obj.customer?.email ?? obj.customer_email;
     metadataUserId = obj.metadata?.userId;
   }
 
@@ -63,7 +67,23 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true });
   }
 
+  // Real expiry from the event when available; +30d fallback keeps renewals safe.
+  // Candidate names cover Creem's schema variants; confirm exact field during test-mode verification.
+  const expiryCandidates = [
+    obj.current_period_end_date,
+    obj.current_period_end,
+    obj.expires_at,
+    obj.expires_date,
+  ];
   expiresAt = new Date(Date.now() + 30 * 86_400_000);
+  for (const candidate of expiryCandidates) {
+    if (candidate === null || candidate === undefined) continue;
+    const d = new Date(typeof candidate === "number" ? candidate * 1000 : String(candidate));
+    if (!isNaN(d.getTime()) && d.getTime() > Date.now()) {
+      expiresAt = d;
+      break;
+    }
+  }
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
