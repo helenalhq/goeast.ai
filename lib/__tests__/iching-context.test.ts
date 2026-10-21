@@ -9,7 +9,6 @@ import {
 
 const HEXAGRAMS = getAllHexagrams();
 const yang = { values: [3, 3, 3] as [number, number, number], line: 7, binary: "1", changing: false };
-const yin = { values: [2, 2, 2] as [number, number, number], line: 8, binary: "0", changing: false };
 const oldYang = { values: [3, 3, 3] as [number, number, number], line: 9, binary: "1", changing: true };
 const oldYin = { values: [2, 2, 2] as [number, number, number], line: 6, binary: "0", changing: true };
 
