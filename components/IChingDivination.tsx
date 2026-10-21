@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { saveDraft, loadDraft, clearDraft } from "@/lib/draft";
+import { buildIchingContext, ICHING_CONTEXT_DRAFT_KEY } from "@/lib/iching-context";
 import { HexagramData } from "@/lib/types";
 import Link from "next/link";
 import ShareButtons from "@/components/ShareButtons";
@@ -32,6 +34,7 @@ export default function IChingDivination({ hexagrams }: { hexagrams: HexagramDat
   const [casts, setCasts] = useState<CoinCast[]>([]);
   const [result, setResult] = useState<HexagramData | null>(null);
   const [phase, setPhase] = useState<"ready" | "casting" | "result">("ready");
+  const router = useRouter();
 
   // Restore an in-progress cast after navigating away and back. The saved
   // coin results ARE the cast — restoring them never re-rolls the coins.
@@ -68,6 +71,7 @@ export default function IChingDivination({ hexagrams }: { hexagrams: HexagramDat
 
   const handleReset = () => {
     clearDraft(CAST_DRAFT_KEY);
+    clearDraft(ICHING_CONTEXT_DRAFT_KEY);
     setCasts([]);
     setResult(null);
     setPhase("ready");
@@ -145,12 +149,18 @@ export default function IChingDivination({ hexagrams }: { hexagrams: HexagramDat
             >
               Read Full Hexagram →
             </Link>
-            <Link
-              href="/sophies-journey/prologue-zhougong"
+            <button
+              type="button"
+              onClick={() => {
+                // Hand the actual cast to the Oracle (numbers only; server resolves names).
+                const ctx = buildIchingContext(casts, hexagrams);
+                if (ctx) saveDraft(ICHING_CONTEXT_DRAFT_KEY, ctx);
+                router.push("/sophies-journey/prologue-zhougong#oracle");
+              }}
               className="px-6 py-2 bg-[#8b4513] text-white rounded-full font-medium hover:opacity-90 transition-colors text-sm"
             >
               Ask Zhou Gong for AI Interpretation →
-            </Link>
+            </button>
             <button
               onClick={handleReset}
               className="px-4 py-2 text-warm text-sm hover:text-china-red transition-colors"

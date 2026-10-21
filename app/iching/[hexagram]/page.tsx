@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getHexagramBySlug, getAllHexagrams } from "@/lib/iching-data";
 import { TRIGRAMS } from "@/lib/types";
-import OracleCta from "@/components/OracleCta";
+import OracleStudyLink from "@/components/OracleStudyLink";
 import JsonLd from "@/components/JsonLd";
 import CitationSnippet from "@/components/CitationSnippet";
 import { generateCitationSnippet } from "@/lib/citation-snippets";
@@ -210,12 +210,9 @@ export default async function HexagramDetailPage({
         })()}
 
         {/* Oracle CTA */}
-        <OracleCta
-          philosopherSlug="zhou-gong"
-          philosopherName="Zhou Gong"
-          philosopherNameZh="周公"
-          schoolId="ancient"
-          message="Want Zhou Gong to interpret this hexagram for your personal situation? Try the Oracle."
+        <OracleStudyLink
+          hexagramNumber={h.number}
+          message={`Learning Hexagram ${h.number} (${h.name_zh})? Bring it to Zhou Gong — no coins needed for a study reading.`}
         />
       </div>
     </article>
