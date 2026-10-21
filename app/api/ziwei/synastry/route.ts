@@ -162,7 +162,9 @@ export async function POST(request: NextRequest) {
   const astrolabeBJson = JSON.parse(JSON.stringify(astrolabeB));
 
   const systemPrompt = isPaid
-    ? getSynastrySystemPrompt(lang) + ZIWEI_DEEP_ADDENDUM
+    ? getSynastrySystemPrompt(lang) +
+      ZIWEI_DEEP_ADDENDUM +
+      "\nFor synastry, apply the timing and palace analysis to BOTH charts and to their interaction."
     : getSynastrySystemPrompt(lang);
   const userMessage = formatSynastryForPrompt(astrolabeAJson, astrolabeBJson, {
     personA: { birthDate: personA.birthDate, birthHour: hourA, gender: personA.gender },

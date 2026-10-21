@@ -6,7 +6,7 @@ describe("getSystemPrompt deep mode", () => {
     for (const lang of ["en", "zh", "both"] as const) {
       const base = getSystemPrompt(lang);
       const deep = getSystemPrompt(lang, { deep: true });
-      expect(deep.startsWith(base)).toBe(true);
+      expect(deep).toBe(base + ZIWEI_DEEP_ADDENDUM);
       expect(deep).toContain("DEEP READING");
     }
     expect(getSystemPrompt("en")).not.toContain("DEEP READING");
