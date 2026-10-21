@@ -504,8 +504,8 @@ export default function OracleOverlay({
     });
     // Restore any question draft saved before a login redirect (no auto-submit).
     // Type-guard: a corrupted/legacy storage value must never reach input state.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     const savedDraft = loadDraft<string>(draftKey);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setInput(typeof savedDraft === "string" ? savedDraft : "");
   }, [draftKey]);
 
