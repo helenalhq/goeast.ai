@@ -57,7 +57,7 @@ export default function PricingClient({
   if (!user) {
     return (
       <Link
-        href="/login?redirect=/pricing"
+        href="/login?next=/pricing"
         className="block w-full text-center px-6 py-2.5 rounded-lg bg-china-red text-white text-sm font-medium hover:bg-china-red/90 transition-colors"
       >
         Sign in to upgrade

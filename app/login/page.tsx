@@ -2,12 +2,14 @@
 
 import { useState, Suspense } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { sanitizeNextPath } from "@/lib/auth-redirect";
 import { useRouter, useSearchParams } from "next/navigation";
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") || "/account";
+  const next = sanitizeNextPath(searchParams.get("next"));
+  const authError = searchParams.get("error") === "auth";
 
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
@@ -40,7 +42,7 @@ function LoginForm() {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
         },
       });
       if (error) {
@@ -60,7 +62,7 @@ function LoginForm() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
       },
     });
     if (error) {
@@ -83,6 +85,12 @@ function LoginForm() {
             ? "Sign in to access your oracle consultations"
             : "Join GoEast.ai for unlimited wisdom"}
         </p>
+
+        {authError && (
+          <div className="mb-4 px-4 py-3 rounded-lg bg-china-red/10 border border-china-red/20 text-china-red text-sm">
+            Sign-in failed or the link expired. Please try again.
+          </div>
+        )}
 
         {error && (
           <div className="mb-4 px-4 py-3 rounded-lg bg-china-red/10 border border-china-red/20 text-china-red text-sm">

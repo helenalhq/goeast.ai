@@ -78,7 +78,7 @@ export default function PricingPage() {
             ))}
           </ul>
           <Link
-            href="/login"
+            href="/login?next=/pricing"
             className="block w-full text-center px-6 py-2.5 rounded-lg border border-sand text-ink text-sm font-medium hover:bg-cream/50 transition-colors"
           >
             Get started free
