@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
+import { loginUrlWithNext } from "@/lib/auth-redirect";
 
 interface ZiweiInterpretationProps {
   birthDate: string;
@@ -24,6 +25,14 @@ export default function ZiweiInterpretation({
   const [language, setLanguage] = useState<"en" | "zh" | "both">("both");
   const [started, setStarted] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+  const [loginHref, setLoginHref] = useState("/login");
+
+  // loginUrlWithNext reads window.location — only available post-mount.
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    setLoginHref(loginUrlWithNext());
+  }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     const supabase = createClient();
@@ -35,7 +44,7 @@ export default function ZiweiInterpretation({
   const handleInterpret = async () => {
     // Require login before using AI features
     if (!isLoggedIn) {
-      window.location.href = "/login";
+      window.location.href = loginUrlWithNext();
       return;
     }
 
@@ -54,10 +63,13 @@ export default function ZiweiInterpretation({
       if (!response.ok) {
         const errData = await response.json();
         if (errData.code === "LOGIN_REQUIRED") {
-          window.location.href = "/login";
+          window.location.href = loginUrlWithNext();
           return;
         } else if (errData.code === "LIMIT_REACHED") {
-          setError("Daily consultation limit reached. Subscribe for more readings.");
+          setError(
+            errData.error ||
+              "Daily limit reached — the free plan includes 3 AI consultations per day; Pro includes 10."
+          );
         } else {
           setError(errData.error || "Failed to get interpretation.");
         }
@@ -123,10 +135,11 @@ export default function ZiweiInterpretation({
             AI Interpretation · AI 命盘解读
           </h4>
           <p className="text-sm text-warm mb-4">
-            Log in to unlock AI-powered chart readings based on traditional Zi Wei Dou Shu wisdom.
+            Casting your chart is free and needs no account. AI readings need a free
+            login (3 per day) — or 10 per day with Pro.
           </p>
           <Link
-            href="/login"
+            href={loginHref}
             className="inline-block px-6 py-3 bg-china-red text-white rounded-full font-medium hover:bg-china-red/90 transition-colors"
           >
             Log In to Get Reading · 登录获取解读

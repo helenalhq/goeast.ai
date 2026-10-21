@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { astro } from "iztro";
+import { saveDraft, loadDraft, clearDraft } from "@/lib/draft";
 import { getHourLabel } from "@/lib/ziwei-prompts";
 import ZiweiInterpretation from "./ZiweiInterpretation";
 import ShareButtons from "./ShareButtons";
@@ -39,6 +40,8 @@ const BIRTH_HOURS = Array.from({ length: 12 }, (_, i) => ({
   label_zh: getHourLabel(i, "zh"),
 }));
 
+const ZIWEI_DRAFT_KEY = "ziwei-birth";
+
 export default function ZiweiChart() {
   const [birthDate, setBirthDate] = useState("");
   const [birthHour, setBirthHour] = useState(0);
@@ -49,6 +52,34 @@ export default function ZiweiChart() {
   const [error, setError] = useState("");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [astrolabeData, setAstrolabeData] = useState<any>(null);
+  const [draftLoaded, setDraftLoaded] = useState(false);
+
+  // Restore birth data (and the deterministic chart computed from it) after a
+  // login round-trip. astro.bySolar is pure — same inputs, same chart.
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    const draft = loadDraft<{ birthDate: string; birthHour: number; gender: "male" | "female" }>(ZIWEI_DRAFT_KEY);
+    if (draft?.birthDate) {
+      setBirthDate(draft.birthDate);
+      setBirthHour(draft.birthHour);
+      setGender(draft.gender);
+      try {
+        const genderZh = draft.gender === "male" ? "男" : "女";
+        const result = astro.bySolar(draft.birthDate, draft.birthHour, genderZh, true, "zh-CN");
+        setPalaces(extractPalaces(result));
+        setAstrolabeData(result);
+        setShowChart(true);
+      } catch {
+        // form restored; user re-clicks Generate
+      }
+    }
+    setDraftLoaded(true);
+  }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
+
+  useEffect(() => {
+    if (draftLoaded) saveDraft(ZIWEI_DRAFT_KEY, { birthDate, birthHour, gender });
+  }, [draftLoaded, birthDate, birthHour, gender]);
 
   const handleGenerate = () => {
     setError("");
@@ -73,6 +104,7 @@ export default function ZiweiChart() {
   };
 
   const handleReset = () => {
+    clearDraft(ZIWEI_DRAFT_KEY);
     setShowChart(false);
     setPalaces([]);
     setSelectedPalace(null);

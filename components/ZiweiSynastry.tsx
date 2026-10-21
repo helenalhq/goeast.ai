@@ -5,6 +5,8 @@ import { createClient } from "@/lib/supabase/client";
 import { getHourLabel } from "@/lib/ziwei-prompts";
 import ReactMarkdown from "react-markdown";
 import Link from "next/link";
+import { loginUrlWithNext } from "@/lib/auth-redirect";
+import { saveDraft, loadDraft } from "@/lib/draft";
 
 type RelationshipType = "romantic" | "business" | "parent-child" | "friendship";
 
@@ -97,6 +99,8 @@ function PersonForm({
   );
 }
 
+const SYNASTRY_DRAFT_KEY = "ziwei-synastry";
+
 export default function ZiweiSynastry() {
   const [personA, setPersonA] = useState<PersonInput>({ birthDate: "", birthHour: 0, gender: "male" });
   const [personB, setPersonB] = useState<PersonInput>({ birthDate: "", birthHour: 0, gender: "female" });
@@ -106,6 +110,8 @@ export default function ZiweiSynastry() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+  const [draftLoaded, setDraftLoaded] = useState(false);
+  const [loginHref, setLoginHref] = useState("/login");
 
   useEffect(() => {
     const supabase = createClient();
@@ -114,9 +120,29 @@ export default function ZiweiSynastry() {
     });
   }, []);
 
+  // Restore synastry inputs after a login round-trip.
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    const draft = loadDraft<{ personA: PersonInput; personB: PersonInput; relationshipType: RelationshipType }>(SYNASTRY_DRAFT_KEY);
+    if (draft?.personA && draft?.personB) {
+      setPersonA(draft.personA);
+      setPersonB(draft.personB);
+      if (draft.relationshipType) setRelationshipType(draft.relationshipType);
+    }
+    setDraftLoaded(true);
+    setLoginHref(loginUrlWithNext());
+  }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
+
+  useEffect(() => {
+    if (draftLoaded) {
+      saveDraft(SYNASTRY_DRAFT_KEY, { personA, personB, relationshipType });
+    }
+  }, [draftLoaded, personA, personB, relationshipType]);
+
   const handleAnalyze = async () => {
     if (!isLoggedIn) {
-      window.location.href = "/login";
+      window.location.href = loginUrlWithNext();
       return;
     }
 
@@ -139,10 +165,13 @@ export default function ZiweiSynastry() {
       if (!response.ok) {
         const errData = await response.json();
         if (errData.code === "LOGIN_REQUIRED") {
-          window.location.href = "/login";
+          window.location.href = loginUrlWithNext();
           return;
         } else if (errData.code === "LIMIT_REACHED") {
-          setError("Daily consultation limit reached. Subscribe for more readings.");
+          setError(
+            errData.error ||
+              "Daily limit reached — the free plan includes 3 AI consultations per day; Pro includes 10."
+          );
         } else {
           setError(errData.error || "Failed to get analysis.");
         }
@@ -197,26 +226,6 @@ export default function ZiweiSynastry() {
     }
   };
 
-  // Not logged in
-  if (isLoggedIn === false) {
-    return (
-      <div className="max-w-4xl mx-auto p-6 bg-gradient-to-br from-cream to-white rounded-xl border border-sand text-center">
-        <h3 className="text-xl font-bold text-ink mb-2">
-          Synastry Analysis · 合盘分析
-        </h3>
-        <p className="text-sm text-warm mb-4">
-          Log in to unlock AI-powered relationship compatibility analysis.
-        </p>
-        <Link
-          href="/login"
-          className="inline-block px-6 py-3 bg-china-red text-white rounded-full font-medium hover:bg-china-red/90 transition-colors"
-        >
-          Log In · 登录
-        </Link>
-      </div>
-    );
-  }
-
   return (
     <div className="max-w-4xl mx-auto">
       {/* Input Forms */}
@@ -264,6 +273,22 @@ export default function ZiweiSynastry() {
           ))}
         </div>
       </div>
+
+      {/* Free/pro clarity: entering birth details is free; the AI analysis needs a login */}
+      {isLoggedIn === false && (
+        <div className="mb-6 p-4 bg-cream rounded-lg border border-sand text-center">
+          <p className="text-sm text-warm mb-3">
+            Entering both birth details is free. The AI synastry analysis needs a free
+            login (3 consultations per day) — or 10 per day with Pro.
+          </p>
+          <Link
+            href={loginHref}
+            className="inline-block px-6 py-2.5 bg-china-red text-white rounded-full font-medium text-sm hover:bg-china-red/90 transition-colors"
+          >
+            Log In to Analyze · 登录后开始合盘
+          </Link>
+        </div>
+      )}
 
       {/* Analyze Button */}
       <div className="text-center mb-8">
