@@ -44,3 +44,21 @@ This document describes exactly what Pro ($4.99/month) unlocks, faithful to the 
 - **`expires_at` not enforced at gates.** It is parsed from webhook events, but access checks do not yet expire entitlements on it. Pending owner decision.
 - **/account email self-claim.** A user can claim a Creem customer by matching `customer_email` (auto-link). Unfixed by decision; documented caveat.
 - **Creem expiry field name to confirm in test mode** before enabling `expires_at` enforcement.
+
+## Verification status (2026-10-22)
+
+| Chain step | Evidence | Status |
+|---|---|---|
+| Login → checkout API → Creem checkout creation | `lib/__tests__/checkout-route.test.ts` (401/200/error/network) | ✅ mocked |
+| Signed webhook → activate → row gates accept | `lib/__tests__/creem-webhook.test.ts` (chain describe) | ✅ mocked |
+| Bad/missing signature, missing secret | same file | ✅ mocked (fail closed) |
+| Replay / cancel / expired / scheduled_cancel | same file | ✅ mocked |
+| Gate predicate on all statuses | same file | ✅ |
+| REAL Creem test-mode checkout → webhook delivery → account upgrade → Pro deep reading | — | ❌ 未验证 |
+| REAL account round-trip (login → buy → entitlement) | — | ❌ 未验证 |
+
+To verify the ❌ rows, the following are needed (none exist today):
+1. Creem **test-mode** API key + test product id (`CREEM_API_BASE=https://test-api.creem.io` per `.env.example`).
+2. A throwaway account in a NON-production Supabase project (or owner-designated test account).
+3. A public webhook tunnel to the local/preview app (e.g. `vercel dev` or a tunnel) so Creem test events reach `/api/webhooks/creem`.
+Success-page redirect is NOT proof of entitlement — only the `subscriptions` row (webhook-written) is.

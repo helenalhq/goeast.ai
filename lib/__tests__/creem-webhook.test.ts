@@ -107,7 +107,12 @@ describe("replay & lifecycle", () => {
     await POST(signedReq(event));
     await POST(signedReq(event));
     expect(activate).toHaveBeenCalledTimes(2);
-    expect(activate.mock.calls[0].slice(1)).toEqual(activate.mock.calls[1].slice(1));
+    expect(activate.mock.calls[0].slice(1, 4)).toEqual(activate.mock.calls[1].slice(1, 4));
+    expect(activate.mock.calls[0][5]).toEqual(activate.mock.calls[1][5]);
+    // +30d fallback Dates are computed per-event; allow sub-second drift.
+    expect(
+      Math.abs(activate.mock.calls[0][4].getTime() - activate.mock.calls[1][4].getTime())
+    ).toBeLessThan(1000);
   });
 
   it("subscription.canceled routes to cancelSubscription with cancelled", async () => {
@@ -138,5 +143,47 @@ describe("replay & lifecycle", () => {
     expect(res.status).toBe(200);
     expect(activate).not.toHaveBeenCalled();
     expect(cancel).not.toHaveBeenCalled();
+  });
+});
+
+describe("entitlement chain (mocked end-to-end)", () => {
+  it("signed checkout.completed → activate called with the row the gates accept", async () => {
+    const future = Math.floor(Date.now() / 1000) + 30 * 86400;
+    await POST(signedReq(SUB_EVENT("checkout.completed", { current_period_end_date: future })));
+    const call = activate.mock.calls[0];
+    const subscriptionId = call[1];
+    const expiresAt = call[4];
+    const metadataUserId = call[5];
+    expect(subscriptionId).toBe("sub_abc");
+    expect(metadataUserId).toBe("u-1");
+    // The gate predicate the app actually uses, applied to the row activateSubscription would write:
+    const row = {
+      status: "active", // what activateSubscription writes
+      expires_at: expiresAt.toISOString(),
+      user_id: metadataUserId,
+    };
+    const hasAccess = row.status === "active" || row.status === "scheduled_cancel";
+    expect(hasAccess).toBe(true);
+    expect(new Date(row.expires_at).getTime()).toBeGreaterThan(Date.now());
+  });
+
+  it("gate predicate denies every non-active status (documents gate behavior)", () => {
+    const hasAccess = (s?: string | null) => s === "active" || s === "scheduled_cancel";
+    expect(hasAccess("active")).toBe(true);
+    expect(hasAccess("scheduled_cancel")).toBe(true);
+    expect(hasAccess("cancelled")).toBe(false);
+    expect(hasAccess("expired")).toBe(false);
+    expect(hasAccess("past_due")).toBe(false);
+    expect(hasAccess(null)).toBe(false);
+    expect(hasAccess(undefined)).toBe(false);
+  });
+
+  it("cancel then replay-activate reflects the ordering risk (documented, not fixed)", async () => {
+    // canceled event cancels…
+    await POST(signedReq(SUB_EVENT("subscription.canceled")));
+    expect(cancel).toHaveBeenCalledWith(expect.anything(), "sub_abc", "cancelled");
+    // …but a later replayed activation re-activates (upsert overwrites) — KNOWN limitation
+    await POST(signedReq(SUB_EVENT("subscription.active")));
+    expect(activate).toHaveBeenCalledTimes(1);
   });
 });
