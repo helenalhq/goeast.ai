@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { saveDraft, loadDraft, clearDraft } from "@/lib/draft";
 import { HexagramData } from "@/lib/types";
 import Link from "next/link";
 import ShareButtons from "@/components/ShareButtons";
@@ -25,16 +26,37 @@ function castCoins(): CoinCast {
   return { values: coins, line, binary, changing };
 }
 
+const CAST_DRAFT_KEY = "iching-cast";
+
 export default function IChingDivination({ hexagrams }: { hexagrams: HexagramData[] }) {
   const [casts, setCasts] = useState<CoinCast[]>([]);
   const [result, setResult] = useState<HexagramData | null>(null);
   const [phase, setPhase] = useState<"ready" | "casting" | "result">("ready");
+
+  // Restore an in-progress cast after navigating away and back. The saved
+  // coin results ARE the cast — restoring them never re-rolls the coins.
+  /* eslint-disable react-hooks/set-state-in-effect -- one-time hydration from sessionStorage, an external store */
+  useEffect(() => {
+    const saved = loadDraft<CoinCast[]>(CAST_DRAFT_KEY);
+    if (saved && saved.length > 0 && saved.length <= 6) {
+      setCasts(saved);
+      if (saved.length === 6) {
+        const binary = saved.map((c) => c.binary).join("");
+        setResult(hexagrams.find((h) => h.binary === binary) || null);
+        setPhase("result");
+      } else {
+        setPhase("casting");
+      }
+    }
+  }, [hexagrams]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleCast = () => {
     if (casts.length >= 6) return;
     const newCast = castCoins();
     const newCasts = [...casts, newCast];
     setCasts(newCasts);
+    saveDraft(CAST_DRAFT_KEY, newCasts);
 
     if (newCasts.length === 6) {
       const binary = newCasts.map((c) => c.binary).join("");
@@ -45,6 +67,7 @@ export default function IChingDivination({ hexagrams }: { hexagrams: HexagramDat
   };
 
   const handleReset = () => {
+    clearDraft(CAST_DRAFT_KEY);
     setCasts([]);
     setResult(null);
     setPhase("ready");
@@ -126,7 +149,7 @@ export default function IChingDivination({ hexagrams }: { hexagrams: HexagramDat
               href="/sophies-journey/prologue-zhougong"
               className="px-6 py-2 bg-[#8b4513] text-white rounded-full font-medium hover:opacity-90 transition-colors text-sm"
             >
-              Ask Zhou Gong for AI Interpretation (Pro) →
+              Ask Zhou Gong for AI Interpretation →
             </Link>
             <button
               onClick={handleReset}
