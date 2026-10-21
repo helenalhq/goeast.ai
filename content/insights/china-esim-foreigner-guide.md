@@ -4,7 +4,7 @@ title: "China eSIM Guide for Foreigners (2026): Setup, Limits, and Best Use Case
 title_zh: "外国人中国 eSIM 指南（2026）：开通、限制与最佳用法"
 philosopher_slug: null
 concept_slugs: []
-published_at: 2026-07-01
+published_at: 2026-10-22
 takeaways:
   - eSIM is the fastest way for foreigners to get mobile data in China before landing.
   - All payment apps, maps, and ride-hailing tools depend on stable mobile connectivity.
@@ -115,6 +115,19 @@ This guide covers practical setup strategy, common mistakes, and how to combine 
 | 1-3 month stay | eSIM + local SIM hybrid |
 | Student/worker | local SIM primary + eSIM backup |
 
+### Routing and what actually works
+
+Travel eSIMs for China come in two flavors, and the difference decides what you can reach:
+
+- **International roaming eSIMs** (Airalo, Holafly, and similar travel providers) route your traffic as international roaming through secure gateways outside mainland China — so Google, Instagram, WhatsApp, and other blocked services typically work without a VPN (source: Airalo Help Center, checked 2026-10-22: https://www.airalo.com/fa/help/using-managing-esims/ZSEEHBT5HW6F/stay-connected-in-china-your-guide-to-unfiltered-internet-access-is-a-vpn-required/ZDZBNIKI4TFP).
+- **Mainland-IP data plans** (plans that put you on a local Chinese network) give you a Chinese IP — fast for domestic apps, but blocked services stay blocked, exactly like local Wi-Fi.
+
+Check which kind you are buying before checkout; providers state this on the plan page. Reliability of roaming eSIMs can vary, so install and test the profile before departure.
+
+For trip sizing: providers commonly sell China plans in roughly the 1–20 GB range, and Airalo's own guidance says 1–10 GB covers most travelers for up to two weeks (source: Airalo, checked 2026-10-22: https://www.airalo.com).
+
+One device-side caveat: eSIM support depends on your device and where it was bought, not on China. Apple notes you cannot use a China-mainland carrier eSIM on an iPhone purchased outside mainland China, and China-bought iPhones historically lack support for foreign travel eSIMs (source: Apple Support, checked 2026-10-22: https://support.apple.com/en-us/123879).
+
 ## Final recommendation
 
 Treat eSIM as your **day-1 continuity layer**. In China, execution speed on day one drives the rest of your setup quality.
@@ -122,6 +135,11 @@ Treat eSIM as your **day-1 continuity layer**. In China, execution speed on day 
 ## Related guides
 
 - [Best AI Apps Every Expat in China Should Have (2026)](/insights/ai-apps-expats-china)
-- [China Local Travel Expert](/skills/china-local-travel-expert)
 - [How to Set Up WeChat Pay as a Foreigner in China (2026)](/insights/wechat-pay-foreigner)
-- [China Travel Guide](/skills/china-travel-guide)
+- [China Travel Guide](/china-travel-guide)
+- [Best Translation Apps for China Travel](/insights/best-translation-apps-china-travel)
+
+## Sources
+
+- Airalo Help Center — Stay Connected in China: Your Guide to Unfiltered Internet Access — checked 2026-10-22 — https://www.airalo.com/fa/help/using-managing-esims/ZSEEHBT5HW6F/stay-connected-in-china-your-guide-to-unfiltered-internet-access-is-a-vpn-required/ZDZBNIKI4TFP
+- Apple Support — Using eSIM with your iPhone in China mainland — checked 2026-10-22 — https://support.apple.com/en-us/123879
