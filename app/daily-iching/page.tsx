@@ -280,10 +280,9 @@ export default function DailyIChingPage() {
         {/* Email Capture */}
         <div className="mb-8">
           <EmailCapture
-            title="Get Your Daily I Ching in Your Inbox"
-            subtitle="Subscribe to receive a new hexagram reading every morning, plus weekly Chinese philosophy and practical China life guides."
+            title="I Ching Updates"
+            subtitle="Today's reading lives on this page. Subscribe to hear when we publish new I Ching and philosophy guides."
             source="daily_iching"
-            leadMagnet="Free bonus: China Travel Checklist PDF"
           />
         </div>
 

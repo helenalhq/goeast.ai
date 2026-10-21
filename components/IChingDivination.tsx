@@ -178,11 +178,10 @@ export default function IChingDivination({ hexagrams }: { hexagrams: HexagramDat
           </div>
           <div className="mt-6">
             <EmailCapture
-              title="Get Your Daily I Ching Reading"
-              subtitle="Subscribe for weekly I Ching insights, Chinese philosophy, and practical China life guides."
+              title="I Ching Updates from GoEast"
+              subtitle="The 64-hexagram library is always free here — subscribe to hear when we add new readings and guides."
               source="iching_result"
               variant="inline"
-              leadMagnet="Free bonus: China Travel Checklist PDF"
             />
           </div>
         </div>

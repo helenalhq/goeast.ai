@@ -136,8 +136,8 @@ export default function ZiweiPage() {
         {/* Email Capture for chart users */}
         <section className="mb-16">
           <EmailCapture
-            title="Get Weekly Astrology Insights"
-            subtitle="Subscribe for weekly Zi Wei Dou Shu insights, I Ching readings, and Chinese philosophy guides — delivered free to your inbox."
+            title="Get Zi Wei Dou Shu Insights"
+            subtitle="New Zi Wei guides and tools from GoEast."
             source="ziwei_page"
           />
         </section>

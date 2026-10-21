@@ -20,12 +20,12 @@ interface EmailCaptureProps {
 type Status = "idle" | "loading" | "success" | "error";
 
 export default function EmailCapture({
-  title = "Get Weekly Chinese Culture Insights",
-  subtitle = "Join 500+ readers exploring Chinese philosophy, I Ching, and practical life guides.",
+  title = "Get Chinese Culture Insights",
+  subtitle = "New GoEast guides on Chinese philosophy, I Ching, and practical life in China.",
   buttonText = "Subscribe",
   source = "website",
   variant = "card",
-  leadMagnet = "Free bonus: China Travel Checklist PDF",
+  leadMagnet,
 }: EmailCaptureProps) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<Status>("idle");
@@ -50,7 +50,7 @@ export default function EmailCapture({
 
       if (res.ok && data.success) {
         setStatus("success");
-        setMessage(data.alreadySubscribed ? "You're already subscribed!" : "Subscribed! Check your inbox.");
+        setMessage(data.alreadySubscribed ? "You're already subscribed!" : "Subscribed — you're on the list.");
         setEmail("");
       } else {
         setStatus("error");

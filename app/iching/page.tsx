@@ -102,8 +102,8 @@ export default function IChingPage() {
       {/* Email Capture for non-divination users */}
       <section className="max-w-3xl mx-auto px-4 pb-8">
         <EmailCapture
-          title="Get Your Daily I Ching Reading"
-          subtitle="Join our newsletter for weekly I Ching insights, Chinese philosophy, and practical China life guides."
+          title="I Ching Updates from GoEast"
+          subtitle="The 64-hexagram library is always free here — subscribe to hear when we add new readings and guides."
           source="iching_page"
         />
       </section>

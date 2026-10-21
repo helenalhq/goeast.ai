@@ -248,8 +248,8 @@ export default async function InsightDetailPage({
         {/* Email Capture */}
         <div className="mt-10">
           <EmailCapture
-            title="Join 500+ Readers Exploring Chinese Culture"
-            subtitle="Get weekly insights on Chinese philosophy, I Ching, practical China life guides, and more — delivered free to your inbox."
+            title="Explore More of GoEast"
+            subtitle="New guides on Chinese philosophy, I Ching, and practical life in China."
             source={`insight_${insight.slug}`}
           />
         </div>

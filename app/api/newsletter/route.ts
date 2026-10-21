@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: "Subscribed successfully! Check your inbox for a confirmation.",
+      message: "Subscribed successfully.",
     });
   } catch (error) {
     console.error("Newsletter API error:", error);

@@ -359,11 +359,10 @@ export default function ZiweiChart() {
           </div>
           <div className="mt-6">
             <EmailCapture
-              title="Save Your Chart & Get Weekly Astrology Insights"
-              subtitle="Subscribe for weekly Zi Wei Dou Shu insights, Chinese astrology guides, and I Ching readings."
+              title="Get Astrology Insights"
+              subtitle="New Zi Wei Dou Shu guides from GoEast."
               source="ziwei_chart"
               variant="inline"
-              leadMagnet="Free bonus: China Travel Checklist PDF"
             />
           </div>
         </div>
