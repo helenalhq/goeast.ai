@@ -4,16 +4,16 @@ title: "China Food Delivery for Foreigners (2026): Meituan and Ele.me Complete G
 title_zh: "外国人在中国点外卖（2026）：美团与饿了么完整实操指南"
 philosopher_slug: null
 concept_slugs: []
-published_at: 2026-07-01
+published_at: 2026-10-22
 takeaways:
   - Meituan (美团) and Ele.me (饿了么) are China's two dominant food delivery platforms.
-  - Both work with Alipay and WeChat Pay — no Chinese bank account needed.
-  - Address precision is the #1 failure point for foreign users. Copy your exact Chinese address.
+  - You pay through the Alipay or WeChat Pay wallet you already set up — if your international card works there, it works here.
+  - Wrong addresses are the #1 failure point — copy your exact Chinese address from your hotel or the map app.
   - Delivery is fast (20-40 minutes) and cheap (¥3-8 delivery fee, often subsidized).
   - Both platforms have photo menus and ratings to help you choose without reading Chinese.
 faqs:
   - question: Can foreigners use Meituan and Ele.me?
-    answer: Yes, both platforms work with Alipay or WeChat Pay login. No Chinese ID is required for basic ordering.
+    answer: Yes, as of late 2026. The easiest route is the mini-program inside Alipay or WeChat — most travelers order with just an Alipay or WeChat account, though identity or phone checks can appear for some features.
     question_zh: 外国人可以用美团和饿了么吗？
     answer_zh: 可以，两个平台都支持支付宝或微信登录，基本点餐不需要中国身份证。
   - question: How much does food delivery cost in China?
@@ -28,7 +28,7 @@ faqs:
 
 # China Food Delivery for Foreigners (2026): Meituan and Ele.me Complete Guide
 
-Food delivery in China is a way of life. With over 500 million users, it's fast, cheap, and incredibly diverse. As a foreigner, you can order anything from street food to Michelin-starred restaurant meals, delivered to your door in 20-40 minutes for a delivery fee of ¥3-8.
+Food delivery in China is a way of life. It's fast, cheap, and incredibly diverse. As a foreigner, you can order anything from street food to Michelin-starred restaurant meals, delivered to your door in 20-40 minutes for a delivery fee of ¥3-8.
 
 The challenge isn't the technology — it's navigating a Chinese-language interface, getting your address right, and handling the few moments where things go wrong.
 
@@ -89,7 +89,7 @@ This is where most foreigners fail. Your address must be precise enough for a ri
 
 ### Step 3: Confirm Payment
 
-Both platforms pay via Alipay or WeChat Pay. Ensure your [payment setup](/insights/alipay-vs-wechat-pay-foreigner) is working before your first order. Make a small test purchase to verify.
+You pay through the Alipay or WeChat Pay wallet you already set up — neither platform takes international cards directly, but if your card works in the wallet (see our [payment setup guide](/insights/alipay-vs-wechat-pay-foreigner)), it works here. Make a small test purchase to verify before your first order.
 
 ## How to Order: Step-by-Step
 
@@ -151,7 +151,7 @@ In the delivery notes field (配送备注), add:
 - Screenshot your order confirmation before delivery
 - Use the in-app complaint/refund function (申请退款)
 - Take a photo of what you received vs. what you ordered
-- Most platforms process refunds within 24 hours
+- Refund handling varies by restaurant and platform — raise issues in the app's order page (申请退款)
 
 ### Problem: Menu Is All in Chinese
 
@@ -214,3 +214,9 @@ If you can't get the apps working:
 - [Top 10 Apps for China](/insights/top-10-apps-for-china-travel) — Complete app stack
 - [Best Translation Apps](/insights/best-translation-apps-china-travel) — Menu translation
 - [China Travel Guide](/china-travel-guide) — Complete resource
+
+## Sources
+
+- Hidden China Travel — Order Food in China Without a Chinese Number (checked 2026-10-22): https://hiddenchinatravel.com/order-food-china-without-chinese-number
+- Trip.com — How to Use Meituan App in English (checked 2026-10-22): https://www.trip.com/guide/info/meituan-app.html
+- ChinaTour — How to Use Meituan Food Delivery as a Foreigner (checked 2026-10-22): https://chinatour.bswen.com/blog/2026-04-24-meituan-food-delivery
