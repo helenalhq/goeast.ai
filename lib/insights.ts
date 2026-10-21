@@ -3,6 +3,7 @@ import path from "path";
 import matter from "gray-matter";
 import { remark } from "remark";
 import html from "remark-html";
+import remarkGfm from "remark-gfm";
 import { Insight, InsightMeta } from "./types";
 
 const insightsDirectory = path.join(process.cwd(), "content/insights");
@@ -37,13 +38,28 @@ export function getInsightBySlug(slug: string): Insight | null {
   };
 }
 
+/**
+ * The article page renders its own H1 from the frontmatter title; strip a
+ * leading body H1 when it duplicates that title so pages never get two.
+ */
+export function stripDuplicateTitleH1(content: string, title: string): string {
+  const match = content.match(/^\s*#\s+(.+?)\s*(?:\n|$)/);
+  if (!match) return content;
+  const bodyH1 = match[1].trim().replace(/^["“'](.*)["”']$/, "$1");
+  if (bodyH1.toLowerCase() === title.trim().toLowerCase()) {
+    return content.slice(match[0].length);
+  }
+  return content;
+}
+
 export async function getInsightWithHtml(slug: string): Promise<Insight | null> {
   const insight = getInsightBySlug(slug);
   if (!insight) return null;
 
-  const processed = await remark().use(html).process(insight.content);
+  const bodyMarkdown = stripDuplicateTitleH1(insight.content, insight.title);
+  const processed = await remark().use(remarkGfm).use(html).process(bodyMarkdown);
   const processedZh = insight.content_zh
-    ? (await remark().use(html).process(insight.content_zh)).toString()
+    ? (await remark().use(remarkGfm).use(html).process(insight.content_zh)).toString()
     : undefined;
 
   return { ...insight, content: processed.toString(), content_zh: processedZh };

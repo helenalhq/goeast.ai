@@ -15,3 +15,10 @@ body {
 h1, h2, h3 {
   font-family: "Noto Serif SC", Georgia, serif;
 }
+
+/* GFM tables: scroll horizontally on narrow screens instead of breaking layout */
+.prose table {
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+}
