@@ -217,13 +217,33 @@ export default async function InsightDetailPage({
           return <FAQ items={faqs} jsonLd={generateFAQJsonLd(faqs)} />;
         })()}
 
-        {/* Oracle CTA */}
-        <OracleCta
-          philosopherSlug={insight.philosopher_slug}
-          philosopherName={philosopher?.name}
-          philosopherNameZh={philosopher?.name_zh}
-          schoolId={philosopher?.school}
-        />
+        {/* Oracle CTA — only where an Oracle context actually exists */}
+        {insight.philosopher_slug ? (
+          <OracleCta
+            philosopherSlug={insight.philosopher_slug}
+            philosopherName={philosopher?.name}
+            philosopherNameZh={philosopher?.name_zh}
+            schoolId={philosopher?.school}
+          />
+        ) : (
+          <div className="mt-12 p-6 bg-cream/60 rounded-sm text-center">
+            <p className="font-serif text-ink text-lg mb-4">Keep planning your trip to China?</p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <Link
+                href="/china-travel-guide"
+                className="inline-block px-7 py-3 rounded-sm bg-ink text-white font-medium text-sm transition-colors hover:opacity-90 no-underline"
+              >
+                China Travel Guide →
+              </Link>
+              <Link
+                href="/insights"
+                className="inline-block px-7 py-3 rounded-sm border border-sand text-ink font-medium text-sm hover:border-china-red hover:text-china-red transition-colors no-underline"
+              >
+                More Practical Guides
+              </Link>
+            </div>
+          </div>
+        )}
 
         {/* Email Capture */}
         <div className="mt-10">

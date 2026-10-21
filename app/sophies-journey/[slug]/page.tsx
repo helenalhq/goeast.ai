@@ -163,7 +163,7 @@ export default async function JourneyStoryPage({
             </div>
 
             {/* Portrait side */}
-            <div className="flex-shrink-0 w-56 md:w-64 lg:w-72">
+            <div id="oracle" className="flex-shrink-0 w-56 md:w-64 lg:w-72 scroll-mt-24">
               <div className="relative aspect-[2/3] rounded-2xl overflow-hidden shadow-xl ring-1 ring-sand">
                 <Image
                   src={heroImage}
