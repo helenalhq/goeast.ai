@@ -6,6 +6,8 @@ import { getOraclePortrait } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
 import { loginUrlWithNext } from "@/lib/auth-redirect";
 import { saveDraft, loadDraft, clearDraft } from "@/lib/draft";
+import { ICHING_CONTEXT_DRAFT_KEY, type IchingConsultationContext } from "@/lib/iching-context";
+import { getHexagramByNumber } from "@/lib/iching-data";
 import type { User } from "@supabase/supabase-js";
 import ReactMarkdown from "react-markdown";
 
@@ -477,6 +479,7 @@ export default function OracleOverlay({
   const [mounted, setMounted] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [ichingCtx, setIchingCtx] = useState<IchingConsultationContext | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const draftKey = `oracle:${slug}`;
 
@@ -507,7 +510,20 @@ export default function OracleOverlay({
     const savedDraft = loadDraft<string>(draftKey);
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setInput(typeof savedDraft === "string" ? savedDraft : "");
-  }, [draftKey]);
+    // Restore the I Ching cast context (Zhou Gong only) so a refresh
+    // mid-question keeps the user's cast alongside the question draft.
+    if (slug === "prologue-zhougong") {
+      const savedCtx = loadDraft<IchingConsultationContext>(ICHING_CONTEXT_DRAFT_KEY);
+      if (
+        savedCtx &&
+        (savedCtx.mode === "cast" || savedCtx.mode === "study") &&
+        typeof savedCtx.hexagramNumber === "number" &&
+        Array.isArray(savedCtx.changingLines)
+      ) {
+        setIchingCtx(savedCtx);
+      }
+    }
+  }, [draftKey, slug]);
 
   useEffect(() => {
     requestAnimationFrame(() => setMounted(true));
@@ -569,7 +585,11 @@ export default function OracleOverlay({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ philosopher: slug, question }),
+        body: JSON.stringify(
+          slug === "prologue-zhougong" && ichingCtx
+            ? { philosopher: slug, question, ichingContext: ichingCtx }
+            : { philosopher: slug, question }
+        ),
       });
 
       if (!res.ok) {
@@ -617,6 +637,8 @@ export default function OracleOverlay({
             // Reading finished successfully — drop the draft so it doesn't
             // restore as a stale question on the next open.
             clearDraft(draftKey);
+            clearDraft(ICHING_CONTEXT_DRAFT_KEY);
+            setIchingCtx(null);
             break;
           }
           try {
@@ -1037,6 +1059,50 @@ export default function OracleOverlay({
                   )}
                 </div>
               )}
+
+              {ichingCtx && (() => {
+                const hex = getHexagramByNumber(ichingCtx.hexagramNumber);
+                const transformed = ichingCtx.transformedNumber !== undefined
+                  ? getHexagramByNumber(ichingCtx.transformedNumber)
+                  : null;
+                return (
+                  <div
+                    className="mb-4 px-4 py-3 rounded-xl"
+                    style={{ backgroundColor: "rgba(0,0,0,0.3)", border: `1px solid rgba(${accent},0.25)` }}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="text-white/80 text-sm leading-relaxed" style={{ fontFamily: SERIF }}>
+                        <p className="text-white/90 font-medium mb-1">
+                          {ichingCtx.mode === "cast" ? "Your cast · 你的卦" : "Studying · 学习此卦"}
+                        </p>
+                        <p>
+                          Hexagram {hex?.number} {hex?.name} ({hex?.name_zh})
+                          {ichingCtx.changingLines.length > 0 && (
+                            <> · changing lines {ichingCtx.changingLines.join(", ")}</>
+                          )}
+                          {transformed && (
+                            <> → {transformed.number} {transformed.name} ({transformed.name_zh})</>
+                          )}
+                        </p>
+                        <p className="text-white/40 text-xs mt-1">
+                          AI interpretation for reflection — not a prediction of what will happen.
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          clearDraft(ICHING_CONTEXT_DRAFT_KEY);
+                          setIchingCtx(null);
+                        }}
+                        className="text-white/40 hover:text-white/80 text-xs flex-shrink-0"
+                        aria-label="Remove hexagram context"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                );
+              })()}
 
               <form onSubmit={handleSubmit}>
                 <div
