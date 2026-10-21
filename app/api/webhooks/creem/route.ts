@@ -8,7 +8,10 @@ function verifySignature(secret: string, body: string, signature: string): boole
     .createHmac("sha256", secret)
     .update(body)
     .digest("hex");
-  return computed === signature;
+  // timing-safe compare (length guard first — timingSafeEqual throws on mismatch)
+  const a = Buffer.from(computed, "utf8");
+  const b = Buffer.from(signature, "utf8");
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
 export async function POST(request: NextRequest) {

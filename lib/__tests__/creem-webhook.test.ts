@@ -120,6 +120,19 @@ describe("replay & lifecycle", () => {
     expect(cancel).toHaveBeenCalledWith(expect.anything(), "sub_abc", "expired");
   });
 
+  it("subscription.scheduled_cancel updates status directly without activating", async () => {
+    const update = vi.fn().mockReturnThis();
+    const eq = vi.fn().mockResolvedValue({ error: null });
+    mockFrom.mockReturnValueOnce({ update, eq });
+    const res = await POST(signedReq(SUB_EVENT("subscription.scheduled_cancel")));
+    expect(res.status).toBe(200);
+    expect(activate).not.toHaveBeenCalled();
+    expect(cancel).not.toHaveBeenCalled();
+    expect(update).toHaveBeenCalledWith(
+      expect.objectContaining({ status: "scheduled_cancel" })
+    );
+  });
+
   it("unknown eventType → 200 without activating", async () => {
     const res = await POST(signedReq(SUB_EVENT("subscription.updated")));
     expect(res.status).toBe(200);
