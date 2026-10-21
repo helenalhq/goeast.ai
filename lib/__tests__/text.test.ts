@@ -23,4 +23,12 @@ describe("clipText", () => {
   it("keeps Chinese text intact when short", () => {
     expect(clipText("紫微斗数合盘分析", 20)).toBe("紫微斗数合盘分析");
   });
+
+  it("ends on a whole word when the window boundary lands after one", () => {
+    expect(clipText("one two three four", 13)).toBe("one two three…");
+  });
+
+  it("degrades to a bare ellipsis when a single word exceeds the budget", () => {
+    expect(clipText("internationalization", 5)).toBe("…");
+  });
 });
