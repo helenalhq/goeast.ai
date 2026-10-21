@@ -118,7 +118,7 @@ describe("auth + Pro deep wiring", () => {
     await POST(req({ philosopher: "ch01-laozi", question: "q" }));
     const call = createCompletion.mock.calls[0][0];
     expect((call.messages[0].content as string)).toContain("DEEP READING MODE");
-    expect(call.max_completion_tokens).toBeGreaterThan(1200);
+    expect(call.max_completion_tokens).toBe(1800); // laozi 600 words × 2 (deep) × 1.5
   });
 
   it("free logged-in user gets base prompt (no DEEP addendum), same budget as before", async () => {

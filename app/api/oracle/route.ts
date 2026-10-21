@@ -53,7 +53,8 @@ export async function POST(request: NextRequest) {
 
   // I Ching cast context (Zhou Gong only). Numbers validated; names resolved server-side.
   let validatedIchingContext: IchingConsultationContext | null = null;
-  if (ichingContext !== undefined) {
+  // (explicit null is treated as absent — some clients null optional fields)
+  if (ichingContext !== undefined && ichingContext !== null) {
     if (philosopher !== "prologue-zhougong") {
       return new Response(JSON.stringify({ error: "ichingContext is only supported for Zhou Gong" }), {
         status: 400,

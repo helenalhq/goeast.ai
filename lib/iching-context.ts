@@ -105,6 +105,7 @@ export function buildIchingContextBlock(ctx: IchingConsultationContext): string 
 
   return `
 
+OVERRIDE: the user's cast below is authoritative — ignore any earlier instruction to cast or choose a hexagram yourself.
 CONSULTATION CONTEXT — THE USER'S I CHING CAST (authoritative; do not recalculate):
 - Hexagram (本卦): Hexagram ${hexagram.number} ${hexagram.name} (${hexagram.name_zh})
 - Changing lines (变爻): ${lines}${transformedPart}${modePart}
