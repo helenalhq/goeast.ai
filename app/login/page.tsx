@@ -83,7 +83,7 @@ function LoginForm() {
         <p className="text-warm text-sm text-center mb-8">
           {mode === "login"
             ? "Sign in to access your oracle consultations"
-            : "Join GoEast.ai for unlimited wisdom"}
+            : "Join GoEast.ai — 3 free Oracle consultations every day"}
         </p>
 
         {authError && (
