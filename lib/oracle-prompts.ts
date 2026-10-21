@@ -3,6 +3,18 @@ type PromptConfig = {
   maxWords: number;
 };
 
+/** Appended to the system prompt for Pro (paid) consultations — the real
+ *  difference between tiers: ~2× depth via added structure, doubled budget.
+ *  Free readings are unchanged. */
+export const ORACLE_DEEP_ADDENDUM = `
+
+DEEP READING MODE (Pro):
+After your standard answer, add:
+- "GOING DEEPER" — examine the question from a second angle: its shadow side, its timing, or its relational dimension, citing the tradition where relevant.
+- "REFLECTION" — 3 open questions the user can sit with over time.
+- Close by inviting ONE follow-up question about this reading.
+The same rules apply: cultural education and reflection only; never claim certainty; never predict harm; never pressure the reader.`;
+
 const ORACLE_PROMPTS: Record<string, PromptConfig> = {
   "prologue-zhougong": {
     maxWords: 800,
@@ -193,6 +205,17 @@ IMPORTANT: This is for entertainment and reflection. Do not give medical, legal,
   },
 };
 
-export function getOraclePrompt(slug: string): PromptConfig | null {
-  return ORACLE_PROMPTS[slug] || null;
+export function getOraclePrompt(
+  slug: string,
+  opts?: { deep?: boolean }
+): PromptConfig | null {
+  const config = ORACLE_PROMPTS[slug];
+  if (!config) return null;
+  if (opts?.deep) {
+    return {
+      system: config.system + ORACLE_DEEP_ADDENDUM,
+      maxWords: config.maxWords * 2,
+    };
+  }
+  return config;
 }
