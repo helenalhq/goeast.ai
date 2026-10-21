@@ -32,8 +32,14 @@ function decodeFully(raw: string): string {
 export function sanitizeNextPath(raw: string | null | undefined): string {
   if (!raw) return DEFAULT_NEXT_PATH;
 
+  // The raw value must already be a path — a leading "/" that only appears
+  // after percent-deoding is an encoding-bypass attempt.
+  if (!raw.trim().startsWith("/")) return DEFAULT_NEXT_PATH;
+
   const candidate = decodeFully(raw).trim();
   if (!candidate || candidate.length > MAX_NEXT_LENGTH) return DEFAULT_NEXT_PATH;
+  // Reject control characters and backslashes anywhere (header/link injection).
+  if (/[\x00-\x1f\x7f]/.test(candidate) || candidate.includes("\\")) return DEFAULT_NEXT_PATH;
 
   // Must be a root-relative path.
   if (!candidate.startsWith("/")) return DEFAULT_NEXT_PATH;
@@ -43,6 +49,8 @@ export function sanitizeNextPath(raw: string | null | undefined): string {
   // Validate the path component strictly; query/hash may follow.
   const pathPart = candidate.split(/[?#]/)[0];
   if (!/^\/[a-zA-Z0-9\-._~/]*$/.test(pathPart)) return DEFAULT_NEXT_PATH;
+  // Reject dot-segments so the validated output is canonical.
+  if (/(^|\/)\.\.(\/|$)/.test(pathPart)) return DEFAULT_NEXT_PATH;
 
   const blocked = BLOCKED_PATH_PREFIXES.some(
     (prefix) => pathPart === prefix || pathPart.startsWith(`${prefix}/`)

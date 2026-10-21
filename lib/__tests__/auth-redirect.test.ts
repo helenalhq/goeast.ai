@@ -45,6 +45,36 @@ describe("sanitizeNextPath", () => {
     expect(sanitizeNextPath("/" + "a".repeat(600))).toBe("/account");
   });
 
+  describe("adversarial encodings and control chars", () => {
+    it("rejects CRLF injection in query component", () => {
+      expect(sanitizeNextPath("/x?next=%0d%0aSet-Cookie:x=1")).toBe("/account");
+    });
+
+    it("rejects control chars in query component", () => {
+      expect(sanitizeNextPath("/x?q=%09tab")).toBe("/account");
+    });
+
+    it("rejects triple-slash host smuggling", () => {
+      expect(sanitizeNextPath("///evil.com")).toBe("/account");
+    });
+
+    it("rejects malformed UTF-8 percent-encoding", () => {
+      expect(sanitizeNextPath("/%c0%afevil.com")).toBe("/account");
+    });
+
+    it("rejects triple-encoded input", () => {
+      expect(sanitizeNextPath("%25252Fevil.com")).toBe("/account");
+    });
+
+    it("rejects dot-segments", () => {
+      expect(sanitizeNextPath("/../../evil.com")).toBe("/account");
+    });
+
+    it("rejects backslash anywhere", () => {
+      expect(sanitizeNextPath("/a\\b")).toBe("/account");
+    });
+  });
+
   it("returns the input unchanged when valid (idempotent)", () => {
     expect(sanitizeNextPath("/pricing")).toBe(sanitizeNextPath(sanitizeNextPath("/pricing")));
   });
