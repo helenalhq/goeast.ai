@@ -17,6 +17,16 @@ describe("stripDuplicateTitleH1", () => {
     expect(stripDuplicateTitleH1(content, "Some Title")).toBe(content);
     expect(stripDuplicateTitleH1("Just body text.", "Some Title")).toBe("Just body text.");
   });
+
+  it("strips a leading H1 wrapped in quotes that duplicates the title", () => {
+    const content = '# "Wu Wei: The Chinese Philosophy of Effortless Action"\n\nBody.';
+    const out = stripDuplicateTitleH1(
+      content,
+      "Wu Wei: The Chinese Philosophy of Effortless Action"
+    );
+    expect(out).not.toContain("#");
+    expect(out).toContain("Body.");
+  });
 });
 
 describe("insight HTML pipeline", () => {

@@ -135,10 +135,6 @@ Set up both from day one. You will eventually need both for different transactio
 ### Business traveler
 Prioritize reliability over preference. Dual setup is the only low-risk option.
 
-## SEO takeaway for expat users
-
-Search intent here is not "what is Alipay" but "which app will actually work for me in China today." If you treat this as an execution problem, not a brand comparison, your success rate rises quickly.
-
 ## Related guides
 
 - [How to Set Up WeChat Pay as a Foreigner in China (2026)](/insights/wechat-pay-foreigner)

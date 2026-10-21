@@ -35,8 +35,6 @@ faqs:
     answer_zh: 两者几乎同时出现（公元前6-5世纪）。老子与孔子是同时代的人，都在回应春秋时期的社会动荡。
 ---
 
-# Taoism vs Confucianism: Key Differences Explained Simply
-
 If you want to understand Chinese culture — its business etiquette, family dynamics, art, architecture, or even how people handle stress — you need to understand two philosophical currents: Taoism (Daoism) and Confucianism.
 
 These two traditions have coexisted for over 2,500 years. They're not competitors; they're complementary forces, like the yin and yang they both describe. But their core teachings point in different directions.

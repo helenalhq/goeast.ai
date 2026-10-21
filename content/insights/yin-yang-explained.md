@@ -133,8 +133,6 @@ faqs:
     answer_zh: 观察自己是否过度偏向某一极——工作与休息、行动与反思——并调整向平衡靠拢，而非走向极端。
 ---
 
-# Yin Yang Explained: What It Really Means (Simple Guide)
-
 Yin Yang is one of the most fundamental concepts in Chinese philosophy. It describes how seemingly opposite forces are actually interconnected, interdependent, and complementary.
 
 ## What is Yin Yang?
