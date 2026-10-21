@@ -8,6 +8,7 @@ import CitationSnippet from "@/components/CitationSnippet";
 import { generateCitationSnippet } from "@/lib/citation-snippets";
 import FAQ from "@/components/FAQ";
 import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
+import { clipText } from "@/lib/text";
 import RelatedContent from "@/components/RelatedContent";
 import { getRelatedContent } from "@/lib/cross-references";
 import type { Metadata } from "next";
@@ -26,7 +27,10 @@ export async function generateMetadata({
   if (!h) return {};
   return {
     title: `Hexagram ${h.number}: ${h.name} Meaning (${h.name_zh}) | I Ching | GoEast.ai`,
-    description: `Hexagram ${h.number}: ${h.name} (${h.name_zh}) meaning and interpretation from the I Ching Book of Changes. ${h.judgment_en.slice(0, 120)}`,
+    description: clipText(
+      `Hexagram ${h.number}: ${h.name} (${h.name_zh}) meaning and interpretation from the I Ching Book of Changes. ${h.judgment_en}`,
+      200
+    ),
     alternates: {
       canonical: `/iching/${hexagram}`,
       languages: {

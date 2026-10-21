@@ -1,4 +1,5 @@
 import { Skill, Journey, PhilosopherDeep, HexagramData, GlossaryEntry, Insight, SCHOOLS, CATEGORIES } from "./types";
+import { clipText } from "./text";
 
 type FAQItem = {
   question: string;
@@ -29,7 +30,7 @@ function generateSkillFAQs(skill: Skill): FAQItem[] {
   return [
     {
       question: `What does ${skill.title} do?`,
-      answer: `${skill.title} is an AI skill for ${skill.category} in China. ${skill.content.replace(/<[^>]*>/g, "").slice(0, 200).trim()}`,
+      answer: `${skill.title} is an AI skill for ${skill.category} in China. ${clipText(skill.content.replace(/<[^>]*>/g, ""), 200)}`,
       questionZh: `${skill.title_zh} 是什么？`,
     },
     {
@@ -74,7 +75,7 @@ function generateGlossaryFAQs(g: GlossaryEntry): FAQItem[] {
   return [
     {
       question: `What is ${g.name} in Chinese philosophy?`,
-      answer: `${g.name} (${g.name_zh}) is a concept from ${school?.name || g.school} philosophy. ${g.definition.replace(/<[^>]*>/g, "").slice(0, 200).trim()}`,
+      answer: `${g.name} (${g.name_zh}) is a concept from ${school?.name || g.school} philosophy. ${clipText(g.definition.replace(/<[^>]*>/g, ""), 200)}`,
       questionZh: `中国哲学中的「${g.name_zh}」是什么？`,
     },
     {
@@ -89,7 +90,7 @@ function generateHexagramFAQs(h: HexagramData): FAQItem[] {
   return [
     {
       question: `What does Hexagram ${h.number} (${h.name}) mean?`,
-      answer: `Hexagram ${h.number}, ${h.name} (${h.name_zh}), represents the interaction of ${h.upper_trigram} (above) and ${h.lower_trigram} (below). ${h.judgment_en.slice(0, 200).trim()}`,
+      answer: `Hexagram ${h.number}, ${h.name} (${h.name_zh}), represents the interaction of ${h.upper_trigram} (above) and ${h.lower_trigram} (below). ${clipText(h.judgment_en, 200)}`,
       questionZh: `第 ${h.number} 卦 ${h.name_zh} 是什么意思？`,
     },
     {
@@ -128,7 +129,7 @@ function generateInsightFAQs(insight: Insight): FAQItem[] {
     }));
   }
 
-  const plainContent = insight.content.replace(/<[^>]*>/g, "").slice(0, 240).trim();
+  const plainContent = clipText(insight.content.replace(/<[^>]*>/g, ""), 240);
   return [
     {
       question: `What is ${insight.title}?`,
