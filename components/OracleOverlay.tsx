@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import { getOracleScenarios } from "@/lib/oracle-scenarios";
 import { getOraclePortrait } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
+import { loginUrlWithNext } from "@/lib/auth-redirect";
+import { saveDraft, loadDraft, clearDraft } from "@/lib/draft";
 import type { User } from "@supabase/supabase-js";
 import ReactMarkdown from "react-markdown";
 
@@ -476,6 +478,7 @@ export default function OracleOverlay({
   const [user, setUser] = useState<User | null>(null);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const draftKey = `oracle:${slug}`;
 
   const config = getOracleScenarios(slug);
   const ritualType = RITUAL_MAP[slug] || "hexagram";
@@ -499,7 +502,10 @@ export default function OracleOverlay({
           .then(({ data: sub }) => setIsSubscribed(!!sub));
       }
     });
-  }, []);
+    // Restore any question draft saved before a login redirect (no auto-submit).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setInput(loadDraft<string>(draftKey) || "");
+  }, [draftKey]);
 
   useEffect(() => {
     requestAnimationFrame(() => setMounted(true));
@@ -526,7 +532,7 @@ export default function OracleOverlay({
 
   const handleUnlock = async () => {
     if (!user) {
-      window.location.href = "/login";
+      window.location.href = loginUrlWithNext();
       return;
     }
     setUnlocking(true);
@@ -547,7 +553,7 @@ export default function OracleOverlay({
   const consult = async (question: string) => {
     // Require login before using AI features
     if (!user) {
-      window.location.href = "/login";
+      window.location.href = loginUrlWithNext();
       return;
     }
 
@@ -569,7 +575,7 @@ export default function OracleOverlay({
         if (contentType.includes("application/json")) {
           const data = await res.json();
           if (data.code === "LOGIN_REQUIRED") {
-            window.location.href = "/login";
+            window.location.href = loginUrlWithNext();
             return;
           } else if (data.code === "LIMIT_REACHED") {
             setErrorMsg("limit");
@@ -605,7 +611,12 @@ export default function OracleOverlay({
         for (const line of chunk.split("\n")) {
           if (!line.startsWith("data: ")) continue;
           const payload = line.slice(6).trim();
-          if (payload === "[DONE]") break;
+          if (payload === "[DONE]") {
+            // Reading finished successfully — drop the draft so it doesn't
+            // restore as a stale question on the next open.
+            clearDraft(draftKey);
+            break;
+          }
           try {
             const parsed = JSON.parse(payload);
             if (parsed.content) {
@@ -1043,7 +1054,10 @@ export default function OracleOverlay({
                   <input
                     type="text"
                     value={input}
-                    onChange={(e) => setInput(e.target.value)}
+                    onChange={(e) => {
+                      setInput(e.target.value);
+                      saveDraft(draftKey, e.target.value);
+                    }}
                     placeholder={`Ask ${name} · 向${nameZh}求问`}
                     className="flex-1 bg-transparent border-none px-4 py-3.5 text-white text-sm placeholder:text-white/15 focus:outline-none"
                     style={{ fontFamily: SERIF }}
