@@ -168,6 +168,9 @@ export default function IChingDivination({ hexagrams }: { hexagrams: HexagramDat
             >
               Ask Zhou Gong for AI Interpretation →
             </button>
+            <p className="text-xs text-warm/70 mt-2">
+              Free casting · AI interpretation requires login (3/day free, 10/day Pro)
+            </p>
             <button
               onClick={handleReset}
               className="px-4 py-2 text-warm text-sm hover:text-china-red transition-colors"
