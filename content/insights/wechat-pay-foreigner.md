@@ -15,7 +15,7 @@ content_zh: |
 
   ### 微信支付的优势
   - 几乎所有商家都接受
-  - 转账给朋友很方便
+  - 余额或中国卡用户可转账红包；外卡仅限商户消费
   - 可以支付水电费、网购等
   - 与微信消息集成
 
@@ -71,7 +71,7 @@ content_zh: |
   3. 选择金额
   4. 确认支付
 
-  **限额：** 外国卡限额：单笔6,500元人民币、每年累计65,000元人民币（来源：微信官方帮助中心，核实于2026-10-22）
+  **限额：** 对于在国际版微信（WeChat/Weixin）账户上绑定外国卡支付的款项：单笔6,500元人民币、每年累计65,000元人民币（来源：微信官方帮助中心，核实于2026-10-22；Wise 交叉核实于2026-10-22）。中国银行卡用户的限额不同（通常更高）。
 
   ### 步骤5：开始支付
 
@@ -152,7 +152,7 @@ content_zh: |
   - [中国旅行最佳翻译App](/insights/best-translation-apps-china-travel)
   - [外国人在中国的AI应用](/insights/ai-apps-expats-china)
 takeaways:
-  - WeChat Pay is essential for daily life in China, from street vendors to group transfers.
+  - WeChat Pay is essential for daily life in China, from street vendors to daily purchases.
   - Setup requires passport verification, card linking, and a small test transaction.
   - Keep Alipay as a backup—merchant terminals can fail intermittently on either app.
   - Name and document formatting must match exactly to avoid verification rejection.
@@ -170,9 +170,9 @@ faqs:
     question_zh: 微信支付失败怎么办？
     answer_zh: 检查银行卡绑定，换卡重试，确保账户活跃，并准备好支付宝作为备用方案。
   - question: What are the limits for foreign cards on WeChat Pay?
-    answer: Foreign cards are capped at RMB 6,500 per single transaction and RMB 65,000 cumulatively per year. Topping up your Wallet balance (零钱) with a foreign card is generally not supported — foreign cards pay merchants directly.
+    answer: For payments charged to a linked foreign card on an international WeChat/Weixin account, the cap is RMB 6,500 per single transaction and RMB 65,000 cumulatively per year. Topping up your Wallet balance (零钱) with a foreign card is generally not supported — foreign cards pay merchants directly. Users with Chinese bank accounts have different (generally higher) limits.
     question_zh: 外国卡在微信支付上的限额是多少？
-    answer_zh: 外国卡单笔限额6,500元人民币，每年累计限额65,000元人民币。外国卡通常不能充值零钱余额，而是直接向商家扣款。
+    answer_zh: 对于在国际版微信（WeChat/Weixin）账户上绑定外国卡支付的款项：单笔限额6,500元人民币，每年累计限额65,000元人民币。外国卡通常不能充值零钱余额，而是直接向商家扣款。中国银行卡用户的限额不同（通常更高）。
 how_to:
   name: "Set Up WeChat Pay as a Foreigner in China"
   description: "Download WeChat, verify your identity with a passport, link a bank card, and start paying in China."
@@ -186,7 +186,7 @@ how_to:
     - name: "Link a bank card"
       text: "Add a Visa, Mastercard, JCB, or Chinese bank card and confirm the verification code."
     - name: "Make a small test payment"
-      text: "Send a tiny transfer or make a small purchase to confirm the card works before relying on it."
+      text: "Make one small merchant purchase (a bottle of water) to confirm the card works before relying on it."
 ---
 
 # How to Set Up WeChat Pay as a Foreigner in China (2026)
@@ -202,7 +202,7 @@ China has become largely cashless. From luxury malls to street vendors, almost e
 ### WeChat Pay Benefits
 
 - Accepted virtually everywhere
-- Easy transfers to friends
+- Transfers and red packets require a Chinese bank card or wallet balance — foreign cards are merchant-payment only
 - Pay bills, shop online, order food
 - Integrated with WeChat messaging
 
@@ -258,7 +258,7 @@ Foreign cards pay merchants directly — topping up your Wallet balance (零钱)
 3. Select amount
 4. Confirm payment
 
-**Limits:** For foreign cards: RMB 6,500 per single transaction and RMB 65,000 cumulative per year (source: WeChat Pay help center, checked 2026-10-22)
+**Limits:** For payments charged to a linked foreign card on an international WeChat/Weixin account: RMB 6,500 per single transaction and RMB 65,000 cumulative per year (source: WeChat Pay help center, checked 2026-10-22; corroborated by Wise, checked 2026-10-22). Users with Chinese bank accounts have different (generally higher) limits.
 
 ### Step 5: Start Paying
 
@@ -324,7 +324,7 @@ Yes, WeChat Pay uses encryption and multiple security measures. Enable payment p
 You can link a foreign credit card (Visa/Mastercard), but will have lower transaction limits. Opening a Chinese bank account is recommended for full functionality.
 
 ### How much can I spend per year?
-Foreign cards have a cumulative annual limit of RMB 65,000 (and RMB 6,500 per single transaction). Limits are much higher with a Chinese bank account.
+For payments charged to a linked foreign card on an international WeChat/Weixin account, the cumulative annual limit is RMB 65,000 (and RMB 6,500 per single transaction). Users with Chinese bank accounts have different (generally higher) limits.
 
 ### Can I use WeChat Pay outside China?
 WeChat Pay works in some countries with Chinese merchant partnerships, but it's primarily designed for use within China.
@@ -342,4 +342,4 @@ WeChat Pay works in some countries with Chinese merchant partnerships, but it's 
 
 - WeChat Pay foreign-card limits (single transaction RMB 6,500; monthly RMB 50,000; annual RMB 65,000) — WeChat/Weixin Help Center, checked 2026-10-22: https://help.wechat.com/cgi-bin/micromsg-bin/oshelpcenter?opcode=2&id=2307252mur7f2307257zfyfe&lang=en&plat=ios&Channel=helpcenter
 - Foreign cards cannot top up Wallet Balance (零钱); Chinese bank cards only — WeChat Newsroom, checked 2026-10-22: https://newsroom.wechat.com/newsRooms/NewsDetails/EasyPaywithWeixinPayLinkYourInternationalBankCardToday
-- Corroborating limits and 3% surcharge on transactions over RMB 200 — Wise guide, checked 2026-10-22: https://wise.com/gb/blog/wechat-pay-for-foreigners
+- Corroborating limits (RMB 6,500 single / 50,000 monthly / 65,000 yearly), 3% surcharge on transactions over RMB 200, and no transfers or red packets for international users — Wise guide, checked 2026-10-22: https://wise.com/gb/blog/wechat-pay-for-foreigners
