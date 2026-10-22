@@ -14,6 +14,7 @@ export type AnalyticsEvent =
   | "login_page_viewed_with_target"
   | "login_succeeded"
   | "upgrade_clicked"
+  | "pricing_example_viewed"
   | "newsletter_subscribed";
 
 type AnalyticsData = Record<string, string | number | boolean>;
@@ -30,9 +31,12 @@ export function logEvent(name: AnalyticsEvent, data: AnalyticsData = {}): void {
     }
   }
   try {
-    track(name, clean);
+    const data: AnalyticsData = { ...clean };
+    const env = process.env.NEXT_PUBLIC_VERCEL_ENV || process.env.VERCEL_ENV;
+    if (env && !("env" in data)) data.env = env; // production | preview | development
+    track(name, data);
     if (process.env.NODE_ENV !== "production") {
-      console.debug("[analytics]", name, clean);
+      console.debug("[analytics]", name, data);
     }
   } catch {
     // analytics must never break the product

@@ -3,6 +3,13 @@ import Link from "next/link";
 import { getSiteConfig } from "@/lib/config";
 import JsonLd from "@/components/JsonLd";
 import PricingClient from "./pricing-client";
+import ExampleViewed from "./example-viewed";
+import {
+  SAMPLE_DEMO_CONDITIONS,
+  SAMPLE_QUESTION,
+  SAMPLE_FREE,
+  SAMPLE_PRO,
+} from "@/lib/sample-reading";
 
 export const metadata: Metadata = {
   title: "Pricing — GoEast.ai",
@@ -112,6 +119,17 @@ export default function PricingPage() {
             ))}
           </ul>
           <PricingClient paymentEnabled={config.paymentEnabled} />
+          <p className="text-xs text-warm/70 mt-3 break-words">
+            $4.99/month · auto-renews · cancel anytime in Account ·{" "}
+            <Link href="/terms" className="underline hover:text-china-red">
+              Terms
+            </Link>{" "}
+            ·{" "}
+            <Link href="/terms" className="underline hover:text-china-red">
+              Refund policy: see Terms
+            </Link>
+            . Taxes, if any, are calculated at checkout.
+          </p>
         </div>
       </div>
 
@@ -141,6 +159,89 @@ export default function PricingPage() {
         <p className="text-xs text-warm/60 mt-3">
           Same engine, same sources — Pro readings go deeper and longer, and you get 10 per day instead of 3.
         </p>
+      </section>
+
+      {/* Real same-condition example — verbatim excerpts from docs/samples/ */}
+      <section id="example" className="mb-12 p-6 bg-cream rounded-xl border border-sand">
+        <ExampleViewed />
+        <h2 className="text-lg font-semibold text-ink mb-2">
+          The same cast, twice — Free vs Pro
+        </h2>
+        <p className="text-xs text-warm/70 mb-6 break-words">{SAMPLE_DEMO_CONDITIONS}</p>
+        <div className="grid md:grid-cols-2 gap-4">
+          {/* Free card */}
+          <div className="p-4 bg-white rounded-lg border border-sand break-words">
+            <p className="font-medium text-ink mb-2 text-sm">Free reading (excerpt)</p>
+            <p className="text-sm italic text-warm mb-3 break-words">“{SAMPLE_QUESTION}”</p>
+            <div className="text-sm text-ink/90 space-y-3">
+              <div className="text-xs leading-relaxed break-words">{SAMPLE_FREE.traditional}</div>
+              <div className="text-xs leading-relaxed break-words">{SAMPLE_FREE.interpretation}</div>
+              <div>
+                <p className="text-xs font-semibold text-ink mb-1">Reflection</p>
+                <ul className="text-xs leading-relaxed space-y-1 text-warm break-words">
+                  {SAMPLE_FREE.reflection.split("\n").map((line) => (
+                    <li key={line}>{line}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <p className="text-xs text-warm/60 mt-4 pt-3 border-t border-sand">
+              Excerpt — full unedited readings:{" "}
+              <a
+                href="https://github.com/helenalhq/goeast.ai/tree/main/docs/samples"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-china-red break-words"
+              >
+                docs/samples/ in the repo
+              </a>
+            </p>
+          </div>
+          {/* Pro card — only what Pro adds */}
+          <div className="p-4 bg-white rounded-lg border-2 border-china-red break-words">
+            <p className="font-medium text-china-red mb-2 text-sm">
+              Pro deep reading (excerpt) — everything in Free, plus:
+            </p>
+            <div className="text-sm text-ink/90 space-y-3">
+              <div>
+                <p className="text-xs font-semibold text-ink mb-1">Going Deeper</p>
+                <div className="text-xs leading-relaxed break-words">
+                  {SAMPLE_PRO.goingDeeper.split("\n\n").map((para) => (
+                    <p key={para} className="mb-2 last:mb-0">{para}</p>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-ink mb-1">Deeper reflection</p>
+                <ul className="text-xs leading-relaxed space-y-1 text-warm break-words">
+                  {SAMPLE_PRO.deeperReflection.split("\n").map((line) => (
+                    <li key={line}>{line}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="text-xs italic text-warm break-words">{SAMPLE_PRO.followUp}</div>
+            </div>
+            <p className="text-xs text-warm/60 mt-4 pt-3 border-t border-sand">
+              Excerpt — full unedited readings:{" "}
+              <a
+                href="https://github.com/helenalhq/goeast.ai/tree/main/docs/samples"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-china-red break-words"
+              >
+                docs/samples/ in the repo
+              </a>
+            </p>
+          </div>
+        </div>
+        <div className="text-center mt-6">
+          <Link
+            href="/iching"
+            className="inline-block px-6 py-2.5 rounded-lg bg-china-red text-white text-sm font-medium hover:bg-china-red/90 transition-colors"
+          >
+            Cast your own hexagram free →
+          </Link>
+        </div>
       </section>
 
       <div className="text-center text-sm text-warm">

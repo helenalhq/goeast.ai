@@ -97,6 +97,12 @@ export default function IChingPage() {
           Cast the coins six times to build your hexagram. Free — no account required.
         </p>
         <IChingDivination hexagrams={hexagrams} />
+        <p className="text-xs text-warm/70 mt-3 text-center">
+          Wondering what a Pro reading adds?{" "}
+          <Link href="/pricing#example" className="underline hover:text-china-red">
+            See a real Free vs Pro example →
+          </Link>
+        </p>
       </section>
 
       {/* Email Capture for non-divination users */}
