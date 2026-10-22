@@ -15,10 +15,10 @@ faqs:
     answer: Yes, if your phone supports eSIM and is carrier-unlocked. Several providers offer China-specific data plans that activate on arrival.
     question_zh: 外国人可以在中国使用 eSIM 吗？
     answer_zh: 可以，前提是手机支持 eSIM 且已解锁。多家供应商提供抵达即激活的中国专用数据套餐。
-  - question: Does eSIM work with Google services blocked in China?
-    answer: eSIM provides data connectivity, but Google services remain blocked. You will still need a VPN or alternative apps for Google-dependent workflows.
-    question_zh: eSIM 在中国能用被屏蔽的 Google 服务吗？
-    answer_zh: eSIM 提供数据连接，但 Google 服务仍被屏蔽。你仍需要 VPN 或替代应用来使用 Google 相关功能。
+  - question: Do I need a VPN to use Google services on a China eSIM?
+    answer: It depends on the plan's routing. International roaming eSIMs exit outside the mainland, so Google, WhatsApp and Instagram usually work without a VPN. Mainland-IP data plans are behind the same firewall as local Wi-Fi — blocked services stay blocked. Check the plan's routing before you buy.
+    question_zh: 用中国 eSIM 上 Google 服务需要 VPN 吗？
+    answer_zh: 取决于套餐的路由方式。国际漫游 eSIM 的出口在境外，Google、WhatsApp 等通常无需 VPN 即可使用；大陆 IP 套餐则与本地网络一样受防火墙限制，被屏蔽的服务依然无法访问。购买前请确认套餐的路由方式。
   - question: Should I get eSIM or a local SIM card in China?
     answer: eSIM is faster to set up before travel. A local SIM may offer better coverage in remote areas. Many travelers use both for redundancy.
     question_zh: 在中国应该用 eSIM 还是本地 SIM 卡？
