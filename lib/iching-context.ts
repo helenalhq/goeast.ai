@@ -14,6 +14,23 @@ export type IchingConsultationContext = {
 
 export const ICHING_CONTEXT_DRAFT_KEY = "iching-context";
 
+/** Stored contexts older than this are treated as absent (expired). */
+export const ICHING_CONTEXT_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+
+/** Wrap a context for storage with a birth timestamp (expiry on restore). */
+export function sealIchingContext(ctx: IchingConsultationContext): { ctx: IchingConsultationContext; savedAt: number } {
+  return { ctx, savedAt: Date.now() };
+}
+
+/** Unseal a stored envelope. Returns null when missing, malformed, or older
+ *  than ICHING_CONTEXT_MAX_AGE_MS. Does NOT touch storage — caller clears. */
+export function unsealIchingContext(raw: unknown): IchingConsultationContext | null {
+  if (typeof raw !== "object" || raw === null) return null;
+  const { ctx, savedAt } = raw as Record<string, unknown>;
+  if (typeof savedAt !== "number" || Date.now() - savedAt > ICHING_CONTEXT_MAX_AGE_MS) return null;
+  return validateIchingContext(ctx);
+}
+
 /** Build context from a completed 6-line coin cast. Returns null unless complete. */
 export function buildIchingContext(
   casts: { binary: string; changing: boolean }[],

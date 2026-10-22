@@ -5,6 +5,9 @@ import {
   buildStudyContext,
   validateIchingContext,
   buildIchingContextBlock,
+  sealIchingContext,
+  unsealIchingContext,
+  type IchingConsultationContext,
 } from "../iching-context";
 
 const HEXAGRAMS = getAllHexagrams();
@@ -77,6 +80,38 @@ describe("validateIchingContext (server-side, untrusted input)", () => {
 
   it("rejects invalid transformedNumber when present", () => {
     expect(validateIchingContext({ mode: "cast", hexagramNumber: 1, changingLines: [1], transformedNumber: 99 })).toBeNull();
+  });
+});
+
+describe("sealIchingContext / unsealIchingContext (storage envelope)", () => {
+  it("sealIchingContext wraps with savedAt ≈ now", () => {
+    const before = Date.now();
+    const envelope = sealIchingContext({ mode: "cast", hexagramNumber: 1, changingLines: [] });
+    const after = Date.now();
+    expect(envelope.ctx).toEqual({ mode: "cast", hexagramNumber: 1, changingLines: [] });
+    expect(envelope.savedAt).toBeGreaterThanOrEqual(before);
+    expect(envelope.savedAt).toBeLessThanOrEqual(after);
+  });
+
+  it("unsealIchingContext accepts a fresh envelope and returns the validated ctx", () => {
+    const ctx: IchingConsultationContext = { mode: "study", hexagramNumber: 6, changingLines: [] };
+    expect(unsealIchingContext(sealIchingContext(ctx))).toEqual(ctx);
+  });
+
+  it("rejects a missing or non-number savedAt", () => {
+    const ctx = { mode: "study", hexagramNumber: 6, changingLines: [] };
+    expect(unsealIchingContext({ ctx })).toBeNull();
+    expect(unsealIchingContext({ ctx, savedAt: "123" })).toBeNull();
+  });
+
+  it("rejects an envelope older than 24h", () => {
+    const ctx = { mode: "study", hexagramNumber: 6, changingLines: [] };
+    expect(unsealIchingContext({ ctx, savedAt: Date.now() - 25 * 3600 * 1000 })).toBeNull();
+  });
+
+  it("rejects a non-envelope payload (legacy plain ctx) and invalid ctx inside envelope", () => {
+    expect(unsealIchingContext({ mode: "study", hexagramNumber: 6, changingLines: [] })).toBeNull();
+    expect(unsealIchingContext({ ctx: { mode: "evil", hexagramNumber: 1, changingLines: [] }, savedAt: Date.now() })).toBeNull();
   });
 });
 

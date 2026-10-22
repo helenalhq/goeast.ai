@@ -9,7 +9,7 @@ import { saveDraft, loadDraft, clearDraft } from "@/lib/draft";
 import { logEvent } from "@/lib/analytics";
 import {
   ICHING_CONTEXT_DRAFT_KEY,
-  validateIchingContext,
+  unsealIchingContext,
   type IchingConsultationContext,
 } from "@/lib/iching-context";
 import { getHexagramByNumber } from "@/lib/iching-data";
@@ -517,15 +517,15 @@ export default function OracleOverlay({
     setInput(typeof savedDraft === "string" ? savedDraft : "");
     // Restore the I Ching cast context (Zhou Gong only) so a refresh
     // mid-question keeps the user's cast alongside the question draft.
-    // Reuse the server validator: a corrupt/out-of-range draft must not
-    // render a broken card ("Hexagram undefined").
+    // The stored envelope expires after 24h; legacy/corrupt payloads are
+    // treated as absent — a broken card must never render ("Hexagram undefined").
     if (slug === "prologue-zhougong") {
-      const savedCtx = validateIchingContext(
-        loadDraft<IchingConsultationContext>(ICHING_CONTEXT_DRAFT_KEY)
-      );
-      if (savedCtx) {
-        setIchingCtx(savedCtx);
-        logEvent("oracle_opened_with_hexagram", { mode: savedCtx.mode });
+      const ctx = unsealIchingContext(loadDraft(ICHING_CONTEXT_DRAFT_KEY));
+      if (ctx) {
+        setIchingCtx(ctx);
+        logEvent("oracle_opened_with_hexagram", { mode: ctx.mode });
+      } else {
+        clearDraft(ICHING_CONTEXT_DRAFT_KEY); // expired/malformed envelope — start clean
       }
     }
   }, [draftKey, slug]);

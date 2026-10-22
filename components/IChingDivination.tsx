@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { saveDraft, loadDraft, clearDraft } from "@/lib/draft";
-import { buildIchingContext, ICHING_CONTEXT_DRAFT_KEY } from "@/lib/iching-context";
+import { buildIchingContext, sealIchingContext, ICHING_CONTEXT_DRAFT_KEY } from "@/lib/iching-context";
 import { logEvent } from "@/lib/analytics";
 import { HexagramData } from "@/lib/types";
 import Link from "next/link";
@@ -158,7 +158,10 @@ export default function IChingDivination({ hexagrams }: { hexagrams: HexagramDat
               onClick={() => {
                 // Hand the actual cast to the Oracle (numbers only; server resolves names).
                 const ctx = buildIchingContext(casts, hexagrams);
-                if (ctx) saveDraft(ICHING_CONTEXT_DRAFT_KEY, ctx);
+                if (ctx) {
+                  clearDraft("oracle:prologue-zhougong"); // new consultation — don't silently pair the old question with this cast
+                  saveDraft(ICHING_CONTEXT_DRAFT_KEY, sealIchingContext(ctx));
+                }
                 router.push("/sophies-journey/prologue-zhougong#oracle");
               }}
               className="px-6 py-2 bg-[#8b4513] text-white rounded-full font-medium hover:opacity-90 transition-colors text-sm"
