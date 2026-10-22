@@ -48,10 +48,10 @@ export default function PhilosopherIntro({
     if (slug === "prologue-zhougong") {
       const ctx = unsealIchingContext(loadDraft(ICHING_CONTEXT_DRAFT_KEY));
       if (ctx?.mode === "study") {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setStudyMode(true);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
