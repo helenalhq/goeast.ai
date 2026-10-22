@@ -1,112 +1,85 @@
 # Payment & Delivery Evidence — GoEast.ai
 
-Status: **2026-10-22** | Branch: `fix/launch-final-polish`
+Status: **2026-10-22 22:30 CST** | Branch: `fix/launch-reliability` | Commit: `61a4e82` + late-event guard
 
-## Summary
+## Verification Levels
 
-This document consolidates all payment and delivery verification evidence for GoEast.ai's Pro subscription ($4.99/month). Evidence is categorized as: **✅ Verified** (mock or real), **⚠️ Partially verified** (code-level only), ** Unverified** (needs test credentials).
+| Symbol | Meaning |
+|---|---|
+| ✅ Code | 代码实现完成，通过编译 |
+| ✅ Auto | 自动化测试通过（vitest mock） |
+| ✅ Callback | 真实 Creem 回调到达并处理 |
+| ✅ Preview | preview.goeast.ai 实际验证 |
+| ✅ Prod | www.goeast.ai 实际验证 |
+| ⏳ Pending | 需要条件/授权，尚未执行 |
 
 ## 1. Entitlement Logic
 
-| Check | Status | Evidence |
+| Check | Code | Auto | Preview | Prod | Evidence |
+|---|---|---|---|---|---|
+| Free = 3/day, Pro = 10/day | ✅ | ✅ | ⏳ | ⏳ | `lib/rate-limit.ts` — `FREE_TIER_LIMIT=3`, `PRO_TIER_LIMIT=10` |
+| **UTC 自然日重置**（非滑动 24h） | ✅ | ✅ | ⏳ | ⏳ | `getUtcWindowStart()` 以 UTC 日期为窗口键；PostgreSQL `increment_usage` 按天原子增量 |
+| 跨功能共享额度（Oracle+紫微+合盘） | ✅ | ✅ | ⏳ | ⏳ | 三路由共用 `usage_log` 表 |
+| `hasActiveProEntitlement` 含 expires_at + 48h 宽限 | ✅ | ✅ | ⏳ | ⏳ | `lib/creem.ts` 新增；7 个单测覆盖全场景 |
+| ~~滑动 24h 窗口~~ | — | — | — | — | **已过时**：旧内存实现为滑动 24h；新实现为 UTC 自然日 |
+| `expires_at` 只写不读 | — | — | — | — | **已过时**：门禁现在读取 `expires_at` + 48h 宽限期 |
+
+## 2. Database Migration Status
+
+| Object | SQL File Written | **Database Executed** | Verified |
+|---|---|---|---|
+| `usage_log` 表 | ✅ `supabase/migrations/002_*.sql` | ❌ **未执行** | `PGRST205` 错误确认表不存在 |
+| `increment_usage` 函数 | ✅ `supabase/migrations/003_*.sql` | ❌ **未执行** | `PGRST202` 错误确认函数不存在 |
+| RLS 策略（无 policy = 仅 service_role） | ✅ | ❌ | 同上 |
+
+**待执行**: 在 Supabase Dashboard SQL 编辑器运行 `supabase/apply-migration.sql`
+**影响**: 共享生产库新增表+函数，不影响现有表；无外键约束
+**回滚**: `DROP FUNCTION increment_usage; DROP TABLE usage_log;`
+
+## 3. Webhook Security
+
+| Check | Code | Auto | Callback | Evidence |
+|---|---|---|---|---|
+| Fail-closed（无 secret → 500） | ✅ | ✅ | — | 路由 18-23 行 + 测试 |
+| HMAC 验签（timingSafeEqual） | ✅ | ✅ | ✅ | Preview 真实 `subscription.canceled` 回调返回 200 |
+| **迟到激活事件不重新开通已取消订阅** | ✅ | ✅ | ⏳ | `activateSubscription` 新增守卫：`cancelled/expired` 状态跳过激活（7 个单测覆盖） |
+| 事件重放幂等 | ✅ | ✅ | — | upsert onConflict |
+| Preview webhook URL | — | — | ✅ | `https://preview.goeast.ai/api/webhooks/creem` 已配置 |
+
+## 4. Late Event Guard（本轮新增）
+
+**已知风险场景**: 测试订阅 `sub_68Odn2mjNTHTZVlm4rUGvC` 已立即取消。Creem 计划在 10月23日 02:39 重试旧 `checkout.completed/paid`，02:45 重试旧 `canceled`。
+
+**防护实现**: `lib/creem.ts` `activateSubscription()` 在 upsert 之前先查询当前状态。若为 `cancelled` 或 `expired`（终态），直接跳过并记录日志。`scheduled_cancel` 仍可转 `active`（正常续费场景）。
+
+**测试**: `lib/__tests__/late-event-guard.test.ts` 7 个用例：
+- 已取消 → 跳过激活 ✓
+- 已过期 → 跳过激活 ✓
+- 无记录 → 正常激活 ✓
+- scheduled_cancel → 正常续费激活 ✓
+- Webhook 路由对迟到 paid 返回 200（不报错，但守卫阻止实际激活）✓
+
+**待验证**: 10月23日 02:39 后确认 Vercel 日志中该订阅未被重新激活。
+
+## 5. Real Generation Status
+
+| Environment | Status | Evidence |
 |---|---|---|
-| Free = 3/day, Pro = 10/day | ✅ | `lib/rate-limit.ts:11,15` — `FREE_TIER_LIMIT=3`, `PAID_TIER_LIMIT=10` |
-| Sliding 24h window | ✅ | `lib/rate-limit.ts:12,16` — `FREE_TIER_WINDOW_MS`, `PAID_TIER_WINDOW_MS` |
-| Shared quota across Oracle/Ziwei/Synastry | ✅ | All three routes call `checkAuthUserRateLimit(userId)` |
-| Status gates (`active`/`scheduled_cancel`) | ✅ | `app/api/oracle/route.ts:72`, `app/api/ziwei/interpret/route.ts:79`, `app/api/ziwei/synastry/route.ts:106`, `app/account/page.tsx:48,69` |
-| `expires_at` parsed but not enforced | ⚠️ | Parsed in webhook, NOT checked at gates — known limitation (owner decision pending) |
+| Preview (preview.goeast.ai) | ❌ **失败** — "Rate limit service unavailable" | 数据库迁移未执行，`increment_usage` 函数不存在 |
+| Production (www.goeast.ai) | ⏳ 未测试 | 同一数据库，预期同样失败 |
+| **修复后** | ⏳ | 执行迁移后需实际验证 |
 
-## 2. Webhook Security
+## 6. Outstanding Items
 
-| Check | Status | Evidence |
+| Item | Blocking | Next Step |
 |---|---|---|
-| Fail-closed (no secret → 500) | ✅ | `app/api/webhooks/creem/route.ts:18-23` + test `rejects when the secret is not configured` |
-| HMAC verification (timing-safe) | ✅ | `lib/creem.ts:62-76` uses `crypto.timingSafeEqual` |
-| Signature bypass when secret unset | ✅ Fixed | Was `if (SECRET && !verify)` — now unconditional verify |
-| Event replay idempotence | ✅ | Upsert on `creem_subscription_id` (`lib/creem.ts:121-133`) |
-| Cancel/expired routing | ✅ | Tests: `subscription.canceled routes to cancelSubscription`, `subscription.expired routes to cancelSubscription` |
-
-## 3. Checkout Flow
-
-| Check | Status | Evidence |
-|---|---|---|
-| Unauthenticated → 401 | ✅ | `lib/__tests__/checkout-route.test.ts` |
-| Authenticated → Creem API call | ✅ | Test asserts `metadata.userId`, `success_url: /account?checkout=success` |
-| Provider error → 502 | ✅ | Test asserts 502 on `!ok` response |
-| Network failure → non-2xx | ✅ | Test asserts ≥500 on fetch throw |
-| Success URL includes `?checkout=success` | ✅ | `app/api/checkout/route.ts:40` |
-
-## 4. Account Page (Post-Checkout)
-
-| Check | Status | Evidence |
-|---|---|---|
-| Pending state (`?checkout=success` + no access) | ✅ | Amber card "Returning from checkout — confirming…" replaces Upgrade button |
-| Auto-refresh (5s, 3-min cap) | ✅ | `app/account/pending-refresher.tsx` — `router.refresh()` + interval cleanup |
-| No auto-recheckout | ✅ | UpgradeButton hidden when `checkoutPending` |
-| Entitlement from DB only | ✅ | `hasAccess` from `supabase.from("subscriptions")` — URL param is presentation-only |
-
-## 5. Pro Entitlement (What Pro Actually Adds)
-
-| Feature | Free | Pro |
-|---|---|---|
-| Oracle consultations/day | 3 | 10 |
-| Oracle output | Standard (3 sections: Traditional/Interpretation/Reflection) | Deep (+ GOING DEEPER section, deeper Reflection, follow-up invitation; ~2× token budget) |
-| Zi Wei reading tokens | 3000 | 6000 |
-| Zi Wei deep sections | No | Yes (Decades & Timing 大限流年, Palace Interactions 宫位互参) |
-| Synastry tokens | 4000 | 8000 |
-| Synastry deep sections | No | Yes (+ both-charts qualifier) |
-
-**Byte-identical free output**: Verified by tests — `getOraclePrompt(slug)` without `{deep}` returns the exact same config object as before round 2.
-
-## 6. End-to-End Payment Flow
-
-| Step | Status | Notes |
-|---|---|---|
-| Login → `/pricing` → Upgrade click | ⚠️ Code verified, no live test | `upgrade_clicked` event fires |
-| `/api/checkout` → Creem | ⚠️ Mock verified | Requires Creem test-mode key for live test |
-| Creem → webhook → `subscriptions` row | ⚠️ Mock verified | Requires webhook tunnel for live test |
-| `/account?checkout=success` → pending card → Pro view | ⚠️ Code verified | Requires test account + webhook delivery |
-| Pro user → Oracle deep reading | ⚠️ Code verified | Requires test account + Pro status in DB |
-
-**Blocking items for full E2E verification:**
-1. Creem test-mode API key + test product (`.env.example` documents `CREEM_API_BASE=https://test-api.creem.io`)
-2. Non-production Supabase project (or owner-designated test account)
-3. Webhook tunnel to local/preview app (e.g. `vercel dev` or public tunnel)
-
-**Without these, no live payment test is possible.** Do not use production credentials or real charges.
-
-## 7. Analytics Funnel
-
-| Event | Type | Where |
-|---|---|---|
-| `iching_cast_completed` | Client | `IChingDivination` (6th cast only) |
-| `oracle_consult_started` | Client | `OracleOverlay.consult` (post login-gate) |
-| `oracle_reading_delivered` | Client | `OracleOverlay` SSE `[DONE]` (success only) |
-| `pricing_example_viewed` | Client | `app/pricing/example-viewed.tsx` (Intersection Observer, 30% threshold) |
-| `upgrade_clicked` | Client | Three upgrade buttons (pricing/oracle/account) |
-| `checkout_created` | Server | `/api/checkout` after Creem returns URL (logs `user_id` only) |
-| `subscription_activated` | Server | Webhook after `activateSubscription` (logs `subscription_id` only) |
-| `subscription_cancelled` | Server | Webhook cancel branches |
-
-**Privacy**: All events are scalar-only (no emails, questions, birth data). Server logs contain only IDs.
-
-**Test vs production traffic**: Client events auto-tag `env` attribute (`production`/`preview`/`development`) via `logEvent`.
-
-## 8. Refund Policy
-
-From `app/terms/page.tsx` §"Cancellation and Refunds":
-- Cancel anytime from account page, effective end of billing period
-- "Refunds are provided at our sole discretion, unless required by applicable law"
-
-**Pricing page disclosure**: "$4.99/month · auto-renews · cancel anytime in Account · Terms & refund policy. Taxes, if any, are calculated at checkout."
-
-## 9. Known Limitations (Owner Decisions Pending)
-
-1. **`expires_at` not enforced at gates** — if Creem fails to deliver `subscription.expired`, access continues indefinitely. Options: (a) add expiry check with grace period, (b) cron job to flip expired rows.
-2. **Email self-claim on `/account`** — any account with matching email auto-claims subscription (no ownership proof).
-3. **No event-id dedup** — replayed activation events re-upsert (harmless but not tracked).
-4. **In-memory quota store** — doesn't share across serverless instances, resets on deploy.
+| 数据库迁移 | 无阻塞 | 用户在 Supabase Dashboard 执行 `supabase/apply-migration.sql` |
+| Free 真实生成验证 | 数据库迁移 | 迁移后在 Preview 用测试账号提交合成问题 |
+| Pro 真实生成验证 | 数据库迁移 + 测试账号 | 迁移后验证 deep 模式输出 |
+| 完整 Test 支付闭环 | 需授权新的 Test 购买 | 账号 pcliu.fd@gmail.com 的订阅已取消，需新的测试购买 |
+| 到期边界自动化测试 | 无阻塞 | 可通过修改 `expires_at` 在测试中模拟 |
+| 迟到事件重试验证 | 无阻塞 | 等待 10月23日 02:39 后检查日志 |
 
 ---
 
-*Document auto-generated from code review. Last updated: 2026-10-22.*
+*Updated: 2026-10-22 22:30 CST. Previous versions described the old in-memory rate limiter as "sliding 24h window" — this is obsolete. Current implementation uses UTC calendar-day windows with PostgreSQL atomic increment.*

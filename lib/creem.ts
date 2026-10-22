@@ -83,7 +83,10 @@ export function isConfigured(): boolean {
 }
 
 /**
- * Activate a subscription in Supabase, linking to user
+ * Activate a subscription in Supabase, linking to user.
+ * Guard: if the subscription is already cancelled/expired, a late-arriving
+ * checkout.completed or subscription.paid event (Creem retry) must NOT
+ * re-activate it. Only inactive/scheduled_cancel rows can transition to active.
  */
 export async function activateSubscription(
   supabase: SupabaseClient,
@@ -93,6 +96,21 @@ export async function activateSubscription(
   expiresAt: Date,
   knownUserId?: string,
 ): Promise<void> {
+  // Check current state: cancelled/expired subscriptions are terminal —
+  // late activation events (retries) must not override them.
+  const { data: existing } = await supabase
+    .from("subscriptions")
+    .select("status")
+    .eq("creem_subscription_id", subscriptionId)
+    .maybeSingle();
+
+  if (existing?.status === "cancelled" || existing?.status === "expired") {
+    console.log(
+      `[creem] skip activate: subscription ${subscriptionId} is ${existing.status} (late event guard)`,
+    );
+    return;
+  }
+
   // Use the userId from checkout metadata if available (most reliable)
   let userId: string | null = knownUserId ?? null;
 
