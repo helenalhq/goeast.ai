@@ -87,7 +87,7 @@
 
 ## 六、预览与回滚
 
-- **预览地址**：见下方"Preview 部署"记录（Vercel preview URL，非生产）。
+- **预览地址**：https://go-east-73inj3232-pclius-projects-c305da2a.vercel.app（Vercel preview，非生产；CLI 确认 Ready。注：本机网络无法直连 *.vercel.app 域，请在浏览器打开核验）
 - **回滚**：合并前 `git checkout main && git branch -D first-order-readiness`；合并后 `git revert <merge> -m 1`。无 DB 迁移/环境变量变更（复用既有 AZURE/CREEM/SUPABASE 配置）。样例生成门控默认跳过，回滚后无任何运行时副作用。
 - 回归保障：deep 顺序修复有路由测试钉住；免费输出仍字节级不变（既有测试）。
 
