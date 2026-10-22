@@ -32,6 +32,16 @@ export default function PhilosopherIntro({
   }, []);
 
   useEffect(() => {
+    // Deep link (#oracle) from CTAs or a login round-trip: open the consult
+    // overlay so the user lands IN the consultation, not one click away.
+    // Only consultOpen is touched — the typing-intro overlay is unaffected.
+    if (window.location.hash === "#oracle") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setConsultOpen(true);
+    }
+  }, []);
+
+  useEffect(() => {
     if (introOpen) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setTyping(true);

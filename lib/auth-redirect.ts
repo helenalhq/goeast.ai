@@ -62,11 +62,16 @@ export function sanitizeNextPath(raw: string | null | undefined): string {
 
 /**
  * Client helper: /login?next=<current path> for tool components that must
- * send the user back to the exact tool after signing in. Uses pathname only —
- * never search params or state — so no user input leaks into the URL.
+ * send the user back to the exact tool after signing in. Uses pathname plus
+ * a sanitized hash (e.g. #oracle deep links) — never search params or state —
+ * so no user input leaks into the URL.
  */
 export function loginUrlWithNext(): string {
   const target =
-    typeof window !== "undefined" ? sanitizeNextPath(window.location.pathname) : DEFAULT_NEXT_PATH;
+    typeof window !== "undefined"
+      ? sanitizeNextPath(
+          window.location.pathname + (window.location.hash || "")
+        )
+      : DEFAULT_NEXT_PATH;
   return `/login?next=${encodeURIComponent(target)}`;
 }

@@ -79,3 +79,11 @@ describe("sanitizeNextPath", () => {
     expect(sanitizeNextPath("/pricing")).toBe(sanitizeNextPath(sanitizeNextPath("/pricing")));
   });
 });
+
+describe("sanitizeNextPath with anchor (login return keeps #oracle)", () => {
+  it("preserves the #oracle hash on a chapter path", () => {
+    expect(sanitizeNextPath("/sophies-journey/prologue-zhougong#oracle")).toBe(
+      "/sophies-journey/prologue-zhougong#oracle"
+    );
+  });
+});
