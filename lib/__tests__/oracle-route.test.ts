@@ -1,11 +1,10 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import type { NextRequest } from "next/server";
 
-const { getUser, getSubscription, checkFree, checkPaid, createCompletion } = vi.hoisted(() => ({
+const { getUser, getSubscription, checkUsage, createCompletion } = vi.hoisted(() => ({
   getUser: vi.fn(),
   getSubscription: vi.fn(),
-  checkFree: vi.fn(),
-  checkPaid: vi.fn(),
+  checkUsage: vi.fn(),
   createCompletion: vi.fn(),
 }));
 
@@ -16,10 +15,25 @@ vi.mock("@/lib/supabase/server", () => ({
 }));
 vi.mock("@/lib/creem", () => ({
   getSubscriptionByUserId: getSubscription,
+  hasActiveProEntitlement: vi.fn().mockImplementation(async (_supabase: unknown, userId: string) => {
+    const sub = await getSubscription(userId);
+    if (!sub) return false;
+    const statusOk = sub.status === "active" || sub.status === "scheduled_cancel";
+    if (!statusOk) return false;
+    if (sub.expires_at) {
+      const expiresAt = new Date(sub.expires_at).getTime();
+      if (Number.isNaN(expiresAt)) return false;
+      if (Date.now() > expiresAt + 48 * 60 * 60 * 1000) return false;
+    } else {
+      return false;
+    }
+    return true;
+  }),
 }));
 vi.mock("@/lib/rate-limit", () => ({
-  checkFreeLimit: checkFree,
-  checkAuthUserRateLimit: checkPaid,
+  FREE_TIER_LIMIT: 3,
+  PRO_TIER_LIMIT: 10,
+  checkAndIncrementUsage: checkUsage,
 }));
 vi.mock("openai", () => {
   class FakeOpenAI {
@@ -41,8 +55,7 @@ function req(body: unknown) {
 beforeEach(() => {
   vi.clearAllMocks();
   getUser.mockResolvedValue({ data: { user: null } });
-  checkFree.mockReturnValue({ allowed: true, remaining: 2 });
-  checkPaid.mockReturnValue({ allowed: true, remaining: 9 });
+  checkUsage.mockImplementation(async () => ({ allowed: true, remaining: 2, currentCount: 1 }));
   createCompletion.mockResolvedValue({ /* not streamed in these tests */ });
 });
 
@@ -114,7 +127,7 @@ describe("auth + Pro deep wiring", () => {
 
   it("paid user (active sub) gets deep prompt and doubled token budget", async () => {
     getUser.mockResolvedValue({ data: { user: { id: "u1" } } });
-    getSubscription.mockResolvedValue({ status: "active" });
+    getSubscription.mockResolvedValue({ status: "active", expires_at: new Date(Date.now() + 30*86400000).toISOString() });
     await POST(req({ philosopher: "ch01-laozi", question: "q" }));
     const call = createCompletion.mock.calls[0][0];
     expect((call.messages[0].content as string)).toContain("DEEP READING MODE");
@@ -132,8 +145,8 @@ describe("auth + Pro deep wiring", () => {
 
   it("paid user hitting the 10/day cap → 429 LIMIT_REACHED", async () => {
     getUser.mockResolvedValue({ data: { user: { id: "u3" } } });
-    getSubscription.mockResolvedValue({ status: "active" });
-    checkPaid.mockReturnValue({ allowed: false, remaining: 0 });
+    getSubscription.mockResolvedValue({ status: "active", expires_at: new Date(Date.now() + 30*86400000).toISOString() });
+    checkUsage.mockImplementation(async () => ({ allowed: false, remaining: 0, currentCount: 10 }));
     const res = await POST(req({ philosopher: "ch01-laozi", question: "q" }));
     expect(res.status).toBe(429);
     expect(createCompletion).not.toHaveBeenCalled();
@@ -141,7 +154,7 @@ describe("auth + Pro deep wiring", () => {
 
   it("paid user WITH cast context gets deep prompt AND context block, in the right ORDER", async () => {
     getUser.mockResolvedValue({ data: { user: { id: "u4" } } });
-    getSubscription.mockResolvedValue({ status: "active" });
+    getSubscription.mockResolvedValue({ status: "active", expires_at: new Date(Date.now() + 30*86400000).toISOString() });
     await POST(req({
       philosopher: "prologue-zhougong",
       question: "q",

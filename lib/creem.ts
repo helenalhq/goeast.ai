@@ -170,3 +170,35 @@ export async function getSubscriptionByUserId(
 
   return data as Subscription | null;
 }
+
+/**
+ * Check if a user has active Pro entitlement with valid expiry.
+ * Returns true only when:
+ *   - status is "active" or "scheduled_cancel"
+ *   - expires_at is present and in the future (with 48h grace period for webhook delays)
+ *   - No subscription row → false (never default to Pro)
+ */
+export async function hasActiveProEntitlement(
+  supabase: SupabaseClient,
+  userId: string,
+): Promise<boolean> {
+  const sub = await getSubscriptionByUserId(supabase, userId);
+  if (!sub) return false;
+
+  const statusOk =
+    sub.status === "active" || sub.status === "scheduled_cancel";
+  if (!statusOk) return false;
+
+  // Grace period: allow 48h past expires_at for webhook delay scenarios
+  const GRACE_PERIOD_MS = 48 * 60 * 60 * 1000;
+  if (sub.expires_at) {
+    const expiresAt = new Date(sub.expires_at).getTime();
+    if (Number.isNaN(expiresAt)) return false; // invalid date → deny
+    if (Date.now() > expiresAt + GRACE_PERIOD_MS) return false; // expired beyond grace
+  } else {
+    // No expires_at recorded — legacy data, deny to be safe
+    return false;
+  }
+
+  return true;
+}

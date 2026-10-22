@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getSiteConfig } from "@/lib/config";
+import { hasActiveProEntitlement, getSubscriptionByUserId } from "@/lib/creem";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import LogoutButton from "./logout-button";
@@ -72,7 +73,7 @@ export default async function AccountPage({
         return data;
       })();
 
-  const hasAccess = activeSub?.status === "active" || activeSub?.status === "scheduled_cancel";
+  const hasAccess = await hasActiveProEntitlement(supabase, user.id);
   // Presentation-only pending state: entitlement still comes exclusively from
   // the subscriptions table (webhook-written). Never grants access.
   const checkoutPending = checkout === "success" && !hasAccess;

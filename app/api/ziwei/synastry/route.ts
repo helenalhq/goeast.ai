@@ -3,8 +3,8 @@ import OpenAI from "openai";
 import { astro } from "iztro";
 import { getSynastrySystemPrompt, formatSynastryForPrompt, RelationshipType } from "@/lib/ziwei-synastry";
 import { ZIWEI_DEEP_ADDENDUM } from "@/lib/ziwei-prompts";
-import { checkFreeLimit, checkAuthUserRateLimit } from "@/lib/rate-limit";
-import { getSubscriptionByUserId } from "@/lib/creem";
+import { checkAndIncrementUsage, FREE_TIER_LIMIT, PRO_TIER_LIMIT } from "@/lib/rate-limit";
+import { hasActiveProEntitlement } from "@/lib/creem";
 import { createClient } from "@/lib/supabase/server";
 
 const openai = new OpenAI({
@@ -103,9 +103,8 @@ export async function POST(request: NextRequest) {
   let isPaid = false;
 
   if (user) {
-    const subscription = await getSubscriptionByUserId(supabase, user.id);
-    if (subscription?.status === "active" || subscription?.status === "scheduled_cancel") {
-      const { allowed } = checkAuthUserRateLimit(user.id);
+    if (await hasActiveProEntitlement(supabase, user.id)) {
+      const { allowed, error } = await checkAndIncrementUsage(supabase, user.id, PRO_TIER_LIMIT); if (error) { return new Response(JSON.stringify({ error: "Rate limit service unavailable", code: "SERVICE_ERROR" }), { status: 503, headers: { "Content-Type": "application/json" } }); }
       if (!allowed) {
         return new Response(JSON.stringify({
           error: "Daily consultation limit reached (10/day)",
@@ -124,10 +123,7 @@ export async function POST(request: NextRequest) {
   const isDev = process.env.NODE_ENV === "development";
 
   if (!isPaid && !isDev) {
-    const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown";
-    const ua = request.headers.get("user-agent") || "";
-    const langHeader = request.headers.get("accept-language") || "";
-    const { allowed } = checkFreeLimit(ip, ua, langHeader, user.id);
+    const { allowed, error } = await checkAndIncrementUsage(supabase, user!.id, FREE_TIER_LIMIT); if (error) { return new Response(JSON.stringify({ error: "Rate limit service unavailable", code: "SERVICE_ERROR" }), { status: 503, headers: { "Content-Type": "application/json" } }); }
 
     if (!allowed) {
       return new Response(JSON.stringify({

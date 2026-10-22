@@ -1,105 +1,94 @@
 /**
- * In-memory rate limiter for AI API endpoints
+ * Database-backed rate limiter for AI API endpoints.
+ *
+ * Free tier: 3 requests per UTC day per userId
+ * Pro tier: 10 requests per UTC day per userId
+ *
+ * Uses PostgreSQL function `increment_usage` for atomic increment + limit check
+ * with row-level locking to prevent race conditions in serverless environments.
+ *
+ * Window resets at UTC midnight (00:00:00+00).
+ * On DB failure: deny by default (fail closed) with error message.
+ * On concurrent requests: serialized by SELECT FOR UPDATE, only one succeeds per limit.
  */
 
-interface RateLimitEntry {
-  count: number;
-  resetAt: number;
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+export const FREE_TIER_LIMIT = 3;
+export const PRO_TIER_LIMIT = 10;
+
+/** Get the UTC day boundary for a given timestamp (used as window key) */
+function getUtcWindowStart(now: Date = new Date()): string {
+  return now.toISOString().slice(0, 10) + "T00:00:00+00";
 }
 
-// Free tier (logged-in, unsubscribed): 3 requests per 24 hours per userId
-const FREE_TIER_LIMIT = 3;
-const FREE_TIER_WINDOW_MS = 24 * 60 * 60 * 1000; // 24 hours
-
-// Paid tier: 10 requests per 24 hours per user
-const PAID_TIER_LIMIT = 10;
-const PAID_TIER_WINDOW_MS = 24 * 60 * 60 * 1000; // 24 hours
-
-// Maps for storing rate limit data
-const freeLimitMap = new Map<string, RateLimitEntry>();
-const paidLimitMap = new Map<string, RateLimitEntry>();
-
-function createFingerprint(ip: string, userAgent: string, acceptLanguage: string): string {
-  const data = `${ip}|${userAgent}|${acceptLanguage}`;
-  let hash = 0;
-  for (let i = 0; i < data.length; i++) {
-    const char = data.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash;
-  }
-  return Math.abs(hash).toString();
-}
-
-/**
- * Check if a free tier user (logged-in but unsubscribed) can make a request.
- * Keyed by userId to prevent bypass via IP/VPN rotation.
- */
-export function checkFreeLimit(
-  ip: string,
-  userAgent: string,
-  acceptLanguage: string,
-  userId?: string,
-): { allowed: boolean; remaining: number } {
-  // Prefer userId-based limiting (cannot be bypassed)
-  const key = userId ? `free:${userId}` : createFingerprint(ip, userAgent, acceptLanguage);
-  const now = Date.now();
-  const entry = freeLimitMap.get(key);
-
-  if (!entry || entry.resetAt < now) {
-    freeLimitMap.set(key, { count: 1, resetAt: now + FREE_TIER_WINDOW_MS });
-    return { allowed: true, remaining: FREE_TIER_LIMIT - 1 };
-  }
-
-  if (entry.count >= FREE_TIER_LIMIT) {
-    return { allowed: false, remaining: 0 };
-  }
-
-  entry.count++;
-  return { allowed: true, remaining: FREE_TIER_LIMIT - entry.count };
+interface UsageCheckResult {
+  allowed: boolean;
+  remaining: number;
+  currentCount: number;
+  error?: string;
 }
 
 /**
- * Check if an authenticated user can make a request (daily limit)
+ * Atomically check and increment daily usage for a user.
+ * Calls PostgreSQL function `increment_usage` which:
+ *   1. Locks the row (SELECT FOR UPDATE)
+ *   2. Increments count
+ *   3. Checks against limit
+ *   4. Rolls back if over limit
+ *   5. Returns JSON with allowed/remaining/currentCount
  */
-export function checkAuthUserRateLimit(
+export async function checkAndIncrementUsage(
+  supabase: SupabaseClient,
   userId: string,
-): { allowed: boolean; remaining: number } {
-  const key = `user:${userId}`;
-  const now = Date.now();
-  const entry = paidLimitMap.get(key);
+  limit: number,
+): Promise<UsageCheckResult> {
+  const windowStart = getUtcWindowStart();
 
-  if (!entry || entry.resetAt < now) {
-    paidLimitMap.set(key, { count: 1, resetAt: now + PAID_TIER_WINDOW_MS });
-    return { allowed: true, remaining: PAID_TIER_LIMIT - 1 };
+  const { data, error } = await supabase.rpc("increment_usage", {
+    p_user_id: userId,
+    p_window_start: windowStart,
+    p_limit: limit,
+  });
+
+  if (error) {
+    console.error("[rate-limit] RPC error:", error.message);
+    return { allowed: false, remaining: 0, currentCount: 0, error: error.message };
   }
 
-  if (entry.count >= PAID_TIER_LIMIT) {
-    return { allowed: false, remaining: 0 };
-  }
-
-  entry.count++;
-  return { allowed: true, remaining: PAID_TIER_LIMIT - entry.count };
+  return {
+    allowed: data?.allowed ?? false,
+    remaining: data?.remaining ?? 0,
+    currentCount: data?.currentCount ?? 0,
+  };
 }
 
 /**
- * Clean up expired entries to prevent memory leaks
+ * Check current usage without incrementing (for pre-flight checks).
+ * Not atomic — use checkAndIncrementUsage for actual limit enforcement.
  */
-export function cleanup(): void {
-  const now = Date.now();
-  for (const [key, entry] of freeLimitMap.entries()) {
-    if (entry.resetAt < now) freeLimitMap.delete(key);
-  }
-  for (const [key, entry] of paidLimitMap.entries()) {
-    if (entry.resetAt < now) paidLimitMap.delete(key);
-  }
-}
+export async function checkUsageLimit(
+  supabase: SupabaseClient,
+  userId: string,
+  limit: number,
+): Promise<{ allowed: boolean; remaining: number }> {
+  const windowStart = getUtcWindowStart();
 
-export function getRateLimitStats(): {
-  freeTierEntries: number;
-  paidTierEntries: number;
-} {
+  const { data, error } = await supabase
+    .from("usage_log")
+    .select("count")
+    .eq("user_id", userId)
+    .eq("window_start", windowStart)
+    .maybeSingle();
+
+  if (error) {
+    console.error("[rate-limit] check error:", error.message);
+    return { allowed: false, remaining: 0 }; // fail closed
+  }
+
+  const currentCount = data?.count ?? 0;
   return {
-    freeTierEntries: freeLimitMap.size,
-    paidTierEntries: paidLimitMap.size,
+    allowed: currentCount < limit,
+    remaining: Math.max(0, limit - currentCount),
   };
 }

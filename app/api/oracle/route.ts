@@ -1,8 +1,8 @@
 import { NextRequest } from "next/server";
 import OpenAI from "openai";
 import { getOraclePrompt, ORACLE_DEEP_ADDENDUM } from "@/lib/oracle-prompts";
-import { checkFreeLimit, checkAuthUserRateLimit } from "@/lib/rate-limit";
-import { getSubscriptionByUserId } from "@/lib/creem";
+import { checkAndIncrementUsage, FREE_TIER_LIMIT, PRO_TIER_LIMIT } from "@/lib/rate-limit";
+import { hasActiveProEntitlement } from "@/lib/creem";
 import { createClient } from "@/lib/supabase/server";
 import { validateIchingContext, buildIchingContextBlock, type IchingConsultationContext } from "@/lib/iching-context";
 
@@ -88,9 +88,17 @@ export async function POST(request: NextRequest) {
   let isPaid = false;
 
   if (user) {
-    const subscription = await getSubscriptionByUserId(supabase, user.id);
-    if (subscription?.status === "active" || subscription?.status === "scheduled_cancel") {
-      const { allowed, remaining } = checkAuthUserRateLimit(user.id);
+    if (await hasActiveProEntitlement(supabase, user.id)) {
+      const { allowed, remaining, error } = await checkAndIncrementUsage(supabase, user.id, PRO_TIER_LIMIT);
+      if (error) {
+        return new Response(JSON.stringify({
+          error: "Rate limit service unavailable",
+          code: "SERVICE_ERROR",
+        }), {
+          status: 503,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
       if (!allowed) {
         return new Response(JSON.stringify({
           error: "Daily consultation limit reached (10/day)",
@@ -109,10 +117,16 @@ export async function POST(request: NextRequest) {
   const isDev = process.env.NODE_ENV === "development";
 
   if (!isPaid && !isDev) {
-    const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown";
-    const ua = request.headers.get("user-agent") || "";
-    const lang = request.headers.get("accept-language") || "";
-    const { allowed } = checkFreeLimit(ip, ua, lang, user.id);
+    const { allowed, remaining, error } = await checkAndIncrementUsage(supabase, user!.id, FREE_TIER_LIMIT);
+    if (error) {
+      return new Response(JSON.stringify({
+        error: "Rate limit service unavailable",
+        code: "SERVICE_ERROR",
+      }), {
+        status: 503,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
     if (!allowed) {
       return new Response(JSON.stringify({
