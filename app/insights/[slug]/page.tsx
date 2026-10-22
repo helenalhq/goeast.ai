@@ -12,6 +12,7 @@ import { generateFAQs, generateFAQJsonLd } from "@/lib/faq-templates";
 import RelatedContent from "@/components/RelatedContent";
 import { getRelatedContent } from "@/lib/cross-references";
 import type { Metadata } from "next";
+import { clipText } from "@/lib/text";
 
 export async function generateStaticParams() {
   return getInsightSlugs().map((slug) => ({ slug }));
@@ -27,7 +28,7 @@ export async function generateMetadata({
   if (!insight) return {};
   const philosopher = insight.philosopher_slug ? PHILOSOPHER_SLUGS[insight.philosopher_slug] : null;
   const description = insight.takeaways?.length
-    ? `${insight.title}. ${insight.takeaways[0]}`
+    ? clipText(`${insight.title}. ${insight.takeaways[0]}`, 155)
     : `${insight.title}. ${philosopher?.name ? `Learn about ${philosopher.name}'s philosophy and its modern applications.` : 'Explore Chinese philosophy concepts and their modern applications.'}`;
   const ogImageUrl = `https://www.goeast.ai/insights/opengraph-image`;
   return {
@@ -71,7 +72,7 @@ export default async function InsightDetailPage({
           "@type": "Article",
           headline: insight.title,
           description: insight.takeaways?.length
-            ? `${insight.title}. ${insight.takeaways[0]}`
+            ? clipText(`${insight.title}. ${insight.takeaways[0]}`, 155)
             : `Explore ${philosopher?.name || 'Chinese philosophy'} in the modern world.`,
           url: `https://www.goeast.ai/insights/${insight.slug}`,
           image: `https://www.goeast.ai/insights/opengraph-image`,

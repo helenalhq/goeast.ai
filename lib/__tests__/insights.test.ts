@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getInsightWithHtml, stripDuplicateTitleH1 } from "../insights";
+import { getInsightWithHtml, getInsightSlugs, stripDuplicateTitleH1 } from "../insights";
 
 describe("stripDuplicateTitleH1", () => {
   it("strips a leading H1 that duplicates the frontmatter title", () => {
@@ -48,5 +48,25 @@ describe("insight HTML pipeline", () => {
   it("does not pass raw HTML through (remark-html escapes by default)", async () => {
     const insight = await getInsightWithHtml("wu-wei-philosophy");
     expect(insight!.content).not.toContain("<script");
+  });
+});
+
+describe("insight meta description budget (root-cause rule)", () => {
+  it("description sources stay within a Google-safe budget with clean endings", async () => {
+    // Mirror of the page's rule — import the same helper if exported, else
+    // assert the behavior via a locally-constructed description.
+    const { clipText } = await import("../text");
+    const budget = 155;
+    for (const slug of getInsightSlugs()) {
+      const insight = await getInsightWithHtml(slug);
+      if (!insight?.takeaways?.length) continue;
+      const description = clipText(
+        `${insight.title}. ${insight.takeaways[0]}`,
+        budget
+      );
+      expect(description.length, slug).toBeLessThanOrEqual(budget + 1);
+      expect(description, slug).toMatch(/[.!?。！？]$/);
+      expect(description.startsWith(insight.title), slug).toBe(true);
+    }
   });
 });
