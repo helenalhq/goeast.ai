@@ -24,6 +24,7 @@ client event — the browser never claims a payment happened.
 | Login succeeded | `login_succeeded` | `{return_target}` (boolean) | password login success, right before redirect. OAuth success is **not measurable client-side** (lands via server-side `/auth/callback` → target page) — noted gap |
 | Upgrade intent | `upgrade_clicked` | `{from: "pricing"\|"oracle"\|"account"}` | three upgrade buttons |
 | Pricing example viewed | `pricing_example_viewed` | `{}` | `app/pricing/example-viewed.tsx` — fires once on mount of the Free-vs-Pro example section (`#example`); mount is sufficient because /pricing is a single screen, so scroll-depth tracking is deliberately not used |
+| Checkout session created (server) | — `console.log({event:"checkout_created", user_id})` | — | `/api/checkout` after Creem returns a checkout URL (no email logged) |
 | Payment confirmed (server) | — `console.log({event:"subscription_activated", subscription_id})` | — | Creem webhook after successful activate |
 | Subscription cancelled (server) | — `console.log({event:"subscription_cancelled", subscription_id})` | — | webhook cancel branches |
 | Newsletter signup | `newsletter_subscribed` | `{source}` | `EmailCapture` success branch — new subscriptions only; repeat submits (`alreadySubscribed`) do not fire |

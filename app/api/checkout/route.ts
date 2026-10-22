@@ -53,6 +53,9 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await res.json();
+    // Funnel: server-side proof a checkout session was created (distinct from
+    // upgrade_clicked, which only measures intent). No email in logs.
+    console.log(JSON.stringify({ event: "checkout_created", user_id: user.id }));
     return NextResponse.json({ checkoutUrl: data.checkout_url ?? data.url });
   } catch (err) {
     console.error("Creem checkout error:", err);

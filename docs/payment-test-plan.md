@@ -41,6 +41,14 @@
 **S5 事件入库（VA 面板）**
 15. 部署为 **production**（VA 仅生产收集）后重复 S2/S3，Vercel Analytics → Events 应出现 `upgrade_clicked`、`oracle_consult_started`、`oracle_reading_delivered`；Logs 出现 `subscription_activated`。对照 `docs/analytics-funnel.md` 漏斗。
 
+**S6 首单链路（Round 3 新增）**
+16. 账号 B（新）登录 → `/iching` 起卦 → 问周公（卦象上下文卡片可见）→ 返回结果。
+17. `/pricing#example` 查看真实对照样例 → VA Events 应现 `pricing_example_viewed {env:"preview"}`。
+18. 点 Upgrade → `upgrade_clicked`；Creem 返回 checkout URL → Vercel Logs 应现 `checkout_created`。
+19. 测试卡支付 → webhook → `subscription_activated`（服务端）→ `/account?checkout=success` 先见"确认中"卡片（Upgrade 按钮隐藏）→ ≤5s 自动刷新为 Pro 视图（PendingRefresher 恢复）。
+20. B 再做一次 Oracle 咨询 → 解读含 GOING DEEPER + 追问邀请 → `oracle_reading_delivered`（Pro 交付证据）。
+21. 反向：`/account?checkout=success` 手动输入（未支付）→ 同样确认中卡片 3 分钟后停止刷新，回免费视图；不得自动重新发起结账。
+
 ## 3. 判定标准（不可用页面表现代替）
 
 - 到账 = Supabase 行 + webhook 日志，**不是** success 页跳转。
@@ -70,3 +78,4 @@
 | S3.8–S3.10 | | | | |
 | S4.11–S4.14 | | | | |
 | S5.15 | | | | |
+| S6.16–S6.21 | | | | |
