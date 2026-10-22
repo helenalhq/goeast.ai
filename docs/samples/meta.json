@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-22T02:07:32.029Z",
+  "generatedAt": "2026-10-22T08:13:11.613Z",
   "question": "How can I build a consistent writing habit without forcing productivity?",
   "cast": {
     "mode": "cast",
@@ -10,8 +10,8 @@
     "transformedNumber": 40
   },
   "castNames": {
-    "hexagram": "32 Heng (恒)",
-    "transformed": "40 Jie (解)"
+    "hexagram": "32 Heng (\u6052)",
+    "transformed": "40 Jie (\u89e3)"
   },
   "pipeline": {
     "prompts": "lib/oracle-prompts.ts getOraclePrompt(slug,{deep}) + lib/iching-context.ts buildIchingContextBlock",
@@ -25,32 +25,7 @@
   },
   "usage": {
     "free": {
-      "completion_tokens": 563,
-      "completion_tokens_details": {
-        "accepted_prediction_tokens": 0,
-        "audio_tokens": 0,
-        "reasoning_tokens": 0,
-        "rejected_prediction_tokens": 0
-      },
-      "latency_checkpoint": {
-        "engine_tbt_ms": 5,
-        "engine_ttft_ms": 45,
-        "engine_ttlt_ms": 3084,
-        "pre_inference_ms": 82,
-        "service_tbt_ms": 5,
-        "service_ttft_ms": 514,
-        "service_ttlt_ms": 3533,
-        "user_visible_ttft_ms": 432
-      },
-      "prompt_tokens": 770,
-      "prompt_tokens_details": {
-        "audio_tokens": 0,
-        "cached_tokens": 0
-      },
-      "total_tokens": 1333
-    },
-    "pro": {
-      "completion_tokens": 872,
+      "completion_tokens": 516,
       "completion_tokens_details": {
         "accepted_prediction_tokens": 0,
         "audio_tokens": 0,
@@ -59,20 +34,45 @@
       },
       "latency_checkpoint": {
         "engine_tbt_ms": 6,
-        "engine_ttft_ms": 40,
-        "engine_ttlt_ms": 5357,
-        "pre_inference_ms": 66,
+        "engine_ttft_ms": 43,
+        "engine_ttlt_ms": 3363,
+        "pre_inference_ms": 86,
         "service_tbt_ms": 6,
-        "service_ttft_ms": 466,
-        "service_ttlt_ms": 5778,
-        "user_visible_ttft_ms": 400
+        "service_ttft_ms": 502,
+        "service_ttlt_ms": 3815,
+        "user_visible_ttft_ms": 416
       },
-      "prompt_tokens": 874,
+      "prompt_tokens": 817,
       "prompt_tokens_details": {
         "audio_tokens": 0,
         "cached_tokens": 0
       },
-      "total_tokens": 1746
+      "total_tokens": 1333
+    },
+    "pro": {
+      "completion_tokens": 743,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 0,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 0
+      },
+      "latency_checkpoint": {
+        "engine_tbt_ms": 6,
+        "engine_ttft_ms": 43,
+        "engine_ttlt_ms": 4795,
+        "pre_inference_ms": 97,
+        "service_tbt_ms": 6,
+        "service_ttft_ms": 514,
+        "service_ttlt_ms": 5259,
+        "user_visible_ttft_ms": 417
+      },
+      "prompt_tokens": 921,
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cached_tokens": 0
+      },
+      "total_tokens": 1664
     }
   },
   "costNote": "Cost figures in docs/round3-report.md are ESTIMATES from public pricing for this model class; exact billing is in the Azure account."
