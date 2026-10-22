@@ -171,6 +171,9 @@ export default function PricingPage() {
             <p className="text-sm italic text-warm mb-3 break-words">“{SAMPLE_QUESTION}”</p>
             <div className="text-sm text-ink/90 space-y-3">
               <div className="text-xs leading-relaxed break-words">{SAMPLE_FREE.traditional}</div>
+              <p className="text-[11px] text-warm/70">
+                (The free reading also interprets the transformed hexagram — elided here; full text linked below.)
+              </p>
               <div className="text-xs leading-relaxed break-words">{SAMPLE_FREE.interpretation}</div>
               <div>
                 <p className="text-xs font-semibold text-ink mb-1">Reflection</p>

@@ -109,7 +109,7 @@ describe.skipIf(!RUN)("sample generation (real API, gated)", () => {
     fs.writeFileSync(
       path.join(outDir, "free-reading.md"),
       `# Free reading — raw model output\n\n` +
-        `> Demo conditions: Hexagram 32 (Heng 恒), changing line 3 → transformed Hexagram 40 (Xie 解); question: "${QUESTION}". Generated ${generatedAt} via the production generation pipeline (see meta.json). Excerpted on /pricing with labels.\n\n---\n\n${results.free.content}\n`
+        `> Demo conditions: Hexagram 32 (Heng 恒), changing line 3 → transformed Hexagram 40 (Jie 解); question: "${QUESTION}". Generated ${generatedAt} via the production generation pipeline (see meta.json). Excerpted on /pricing with labels.\n\n---\n\n${results.free.content}\n`
     );
     fs.writeFileSync(
       path.join(outDir, "pro-reading.md"),
