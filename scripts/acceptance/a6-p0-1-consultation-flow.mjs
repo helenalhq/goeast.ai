@@ -35,15 +35,22 @@ try {
   check("navigated to /sophies-journey/prologue-zhougong#oracle", true);
 
   // 2+4. Context draft was written by the click handler; open the Oracle overlay
-  const ctx = await page.evaluate(() =>
+  const envelope = await page.evaluate(() =>
     JSON.parse(sessionStorage.getItem("goeast:draft:iching-context") || "null")
   );
   check(
-    "iching-context draft saved",
-    !!ctx && typeof ctx.hexagramNumber === "number" && Array.isArray(ctx.changingLines),
-    JSON.stringify(ctx)
+    "iching-context draft saved as sealed envelope",
+    !!envelope &&
+      typeof envelope.savedAt === "number" &&
+      typeof envelope.ctx?.hexagramNumber === "number" &&
+      Array.isArray(envelope.ctx?.changingLines),
+    JSON.stringify(envelope)
   );
-  await page.click("button:has-text(\"Cast the Oracle\")");
+  // R2: the #oracle deep link auto-opens the overlay — click only if closed.
+  const overlayOpen = await page.locator("text=Your cast · 你的卦").count();
+  if (!overlayOpen) {
+    await page.click(".flex-1 button:has-text(\"Cast the Oracle\")");
+  }
   await page.waitForSelector("text=Your cast · 你的卦", { timeout: 5000 });
   const cardText = await page.textContent("body");
   check(
@@ -88,6 +95,11 @@ try {
   );
   check("cast draft intact after back-nav (no recast)", !!castDraftStillThere);
 
+  // 7b. R2: reload with #oracle auto-opens the consult overlay
+  await page.goto(`${BASE}/sophies-journey/prologue-zhougong#oracle`, { waitUntil: "networkidle" });
+  await page.waitForSelector("input[placeholder*=\"Ask\"]", { timeout: 5000 });
+  check("#oracle reload auto-opens consult overlay", true);
+
   // 8. Study path: fixed hexagram page
   await page.goto(`${BASE}/iching/qian`, { waitUntil: "networkidle" });
   const studyBtn = await page.textContent("body");
@@ -97,8 +109,13 @@ try {
   );
   await page.click("text=Study This Hexagram with Zhou Gong");
   await page.waitForURL(/prologue-zhougong/, { timeout: 10000 });
-  await page.click("button:has-text(\"Cast the Oracle\")");
-  await page.waitForSelector("text=Studying · 学习此卦", { timeout: 5000 });
+    // Auto-open expected via #oracle; fall back to a forced click if not.
+  try {
+    await page.waitForSelector("text=Studying · 学习此卦", { timeout: 8000 });
+  } catch {
+    await page.click(".flex-1 button:has-text(\"Cast the Oracle\")", { force: true });
+    await page.waitForSelector("text=Studying · 学习此卦", { timeout: 5000 });
+  }
   check("study context card (no invented changing lines)", true);
   await page.screenshot({ path: `${SHOTS}/desktop_oracle_study_context.png` });
 
