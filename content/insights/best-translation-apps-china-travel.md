@@ -96,7 +96,7 @@ In China, translation reliability comes from **workflow design**, not app brand 
 
 ## Related guides
 
-- [Chinese-English Translation Tutor](/skills/chinese-english-translation)
-- [Chinese Language Assistant](/skills/chinese-language-assistant)
+- [Top 10 Apps Every Traveler Needs in China](/insights/top-10-apps-for-china-travel)
+- [Google Maps in China: Alternatives That Actually Work](/insights/google-maps-in-china-alternatives)
 - [How to Use DiDi in China Without Chinese (2026 Foreigner Guide)](/insights/didi-english-guide-china)
 - [How Foreigners Can Navigate Hospitals in China (2026 Practical Guide)](/insights/china-hospital-foreigner-guide)

@@ -138,6 +138,4 @@ Prioritize reliability over preference. Dual setup is the only low-risk option.
 ## Related guides
 
 - [How to Set Up WeChat Pay as a Foreigner in China (2026)](/insights/wechat-pay-foreigner)
-- [China Payment Setup Guide](/skills/china-payment-setup)
-- [Alipay Integration Expert](/skills/alipay-integration-expert)
 - [Best AI Apps Every Expat in China Should Have (2026)](/insights/ai-apps-expats-china)

@@ -101,7 +101,7 @@ For foreigners, DiDi success depends less on language fluency and more on **addr
 
 ## Related guides
 
-- [China Local Travel Expert](/skills/china-local-travel-expert)
-- [China Payment Setup Guide](/skills/china-payment-setup)
-- [China Travel Guide](/skills/china-travel-guide)
+- [China High-Speed Rail and 12306 Guide](/insights/china-high-speed-rail-12306-guide)
+- [Alipay vs WeChat Pay for Foreigners](/insights/alipay-vs-wechat-pay-foreigner)
+- [China Travel Guide](/china-travel-guide)
 - [Best AI Apps Every Expat in China Should Have (2026)](/insights/ai-apps-expats-china)

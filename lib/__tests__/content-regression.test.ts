@@ -64,4 +64,22 @@ describe("content regression — editorial hygiene", () => {
     const home = fs.readFileSync(path.join(process.cwd(), "app/page.tsx"), "utf8");
     expect(home).not.toMatch(/optimized landing/i);
   });
+
+  it("no article renders two FAQ sets (body FAQ section forbidden when frontmatter faqs exist)", () => {
+    for (const f of fs.readdirSync(INSIGHTS_DIR)) {
+      const text = fs.readFileSync(path.join(INSIGHTS_DIR, f), "utf8");
+      const hasFrontmatterFaqs = /^faqs:/m.test(text);
+      const body = text.replace(/^---[\s\S]*?---/, "");
+      if (hasFrontmatterFaqs) {
+        expect(body.includes("## FAQ"), f).toBe(false);
+      }
+    }
+  });
+
+  it("no insight links to developer skill pages (site-wide, not just the four edited)", () => {
+    for (const f of fs.readdirSync(INSIGHTS_DIR)) {
+      const text = fs.readFileSync(path.join(INSIGHTS_DIR, f), "utf8");
+      expect(text.includes("/skills/"), f).toBe(false);
+    }
+  });
 });

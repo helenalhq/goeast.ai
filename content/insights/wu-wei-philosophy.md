@@ -124,6 +124,10 @@ faqs:
     answer: Yes. Wu Wei means pursuing goals with less friction, not abandoning them—choosing battles wisely and acting at the right time. The most successful people often achieve more by forcing less.
     question_zh: 无为与雄心壮志兼容吗？
     answer_zh: 兼容。无为是以更少阻力追求目标，而非放弃目标——明智地选择战场，在恰当时机行动。
+  - question: What's the difference between Wu Wei and going with the flow?
+    answer: '"Going with the flow" can be passive. Wu Wei is active alignment with natural patterns—it requires awareness, skill, and sometimes courage to act at the right moment.'
+    question_zh: 无为与"随波逐流"有什么区别？
+    answer_zh: '"随波逐流"可能是被动的。无为是与自然规律的主动契合——它需要觉察、技巧，有时还需要在恰当时机出手的勇气。'
 ---
 
 # Wu Wei: The Chinese Philosophy of Effortless Action
@@ -321,28 +325,6 @@ Develop sensitivity to timing and context:
 - Spend time in nature
 - Notice natural rhythms
 - Learn from water
-
-## FAQ
-
-### Does Wu Wei mean doing nothing?
-
-No. Wu Wei means not forcing action. It's about acting in alignment with the natural flow—sometimes that means acting decisively, sometimes it means waiting.
-
-### How do I practice Wu Wei?
-
-Start by observing when you're forcing outcomes versus flowing with circumstances. Practice pausing before reacting. Find activities where you naturally experience flow.
-
-### Is Wu Wei compatible with ambition?
-
-Yes. Wu Wei isn't about giving up goals—it's about pursuing them with wisdom and efficiency. The most successful people often achieve more by forcing less.
-
-### What's the difference between Wu Wei and going with the flow?
-
-"Going with the flow" can be passive. Wu Wei is active alignment with natural patterns. It requires awareness, skill, and sometimes courage to act at the right moment.
-
-### Can Wu Wei help with stress?
-
-Absolutely. Much stress comes from trying to control what we can't. Wu Wei teaches us to focus our energy where it matters and let go of the rest.
 
 ## Related
 

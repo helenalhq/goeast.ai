@@ -121,7 +121,7 @@ If you need help choosing a specific hospital or department in China, [ChinaMed 
 
 ## Related guides
 
-- [China Medical Journey Assistant](/skills/china-medical-journey-assistant)
-- [Hospital Recommendation Report](/skills/hospital-recommendation-report)
-- [Chinese-English Translation Tutor](/skills/chinese-english-translation)
+- [China Travel Guide](/china-travel-guide)
+- [Best Translation Apps for China Travel](/insights/best-translation-apps-china-travel)
+- [China eSIM for Foreigners](/insights/china-esim-foreigner-guide)
 - [Best AI Apps Every Expat in China Should Have (2026)](/insights/ai-apps-expats-china)

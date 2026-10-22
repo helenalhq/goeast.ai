@@ -309,26 +309,6 @@ Foreign cards pay merchants directly — topping up your Wallet balance (零钱)
 - Not practical for daily expenses
 - May incur foreign transaction fees
 
-## FAQ
-
-### Can foreigners use WeChat Pay?
-Yes, foreigners can use WeChat Pay. You need to complete identity verification and link a bank card.
-
-### What documents do I need?
-A valid passport is required. Having a Chinese bank account is helpful but not mandatory.
-
-### Is WeChat Pay safe?
-Yes, WeChat Pay uses encryption and multiple security measures. Enable payment password and fingerprint/face recognition for extra security.
-
-### What if I don't have a Chinese bank account?
-You can link a foreign credit card (Visa/Mastercard), but will have lower transaction limits. Opening a Chinese bank account is recommended for full functionality.
-
-### How much can I spend per year?
-For payments charged to a linked foreign card on an international WeChat/Weixin account, the cumulative annual limit is RMB 65,000 (and RMB 6,500 per single transaction). Users with Chinese bank accounts have different (generally higher) limits.
-
-### Can I use WeChat Pay outside China?
-WeChat Pay works in some countries with Chinese merchant partnerships, but it's primarily designed for use within China.
-
 ## Related
 
 - [Alipay vs WeChat Pay: A Foreigner's Guide](/insights/alipay-vs-wechat-pay-foreigner)

@@ -131,6 +131,10 @@ faqs:
     answer: Notice where you are over-emphasizing one pole—work vs. rest, action vs. reflection—and adjust toward balance rather than extremes.
     question_zh: 如何在日常生活中应用阴阳？
     answer_zh: 观察自己是否过度偏向某一极——工作与休息、行动与反思——并调整向平衡靠拢，而非走向极端。
+  - question: What does the Yin Yang symbol mean?
+    answer: The taijitu shows that Yin and Yang are interconnected, contain the seed of each other, and flow into each other dynamically. It represents balance, harmony, and the interdependence of opposites.
+    question_zh: 阴阳符号（太极图）是什么意思？
+    answer_zh: 太极图表明阴阳相互关联、互含对方之种籽，并动态地相互转化。它象征平衡、和谐与对立面的相互依存。
 ---
 
 Yin Yang is one of the most fundamental concepts in Chinese philosophy. It describes how seemingly opposite forces are actually interconnected, interdependent, and complementary.
@@ -284,28 +288,6 @@ Traditional Chinese Medicine (TCM) uses Yin Yang theory extensively:
 - Understand that things naturally cycle between Yin and Yang
 - Good times (Yang) will have challenges (Yin)
 - Difficult times (Yin) will have opportunities (Yang)
-
-## FAQ
-
-### What is the difference between Yin and Yang?
-
-Yin represents passive, receptive, dark, cool qualities. Yang represents active, creative, light, warm qualities. They are complementary opposites, not competing forces.
-
-### Is Yin good or bad?
-
-Neither is good or bad. Both are necessary. Think of breathing: inhalation (Yang) and exhalation (Yin) are both essential for life.
-
-### How do I apply Yin Yang in my daily life?
-
-Observe natural rhythms, balance activity with rest, avoid extremes, and accept that life naturally cycles between different states.
-
-### What does the Yin Yang symbol mean?
-
-The taijitu shows that Yin and Yang are interconnected, contain the seed of each other, and flow into each other dynamically. It represents balance, harmony, and the interdependence of opposites.
-
-### Is Yin Yang a religion?
-
-No, Yin Yang is a philosophical concept, not a religion. It's used in Daoism, Traditional Chinese Medicine, martial arts, and feng shui, but it's a framework for understanding reality, not a belief system.
 
 ## Related
 

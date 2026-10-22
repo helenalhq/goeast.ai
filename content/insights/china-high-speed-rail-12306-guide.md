@@ -97,7 +97,7 @@ Treat high-speed rail as a system: booking, identity consistency, station timing
 
 ## Related guides
 
-- [China Local Travel Expert](/skills/china-local-travel-expert)
-- [DiDi Ride-Hailing Assistant](/skills/didi-ride-hailing)
-- [China Travel Guide](/skills/china-travel-guide)
+- [Best Translation Apps for China Travel](/insights/best-translation-apps-china-travel)
+- [Google Maps in China: Alternatives That Actually Work](/insights/google-maps-in-china-alternatives)
+- [China Travel Guide](/china-travel-guide)
 - [How to Use DiDi in China Without Chinese (2026 Foreigner Guide)](/insights/didi-english-guide-china)

@@ -174,8 +174,8 @@ content_zh: |
   ## 相关阅读
   - [外国人在中国的微信支付](/insights/wechat-pay-foreigner)
   - [中国文化指南](/insights/chinese-culture-guide)
-  - [中国支付设置](/skills/china-payment-setup)
-  - [中国本地旅行专家](/skills/china-local-travel-expert)
+  - [支付宝与微信支付对比](/insights/alipay-vs-wechat-pay-foreigner)
+  - [中国旅行指南](/china-travel-guide)
 ---
 
 # Best AI Apps Every Expat in China Should Have (2026)
@@ -349,5 +349,5 @@ Most are free. Premium features can be paid via WeChat Pay, Alipay, or internati
 
 - [WeChat Pay Setup for Foreigners](/insights/wechat-pay-foreigner)
 - [Chinese Culture Guide](/insights/chinese-culture-guide)
-- [China Payment Setup](/skills/china-payment-setup)
-- [China Local Travel Expert](/skills/china-local-travel-expert)
+- [Alipay vs WeChat Pay for Foreigners](/insights/alipay-vs-wechat-pay-foreigner)
+- [China Travel Guide](/china-travel-guide)
