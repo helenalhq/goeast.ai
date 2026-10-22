@@ -161,7 +161,7 @@ export default async function AccountPage({
                 which can arrive after the browser. Never auto-recheckout. */}
             <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
               <p className="text-sm font-medium text-amber-800">
-                Payment received — confirming your subscription…
+                Returning from checkout — confirming your subscription…
               </p>
               <p className="text-xs text-amber-700 mt-1">
                 This usually takes a few seconds. This page refreshes automatically;
