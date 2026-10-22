@@ -11,9 +11,9 @@
 | 任务 | 验收项 | 状态 | 证据 |
 |---|---|---|---|
 | **P0-1 同一卦连续咨询** | 游客起卦→输入问题→（登录）→原卦解读 | ✅（本地交互级） | A6 脚本 12/12（真实随机起出归妹卦 54，变爻 1,5 → 之卦 47，卡片显示与跳转全链路） |
-| | 登录失败/取消后草稿可恢复 | ✅（代码级+设计） | sessionStorage 三键（question/cast/context），失败路径不清除（审查确认）；**真实登录往返未验证**（需测试账号，见第六节） |
+| | 登录失败/取消后草稿可恢复 | ⚠️ 部分（代码级；**真实登录往返未验证**——需测试账号） | R2.1 后：#oracle 锚点保留+自动开框（交互实测）；登录后返回进行中咨询待测试账号（手册 S1/S3） |
 | | 刷新/重试不重复扣次 | ✅ | 恢复路径零 API 调用；consult 仅显式点击；额度仅服务端对已授权请求计数（路由测试断言 401/429 不触模型） |
-| | 不同咨询不串上下文 | ✅ | 上下文仅 zhou-gong 读取/发送；成功/✕/Cast Again/关标签页 四路清除；`[DONE]` 清 question+context |
+| | 不同咨询不串上下文 | ✅（R2.1 修复后实测） | 初版缺陷：旧问题按人物键保留、配给新卦——R2.1 起：工具入口=开始新咨询（清旧问题+信封 24h 过期）；直接打开=继续上次（headless 实测 PASS） |
 | | 不虚构变爻（固定卦页学习模式） | ✅ | `mode:"study"` prompt 明令 "did NOT cast. Do not invent changing lines"；UI 标"学习此卦" |
 | | 传统文本/AI 解释/反思建议区分 + 不宣称必然/不恐吓 | ✅ | prompt 三段结构 + "never a prediction…never a reason to fear, and never a reason to pay"；卡片免责行 |
 | | 隐私：问题/排盘不进 URL、埋点、日志 | ✅ | 上下文仅数字（服务端解析卦名防注入，测试断言注入字符串不可达 prompt）；`loginUrlWithNext` 仅 pathname；埋点封装结构性拒绝非标量 |
@@ -35,7 +35,7 @@
 | | 回归检查 + 首页措辞 | ✅ | `content-regression.test.ts` 6 项（黑名单词/无 skills 链接/takeaway 完整/FAQ 去重/日期与来源/首页措辞）；"optimized landing guides" 移除 |
 | **P1-2 埋点** | 检查现有 VA，不重复安装 | ✅ | SDK 已装、CSP 已允许、零重复安装 |
 | | 最小事件集 + 服务端支付确认 | ✅ | 12 个事件接线（见 `docs/analytics-funnel.md`）；支付确认=webhook 结构化日志（仅 subscription_id） |
-| | 重试不重复计数 | ✅ | 点击守卫 + `[DONE]` 单次 + ref 守卫（审查记录） |
+| | 重试不重复计数 | ✅（语义经 R2.1 修正） | newsletter 仅新增计数；登录拆分 viewed/succeeded（OAuth 回调为已知盲区）；支付确认/交付/入库证据见 docs/payment-test-plan.md §4-§5 |
 | | 无 PII | ✅ | 封装结构性拒绝非标量（单测）；事件数据仅枚举串/布尔/计数 |
 | | 一次测试流程事件证据 | ✅ | headless 浏览器实测捕获 4 事件（cast/oracle_opened×2 dev 严格模式/chart）；consult/delivered 需登录（测试账号缺失，未验） |
 
@@ -92,5 +92,23 @@
 - 交互验收脚本（可复跑）：`scripts/acceptance/a6-p0-1-consultation-flow.mjs`（12/12）、`scripts/acceptance/e4-analytics-evidence.mjs`（4 事件）
 - 截图：`/tmp/goeast-shots-round2/`（7 张：上下文卡片桌面/手机、登录跳转、学习模式、定价块桌面/手机、乾卦学习 CTA）
 - 权益对照：`docs/entitlements.md`；漏斗说明：`docs/analytics-funnel.md`
+
+## 九、Round 2.1 收尾（2026-10-22，owner 验收反馈修复）
+
+分支 `fix/round2-1-review-fixes`（8 个提交）。逐项对应验收反馈：
+
+| 反馈 | 修复 | 验证 |
+|---|---|---|
+| P0 旧问题混入新咨询 | 工具入口（起卦/学习）=开始新咨询：清旧问题草稿+写入带 savedAt 的信封；直接打开 Consult=继续上次；上下文 24h 过期+防篡改（未来/NaN 时间戳拒绝） | headless 交互实测：旧问题清空✓ 学习卡片✓ 信封存储✓ 重载恢复✓；+8 单测 |
+| P0 登录恢复不完整 | loginUrlWithNext 保留 #oracle 锚点；#oracle 深链/回跳自动打开咨询框 | 重载自动开框实测 PASS；**真实登录往返仍未验证**（需测试账号，手册 S1） |
+| eSIM FAQ 与正文矛盾 | 中英 FAQ 重写为路由两态（漫游可用/大陆IP受限），JSON-LD 同源同步 | grep 无 "still need a VPN" 残留 |
+| 外卖摘要残句（根因） | 提取规则修复：meta description 经 clipText 155 字符句边界预算（含 JSON-LD Article.description 同步） | 全部文章 description 以完整句收尾（回归测试钉住） |
+| wechat 限额缺适用条件/转账混淆 | 限额限定"外卡+国际版账户"，中国卡用户另述；4 处转账表述改为"余额/中国卡功能，外卡仅商户消费"；Wise 二源印证限额与不可转账 | grep 无 transfer 混淆残留 |
+| 无为双 FAQ | body FAQ 小节删除，1 个高价值问题并入 frontmatter（现 4 问一套）；站点级回归测试新增"双 FAQ 禁止"（又抓出并修复 wechat-pay、yin-yang-explained 两篇） | 测试 110/110 |
+| alipay 及其他文章 skill 导流 | 站点级清理：11 个 /skills/ 链接/5 篇文章全部替换为真实指南页；回归测试站点级禁止 | `grep /skills/ content/insights` = 0 |
+| 埋点语义 | newsletter_subscribed 仅新增；login 拆 login_page_viewed_with_target（浏览）/ login_succeeded（密码登录成功，OAuth=已知盲区）；漏斗文档同步 | grep 旧事件名 0 残留 |
+| 测试模式验证 | `docs/payment-test-plan.md`：前置条件/15 步流程/判定标准（页面表现不作数）/执行记录表 | 待条件齐备执行 |
+
+**自动化**：110/110 测试、tsc clean、lint 34≤基线、build 0 错误。
 
 *报告完。等待审核。*
