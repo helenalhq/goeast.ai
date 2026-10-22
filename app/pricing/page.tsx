@@ -122,11 +122,7 @@ export default function PricingPage() {
           <p className="text-xs text-warm/70 mt-3 break-words">
             $4.99/month · auto-renews · cancel anytime in Account ·{" "}
             <Link href="/terms" className="underline hover:text-china-red">
-              Terms
-            </Link>{" "}
-            ·{" "}
-            <Link href="/terms" className="underline hover:text-china-red">
-              Refund policy: see Terms
+              Terms &amp; refund policy
             </Link>
             . Taxes, if any, are calculated at checkout.
           </p>

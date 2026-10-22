@@ -1,6 +1,6 @@
 # Free reading — raw model output
 
-> Demo conditions: Hexagram 32 (Heng 恒), changing line 3 → transformed Hexagram 40 (Xie 解); question: "How can I build a consistent writing habit without forcing productivity?". Generated 2026-10-22T02:07:32.029Z via the production generation pipeline (see meta.json). Excerpted on /pricing with labels.
+> Demo conditions: Hexagram 32 (Heng 恒), changing line 3 → transformed Hexagram 40 (Jie 解); question: "How can I build a consistent writing habit without forcing productivity?". Generated 2026-10-22T02:07:32.029Z via the production generation pipeline (see meta.json). Excerpted on /pricing with labels.
 
 ---
 
