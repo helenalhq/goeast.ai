@@ -27,7 +27,9 @@ export function sealIchingContext(ctx: IchingConsultationContext): { ctx: Iching
 export function unsealIchingContext(raw: unknown): IchingConsultationContext | null {
   if (typeof raw !== "object" || raw === null) return null;
   const { ctx, savedAt } = raw as Record<string, unknown>;
-  if (typeof savedAt !== "number" || Date.now() - savedAt > ICHING_CONTEXT_MAX_AGE_MS) return null;
+  // NaN and future timestamps (clock skew / tampering) both fail this range check.
+  const age = typeof savedAt === "number" ? Date.now() - savedAt : Number.NaN;
+  if (!Number.isFinite(age) || age < 0 || age > ICHING_CONTEXT_MAX_AGE_MS) return null;
   return validateIchingContext(ctx);
 }
 

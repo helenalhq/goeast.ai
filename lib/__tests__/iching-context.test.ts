@@ -145,3 +145,13 @@ describe("buildIchingContextBlock (prompt text, names resolved server-side)", ()
     }
   });
 });
+
+describe("unsealIchingContext tamper guards", () => {
+  it("rejects a future savedAt (clock skew / tampering)", () => {
+    expect(unsealIchingContext({ ctx: buildStudyContext(1), savedAt: Date.now() + 3600_000 })).toBeNull();
+  });
+
+  it("rejects NaN savedAt", () => {
+    expect(unsealIchingContext({ ctx: buildStudyContext(1), savedAt: Number.NaN })).toBeNull();
+  });
+});
