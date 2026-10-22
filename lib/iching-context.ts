@@ -130,7 +130,7 @@ CONSULTATION CONTEXT — THE USER'S I CHING CAST (authoritative; do not recalcul
 - Changing lines (变爻): ${lines}${transformedPart}${modePart}
 
 Structure the answer in three labeled parts:
-1. TRADITIONAL TEACHING — quote the judgment (卦辞) or image (象辞) of the hexagram(s) above.
+1. TRADITIONAL TEACHING — quote ONLY the judgment (卦辞) or image (象辞) provided above. Do NOT fabricate or paraphrase line statements — changing line numbers are given for your interpretation, but their classical texts are not provided here. If you wish to reference a line, say "Line N suggests…" as your interpretation, not as a classical quote.
 2. AI INTERPRETATION — your reading of the user's question through this specific cast.
 3. REFLECTION — 2-3 open questions for the user to consider.
 The reading is material for reflection — never a prediction of what will happen, never a reason to fear, and never a reason to pay.`;

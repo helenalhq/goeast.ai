@@ -187,12 +187,10 @@ export default function PricingPage() {
             <p className="text-xs text-warm/60 mt-4 pt-3 border-t border-sand">
               Excerpt — full unedited readings:{" "}
               <a
-                href="https://github.com/helenalhq/goeast.ai/tree/main/docs/samples"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/examples/iching-writing-habit"
                 className="underline hover:text-china-red break-words"
               >
-                docs/samples/ in the repo
+                view complete Free and Pro readings →
               </a>
             </p>
           </div>
@@ -223,12 +221,10 @@ export default function PricingPage() {
             <p className="text-xs text-warm/60 mt-4 pt-3 border-t border-sand">
               Excerpt — full unedited readings:{" "}
               <a
-                href="https://github.com/helenalhq/goeast.ai/tree/main/docs/samples"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/examples/iching-writing-habit"
                 className="underline hover:text-china-red break-words"
               >
-                docs/samples/ in the repo
+                view complete Free and Pro readings →
               </a>
             </p>
           </div>
