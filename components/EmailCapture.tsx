@@ -51,7 +51,9 @@ export default function EmailCapture({
 
       if (res.ok && data.success) {
         setStatus("success");
-        logEvent("newsletter_subscribed", { source });
+        if (!data.alreadySubscribed) {
+          logEvent("newsletter_subscribed", { source });
+        }
         setMessage(data.alreadySubscribed ? "You're already subscribed!" : "Subscribed — you're on the list.");
         setEmail("");
       } else {

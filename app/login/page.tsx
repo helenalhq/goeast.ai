@@ -23,7 +23,7 @@ function LoginForm() {
   useEffect(() => {
     if (!loggedReturnTarget.current && next !== "/account") {
       loggedReturnTarget.current = true;
-      logEvent("login_with_return_target", {});
+      logEvent("login_page_viewed_with_target", {});
     }
   }, [next]);
 
@@ -43,6 +43,7 @@ function LoginForm() {
       if (error) {
         setError(error.message);
       } else {
+        logEvent("login_succeeded", { return_target: next !== "/account" });
         router.push(next);
         router.refresh();
       }
