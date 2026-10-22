@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         product_id: CREEM_PRODUCT_ID,
-        success_url: `${baseUrl}/account`,
+        success_url: `${baseUrl}/account?checkout=success`,
         customer: { email: user.email },
         metadata: { userId: user.id },
       }),

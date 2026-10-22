@@ -6,6 +6,7 @@ import LogoutButton from "./logout-button";
 import UpgradeButton from "./upgrade-button";
 import CancelButton from "./cancel-button";
 import ResumeButton from "./resume-button";
+import PendingRefresher from "./pending-refresher";
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +26,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function AccountPage() {
+export default async function AccountPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ checkout?: string }>;
+}) {
+  const { checkout } = await searchParams;
   const supabase = await createClient();
   const config = getSiteConfig();
   const {
@@ -67,6 +73,9 @@ export default async function AccountPage() {
       })();
 
   const hasAccess = activeSub?.status === "active" || activeSub?.status === "scheduled_cancel";
+  // Presentation-only pending state: entitlement still comes exclusively from
+  // the subscriptions table (webhook-written). Never grants access.
+  const checkoutPending = checkout === "success" && !hasAccess;
   const email = user.email ?? "";
   const displayName =
     user.user_metadata?.full_name ||
@@ -145,7 +154,24 @@ export default async function AccountPage() {
             </div>
           </div>
         )}
-        {!hasAccess && config.paymentEnabled && <UpgradeButton />}
+        {checkoutPending && (
+          <>
+            <PendingRefresher />
+            {/* Honest pending state: entitlement comes from the payment webhook,
+                which can arrive after the browser. Never auto-recheckout. */}
+            <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+              <p className="text-sm font-medium text-amber-800">
+                Payment received — confirming your subscription…
+              </p>
+              <p className="text-xs text-amber-700 mt-1">
+                This usually takes a few seconds. This page refreshes automatically;
+                do not pay again. If Pro doesn&apos;t appear within a few minutes,
+                contact us and we&apos;ll confirm your payment manually.
+              </p>
+            </div>
+          </>
+        )}
+        {!hasAccess && !checkoutPending && config.paymentEnabled && <UpgradeButton />}
       </div>
 
       <div className="flex items-center justify-between">
