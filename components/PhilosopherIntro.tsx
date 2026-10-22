@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import OracleOverlay from "./OracleOverlay";
 import { getOracleScenarios } from "@/lib/oracle-scenarios";
+import { ICHING_CONTEXT_DRAFT_KEY, unsealIchingContext } from "@/lib/iching-context";
+import { loadDraft } from "@/lib/draft";
 
 interface PhilosopherIntroProps {
   slug: string;
@@ -23,6 +25,9 @@ export default function PhilosopherIntro({
   const [consultOpen, setConsultOpen] = useState(false);
   const [displayed, setDisplayed] = useState("");
   const [typing, setTyping] = useState(false);
+  // Study mode (arrived from a hexagram reference page, no coins thrown):
+  // the consult button must not claim the user cast anything.
+  const [studyMode, setStudyMode] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -38,6 +43,14 @@ export default function PhilosopherIntro({
     if (window.location.hash === "#oracle") {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setConsultOpen(true);
+    }
+    // Detect study-mode context so the button label stays truthful.
+    if (slug === "prologue-zhougong") {
+      const ctx = unsealIchingContext(loadDraft(ICHING_CONTEXT_DRAFT_KEY));
+      if (ctx?.mode === "study") {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setStudyMode(true);
+      }
     }
   }, []);
 
@@ -87,7 +100,9 @@ export default function PhilosopherIntro({
             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
             <line x1="12" y1="17" x2="12.01" y2="17" />
           </svg>
-          {getOracleScenarios(slug)?.consultLabel || "Consult"}
+          {studyMode
+            ? "Study the Hexagram"
+            : getOracleScenarios(slug)?.consultLabel || "Consult"}
         </button>
       </div>
 
