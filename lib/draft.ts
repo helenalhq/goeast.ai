@@ -34,3 +34,25 @@ export function clearDraft(key: string): void {
     // ignore
   }
 }
+
+/** Max age for sealed text drafts (question drafts) — mirrors the hexagram
+ *  context rule in lib/iching-context.ts so a question can't outlive its cast. */
+export const TEXT_DRAFT_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+
+export type TextDraftEnvelope = { text: string; savedAt: number };
+
+/** Wrap a question draft for storage with a birth timestamp. */
+export function sealTextDraft(text: string): TextDraftEnvelope {
+  return { text, savedAt: Date.now() };
+}
+
+/** Unseal a stored text draft. Returns null when missing/malformed/legacy/
+ *  expired (incl. future or NaN timestamps). Caller decides whether to clear. */
+export function unsealTextDraft(raw: unknown): string | null {
+  if (typeof raw !== "object" || raw === null) return null;
+  const { text, savedAt } = raw as Record<string, unknown>;
+  if (typeof text !== "string") return null;
+  const age = typeof savedAt === "number" ? Date.now() - savedAt : Number.NaN;
+  if (!Number.isFinite(age) || age < 0 || age > TEXT_DRAFT_MAX_AGE_MS) return null;
+  return text;
+}

@@ -5,7 +5,13 @@ import { getOracleScenarios } from "@/lib/oracle-scenarios";
 import { getOraclePortrait } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
 import { loginUrlWithNext } from "@/lib/auth-redirect";
-import { saveDraft, loadDraft, clearDraft } from "@/lib/draft";
+import {
+  saveDraft,
+  loadDraft,
+  clearDraft,
+  sealTextDraft,
+  unsealTextDraft,
+} from "@/lib/draft";
 import { logEvent } from "@/lib/analytics";
 import {
   ICHING_CONTEXT_DRAFT_KEY,
@@ -512,9 +518,14 @@ export default function OracleOverlay({
     });
     // Restore any question draft saved before a login redirect (no auto-submit).
     // Type-guard: a corrupted/legacy storage value must never reach input state.
-    const savedDraft = loadDraft<string>(draftKey);
+    // The stored envelope expires after 24h (same rule as hexagram contexts),
+    // so a stale question can't outlive its cast.
+    const savedQuestion = unsealTextDraft(loadDraft(draftKey));
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setInput(typeof savedDraft === "string" ? savedDraft : "");
+    setInput(typeof savedQuestion === "string" ? savedQuestion : "");
+    if (loadDraft(draftKey) !== null && savedQuestion === null) {
+      clearDraft(draftKey); // expired/legacy envelope — start clean
+    }
     // Restore the I Ching cast context (Zhou Gong only) so a refresh
     // mid-question keeps the user's cast alongside the question draft.
     // The stored envelope expires after 24h; legacy/corrupt payloads are
@@ -1146,7 +1157,7 @@ export default function OracleOverlay({
                     value={input}
                     onChange={(e) => {
                       setInput(e.target.value);
-                      saveDraft(draftKey, e.target.value);
+                      saveDraft(draftKey, sealTextDraft(e.target.value));
                     }}
                     placeholder={`Ask ${name} · 向${nameZh}求问`}
                     className="flex-1 bg-transparent border-none px-4 py-3.5 text-white text-sm placeholder:text-white/15 focus:outline-none"
