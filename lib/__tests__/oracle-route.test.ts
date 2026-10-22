@@ -139,7 +139,7 @@ describe("auth + Pro deep wiring", () => {
     expect(createCompletion).not.toHaveBeenCalled();
   });
 
-  it("paid user WITH cast context gets deep prompt AND context block together", async () => {
+  it("paid user WITH cast context gets deep prompt AND context block, in the right ORDER", async () => {
     getUser.mockResolvedValue({ data: { user: { id: "u4" } } });
     getSubscription.mockResolvedValue({ status: "active" });
     await POST(req({
@@ -150,5 +150,9 @@ describe("auth + Pro deep wiring", () => {
     const system = createCompletion.mock.calls[0][0].messages[0].content as string;
     expect(system).toContain("DEEP READING MODE");
     expect(system).toContain("STUDY");
+    // The context block's three-part structure must precede the deep addendum,
+    // so Pro sections are appended AFTER the standard answer (not overridden).
+    expect(system.indexOf("TRADITIONAL TEACHING")).toBeLessThan(system.indexOf("DEEP READING MODE"));
+    expect(system.indexOf("CONSULTATION CONTEXT")).toBeLessThan(system.indexOf("DEEP READING MODE"));
   });
 });

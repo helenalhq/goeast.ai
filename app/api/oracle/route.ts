@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import OpenAI from "openai";
-import { getOraclePrompt } from "@/lib/oracle-prompts";
+import { getOraclePrompt, ORACLE_DEEP_ADDENDUM } from "@/lib/oracle-prompts";
 import { checkFreeLimit, checkAuthUserRateLimit } from "@/lib/rate-limit";
 import { getSubscriptionByUserId } from "@/lib/creem";
 import { createClient } from "@/lib/supabase/server";
@@ -136,12 +136,19 @@ export async function POST(request: NextRequest) {
     });
   }
   const contextBlock = validatedIchingContext ? buildIchingContextBlock(validatedIchingContext) : "";
+  // Prompt assembly order matters: base → cast context → deep addendum (Pro).
+  // The context block's three-part structure must come BEFORE the deep
+  // addendum so Pro's extra sections (GOING DEEPER, follow-up) are appended
+  // after the standard answer instead of being overridden by it.
+  // (`promptConfig` is the validated base config from the early 404 check.)
+  const system =
+    promptConfig.system + contextBlock + (isPaid ? ORACLE_DEEP_ADDENDUM : "");
 
   try {
     const stream = await openai.chat.completions.create({
       model: MODEL,
       messages: [
-        { role: "system", content: finalPrompt.system + contextBlock },
+        { role: "system", content: system },
         { role: "user", content: question.trim() },
       ],
       max_completion_tokens: Math.round(finalPrompt.maxWords * 1.5),
