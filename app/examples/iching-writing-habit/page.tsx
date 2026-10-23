@@ -3,6 +3,7 @@ import Link from "next/link";
 import fs from "fs";
 import path from "path";
 import ReactMarkdown from "react-markdown";
+import ExampleUpgradeCta from "./upgrade-cta";
 
 export const metadata: Metadata = {
   title: "I Ching Writing Habit — Free vs Pro Example | GoEast.ai",
@@ -113,9 +114,12 @@ export default function ExamplesPage() {
         </section>
       </div>
 
-      <footer className="mt-10 text-center text-sm text-warm">
+      {/* Direct upgrade CTA — after seeing the Pro value, no extra navigation needed */}
+      <ExampleUpgradeCta />
+
+      <footer className="mt-8 text-center text-sm text-warm">
         <p>
-          <Link href="/pricing#example" className="text-china-red hover:underline">
+          <Link href="/pricing" className="text-china-red hover:underline">
             ← Back to pricing
           </Link>{" "}
           ·{" "}

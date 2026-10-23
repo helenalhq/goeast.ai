@@ -22,7 +22,7 @@ client event — the browser never claims a payment happened.
 | Quota exhausted | `oracle_limit_reached` | `{subscribed}` | `OracleOverlay` LIMIT_REACHED branch |
 | Login page opened with a destination | `login_page_viewed_with_target` | `{}` (no path value) | login page mount when `next ≠ /account` — measures login-page opens with a return destination (NOT success) |
 | Login succeeded | `login_succeeded` | `{return_target}` (boolean) | password login success, right before redirect. OAuth success is **not measurable client-side** (lands via server-side `/auth/callback` → target page) — noted gap |
-| Upgrade intent | `upgrade_clicked` | `{from: "pricing"\|"oracle"\|"account"}` | three upgrade buttons |
+| Upgrade intent | `upgrade_clicked` | `{from: "pricing"\|"oracle"\|"account"\|"example"}` | four upgrade entry points: pricing page, oracle overlay, account page, /examples page |
 | Pricing example viewed | `pricing_example_viewed` | `{}` | `app/pricing/example-viewed.tsx` — fires once when the Free-vs-Pro example section enters the viewport (Intersection Observer, 30% threshold). More accurate than mount-based firing. |
 | Checkout session created (server) | — `console.log({event:"checkout_created", user_id})` | — | `/api/checkout` after Creem returns a checkout URL (no email logged) |
 | Payment confirmed (server) | — `console.log({event:"subscription_activated", subscription_id})` | — | Creem webhook after successful activate |
