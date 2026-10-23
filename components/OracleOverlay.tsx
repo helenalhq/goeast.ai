@@ -494,6 +494,18 @@ export default function OracleOverlay({
   const scrollRef = useRef<HTMLDivElement>(null);
   const draftKey = `oracle:${slug}`;
 
+  // Reset unlocking when the page is restored from bfcache (browser Back
+  // from Creem checkout) — same fix as useUpgradeButton hook.
+  useEffect(() => {
+    const onPageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) {
+        setUnlocking(false);
+      }
+    };
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
+  }, []);
+
   const config = getOracleScenarios(slug);
   const ritualType = RITUAL_MAP[slug] || "hexagram";
   const centerChar = config?.specialtyZh?.charAt(0) || nameZh.charAt(0);
@@ -569,6 +581,7 @@ export default function OracleOverlay({
       window.location.href = loginUrlWithNext();
       return;
     }
+    if (unlocking) return; // guard: no duplicate checkout while in flight
     logEvent("upgrade_clicked", { from: "oracle" });
     setUnlocking(true);
     try {
@@ -579,9 +592,13 @@ export default function OracleOverlay({
       const { checkoutUrl } = await res.json();
       if (checkoutUrl) {
         window.location.href = checkoutUrl;
+        // NOTE: don't reset unlocking — browser is navigating away.
+        // pageshow listener resets it on browser Back (bfcache).
+      } else {
+        setUnlocking(false); // API error — allow retry
       }
     } catch {
-      setUnlocking(false);
+      setUnlocking(false); // network error — allow retry
     }
   };
 

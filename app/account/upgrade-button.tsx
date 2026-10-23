@@ -1,28 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { logEvent } from "@/lib/analytics";
+import { useUpgradeButton } from "@/lib/use-upgrade-button";
 
 export default function UpgradeButton() {
-  const [loading, setLoading] = useState(false);
-
-  const handleUpgrade = async () => {
-    setLoading(true);
-    logEvent("upgrade_clicked", { from: "account" });
-    try {
-      const res = await fetch("/api/checkout", { method: "POST" });
-      const data = await res.json();
-      if (data.checkoutUrl) {
-        window.location.href = data.checkoutUrl;
-      } else {
-        alert(data.error || "Failed to start checkout");
-        setLoading(false);
-      }
-    } catch {
-      alert("Payment service unavailable");
-      setLoading(false);
-    }
-  };
+  const { loading, error, handleUpgrade } = useUpgradeButton("account");
 
   return (
     <div className="border-t border-sand pt-4">
@@ -31,6 +12,9 @@ export default function UpgradeButton() {
         readings (~2× length + reflection prompts), including Zi Wei timing
         and palace-interaction analysis.
       </p>
+      {error && (
+        <p className="text-xs text-china-red mb-2" role="alert">{error}</p>
+      )}
       <button
         onClick={handleUpgrade}
         disabled={loading}

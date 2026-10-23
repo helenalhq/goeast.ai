@@ -4,17 +4,18 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { logEvent } from "@/lib/analytics";
+import { useUpgradeButton } from "@/lib/use-upgrade-button";
 
 /**
  * Upgrade CTA at the end of the /examples page — reuses the existing
  * checkout flow (same /api/checkout endpoint, same Creem pipeline).
- * Source attribution: `from: "example"` distinguishes this entry point
- * from pricing-page and oracle-overlay upgrade clicks.
+ * Source attribution: `from: "example"` distinguishes this entry point.
+ * Uses shared useUpgradeButton hook (bfcache-safe, double-click guard).
  */
 export default function ExampleUpgradeCta() {
-  const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<object | null>(null);
   const [checking, setChecking] = useState(true);
+  const { loading, error, handleUpgrade } = useUpgradeButton("example");
 
   useEffect(() => {
     const supabase = createClient();
@@ -23,24 +24,6 @@ export default function ExampleUpgradeCta() {
       setChecking(false);
     });
   }, []);
-
-  const handleUpgrade = async () => {
-    setLoading(true);
-    logEvent("upgrade_clicked", { from: "example" });
-    try {
-      const res = await fetch("/api/checkout", { method: "POST" });
-      const data = await res.json();
-      if (data.checkoutUrl) {
-        window.location.href = data.checkoutUrl;
-      } else {
-        alert(data.error || "Failed to start checkout");
-        setLoading(false);
-      }
-    } catch {
-      alert("Payment service unavailable");
-      setLoading(false);
-    }
-  };
 
   return (
     <section className="mt-10 p-6 bg-gradient-to-br from-cream to-white rounded-xl border-2 border-china-red text-center">
@@ -55,6 +38,10 @@ export default function ExampleUpgradeCta() {
         $4.99/month · auto-renews · 10 AI consultations per day (free: 3) ·
         cancel anytime in Account
       </p>
+
+      {error && (
+        <p className="text-xs text-china-red mb-3" role="alert">{error}</p>
+      )}
 
       {checking ? (
         <div className="inline-block px-8 py-3 rounded-lg bg-china-red/50 text-white text-sm font-medium cursor-wait">
