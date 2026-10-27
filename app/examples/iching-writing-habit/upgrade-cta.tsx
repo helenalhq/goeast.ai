@@ -5,11 +5,10 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { logEvent } from "@/lib/analytics";
 import { useUpgradeButton } from "@/lib/use-upgrade-button";
+import TryIChingLink from "@/components/TryIChingLink";
 
 /**
- * Upgrade CTA at the end of the /examples page — reuses the existing
- * checkout flow (same /api/checkout endpoint, same Creem pipeline).
- * Source attribution: `from: "example"` distinguishes this entry point.
+ * Upgrade CTA + free trial entry at the end of the /examples page.
  * Uses shared useUpgradeButton hook (bfcache-safe, double-click guard).
  */
 export default function ExampleUpgradeCta() {
@@ -65,12 +64,27 @@ export default function ExampleUpgradeCta() {
         </button>
       )}
 
-      <p className="text-xs text-warm/60 mt-4">
-        <Link href="/iching" className="underline hover:text-china-red">
-          or cast your own hexagram free →
-        </Link>
-      </p>
-      <p className="text-xs text-warm/50 mt-2">
+      <div className="mt-5 pt-4 border-t border-sand">
+        <p className="text-sm text-warm mb-3">
+          Not ready to subscribe? Try the I Ching Oracle free — 3 consultations per day.
+        </p>
+        <div className="flex flex-wrap justify-center gap-3">
+          <TryIChingLink
+            source="writing-habit-example"
+            className="inline-block px-6 py-2.5 rounded-full bg-ink text-white text-sm font-medium hover:bg-ink/90 transition-colors no-underline"
+          >
+            Try I Ching →
+          </TryIChingLink>
+          <Link
+            href="/iching"
+            className="inline-block px-6 py-2.5 rounded-full border border-sand text-ink text-sm font-medium hover:border-china-red hover:text-china-red transition-colors no-underline"
+          >
+            Browse hexagrams
+          </Link>
+        </div>
+      </div>
+
+      <p className="text-xs text-warm/50 mt-4">
         Subscription renews automatically each month. Cancel anytime from your
         Account page — access continues until the end of the paid period.
       </p>

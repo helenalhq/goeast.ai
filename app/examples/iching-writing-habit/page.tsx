@@ -124,7 +124,7 @@ export default function ExamplesPage() {
           </Link>{" "}
           ·{" "}
           <Link href="/iching" className="text-china-red hover:underline">
-            Cast your own hexagram free →
+            Browse hexagrams →
           </Link>
         </p>
         <p className="text-xs text-warm/60 mt-3">

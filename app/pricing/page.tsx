@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getSiteConfig } from "@/lib/config";
 import JsonLd from "@/components/JsonLd";
+import TryIChingLink from "@/components/TryIChingLink";
 import PricingClient from "./pricing-client";
 import ExampleViewed from "./example-viewed";
 import {
@@ -229,12 +230,18 @@ export default function PricingPage() {
             </p>
           </div>
         </div>
-        <div className="text-center mt-6">
+        <div className="text-center mt-6 flex flex-wrap justify-center gap-3">
+          <TryIChingLink
+            source="pricing"
+            className="inline-block px-6 py-2.5 rounded-lg bg-china-red text-white text-sm font-medium hover:bg-china-red/90 transition-colors no-underline"
+          >
+            Try I Ching →
+          </TryIChingLink>
           <Link
             href="/iching"
-            className="inline-block px-6 py-2.5 rounded-lg bg-china-red text-white text-sm font-medium hover:bg-china-red/90 transition-colors"
+            className="inline-block px-6 py-2.5 rounded-lg border border-sand text-ink text-sm font-medium hover:border-china-red hover:text-china-red transition-colors"
           >
-            Cast your own hexagram free →
+            Browse hexagrams
           </Link>
         </div>
       </section>
