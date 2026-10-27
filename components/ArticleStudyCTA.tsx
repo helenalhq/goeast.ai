@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { buildStudyContext, sealIchingContext, ICHING_CONTEXT_DRAFT_KEY } from "@/lib/iching-context";
 import { saveDraft, clearDraft, saveSource } from "@/lib/draft";
 import { logEvent } from "@/lib/analytics";
@@ -10,12 +9,14 @@ import { logEvent } from "@/lib/analytics";
 const SOURCE_KEY = "oracle-source";
 
 /**
- * In-article AI study entry — placed between the intro (Judgment/Image)
- * and the long interpretation (Modern Application) on selected hexagram
- * pages. Links to the SAME study-mode flow as the bottom OracleStudyLink,
- * with source attribution so article-driven visits are distinguishable.
+ * In-article AI study entry — placed after the intro (citation) and before
+ * the long interpretation (Judgment) on selected hexagram pages.
  *
- * Does NOT: auto-submit, consume quota, trigger payment, or bypass login.
+ * Uses `window.location.assign` (full navigation) instead of `router.push`
+ * to guarantee the #oracle hash is correctly set on every navigation,
+ * including re-entry after browser Back. SPA router.push on the same route
+ * with a hash can produce duplicated hash fragments (#oracle#oracle) when
+ * the router's internal history state is out of sync with the browser.
  */
 export default function ArticleStudyCTA({
   hexagramNumber,
@@ -24,8 +25,6 @@ export default function ArticleStudyCTA({
   hexagramNumber: number;
   hexagramSlug: string;
 }) {
-  const router = useRouter();
-
   const handleClick = () => {
     // Fire a click event with source info (scalars only, no PII)
     logEvent("hexagram_study_clicked", {
@@ -41,7 +40,10 @@ export default function ArticleStudyCTA({
     // Same study-mode setup as OracleStudyLink (start new consultation)
     clearDraft("oracle:prologue-zhougong");
     saveDraft(ICHING_CONTEXT_DRAFT_KEY, sealIchingContext(buildStudyContext(hexagramNumber)));
-    router.push("/sophies-journey/prologue-zhougong#oracle");
+
+    // Full page navigation — guarantees fresh mount + correct hash every time.
+    // sessionStorage drafts survive full navigations within the same tab.
+    window.location.assign("/sophies-journey/prologue-zhougong#oracle");
   };
 
   return (

@@ -1,12 +1,15 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { buildStudyContext, sealIchingContext, ICHING_CONTEXT_DRAFT_KEY } from "@/lib/iching-context";
 import { saveDraft, clearDraft } from "@/lib/draft";
 
 /** "Study this hexagram" CTA — tells the Oracle the user is LEARNING this
  *  hexagram (no cast, no changing lines), replacing the generic Oracle CTA
- *  on hexagram reference pages. */
+ *  on hexagram reference pages.
+ *
+ *  Uses `window.location.assign` (full navigation) instead of `router.push`
+ *  to guarantee the #oracle hash is correctly set on every navigation,
+ *  including re-entry after browser Back. See ArticleStudyCTA for details. */
 export default function OracleStudyLink({
   hexagramNumber,
   accentColor = "#8b4513",
@@ -16,7 +19,6 @@ export default function OracleStudyLink({
   accentColor?: string;
   message: string;
 }) {
-  const router = useRouter();
   return (
     <div className="mt-12 p-6 bg-cream/60 rounded-sm text-center">
       <p className="font-serif text-ink text-lg mb-4">{message}</p>
@@ -25,7 +27,9 @@ export default function OracleStudyLink({
         onClick={() => {
           clearDraft("oracle:prologue-zhougong"); // new consultation — don't silently pair the old question with this study session
           saveDraft(ICHING_CONTEXT_DRAFT_KEY, sealIchingContext(buildStudyContext(hexagramNumber)));
-          router.push("/sophies-journey/prologue-zhougong#oracle");
+          // Full page navigation — guarantees fresh mount + correct hash.
+          // sessionStorage drafts survive full navigations within the same tab.
+          window.location.assign("/sophies-journey/prologue-zhougong#oracle");
         }}
         className="inline-block px-7 py-3 rounded-sm text-white font-medium text-sm transition-colors hover:opacity-90 no-underline"
         style={{ backgroundColor: accentColor }}
