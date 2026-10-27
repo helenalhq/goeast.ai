@@ -4,6 +4,7 @@ import { track } from "@vercel/analytics";
  *  call sites honest — add new events here, never inline strings. */
 export type AnalyticsEvent =
   | "iching_cast_completed"
+  | "hexagram_study_clicked"
   | "oracle_opened_with_hexagram"
   | "oracle_consult_started"
   | "oracle_reading_delivered"

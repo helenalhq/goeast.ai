@@ -11,6 +11,7 @@ import {
   clearDraft,
   sealTextDraft,
   unsealTextDraft,
+  takeSource,
 } from "@/lib/draft";
 import { logEvent } from "@/lib/analytics";
 import {
@@ -546,7 +547,13 @@ export default function OracleOverlay({
       const ctx = unsealIchingContext(loadDraft(ICHING_CONTEXT_DRAFT_KEY));
       if (ctx) {
         setIchingCtx(ctx);
-        logEvent("oracle_opened_with_hexagram", { mode: ctx.mode });
+        // Read one-time source attribution (e.g. from an article CTA) if
+        // present — cleared after read, no cross-session tracking.
+        const source = takeSource("oracle-source");
+        logEvent("oracle_opened_with_hexagram", {
+          mode: ctx.mode,
+          ...(source ? { source_article: source } : {}),
+        });
       } else {
         clearDraft(ICHING_CONTEXT_DRAFT_KEY); // expired/malformed envelope — start clean
       }

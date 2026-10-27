@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getHexagramBySlug, getAllHexagrams } from "@/lib/iching-data";
 import { TRIGRAMS } from "@/lib/types";
 import OracleStudyLink from "@/components/OracleStudyLink";
+import ArticleStudyCTA from "@/components/ArticleStudyCTA";
 import JsonLd from "@/components/JsonLd";
 import CitationSnippet from "@/components/CitationSnippet";
 import { generateCitationSnippet } from "@/lib/citation-snippets";
@@ -161,6 +162,11 @@ export default async function HexagramDetailPage({
             )}
           </div>
         </section>
+
+        {/* In-article AI study entry — only on designated high-traffic hexagrams */}
+        {(h.slug === "gen-mountain" || h.slug === "kun-oppression") && (
+          <ArticleStudyCTA hexagramNumber={h.number} hexagramSlug={h.slug} />
+        )}
 
         {/* Modern Application */}
         {h.modern_application && (

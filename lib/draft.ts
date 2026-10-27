@@ -56,3 +56,27 @@ export function unsealTextDraft(raw: unknown): string | null {
   if (!Number.isFinite(age) || age < 0 || age > TEXT_DRAFT_MAX_AGE_MS) return null;
   return text;
 }
+
+/** Save a one-time source attribution (e.g. which article drove the visit).
+ *  Only the pathname is stored — no query params or user input. Cleared
+ *  after a single read by the consumer (no cross-session tracking). */
+export function saveSource(key: string, pathname: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.sessionStorage.setItem(PREFIX + key, pathname);
+  } catch {
+    // ignore
+  }
+}
+
+/** Read and clear a one-time source attribution. Returns null if absent. */
+export function takeSource(key: string): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.sessionStorage.getItem(PREFIX + key);
+    if (raw) window.sessionStorage.removeItem(PREFIX + key);
+    return raw;
+  } catch {
+    return null;
+  }
+}

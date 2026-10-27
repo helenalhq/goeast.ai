@@ -16,7 +16,8 @@ client event — the browser never claims a payment happened.
 | Tool: generate Zi Wei chart | `ziwei_chart_generated` | `{}` | `ZiweiChart.handleGenerate` (success only) |
 | Tool: start Zi Wei reading | `ziwei_reading_started` | `{}` | `ZiweiInterpretation.handleInterpret` (post login-gate) |
 | Tool: start synastry | `synastry_analysis_started` | `{}` | `ZiweiSynastry.handleAnalyze` (post gate + validation) |
-| Enter Oracle with a cast | `oracle_opened_with_hexagram` | `{mode: "cast"\|"study"}` | `OracleOverlay` mount effect (context restored) |
+| Enter Oracle with a cast | `oracle_opened_with_hexagram` | `{mode: "cast"\|"study", source_article?}` | `OracleOverlay` mount effect (context restored); `source_article` present only when the visit came from an article CTA (one-time, cleared after read) |
+| Hexagram article study CTA click | `hexagram_study_clicked` | `{hexagram, source_article, cta_position}` | `ArticleStudyCTA` on gen-mountain / kun-oppression pages |
 | Consultation starts | `oracle_consult_started` | `{philosopher, with_context}` | `OracleOverlay.consult` (post login-gate) |
 | Reading delivered | `oracle_reading_delivered` | `{philosopher}` | `OracleOverlay` SSE `[DONE]` (success only) |
 | Quota exhausted | `oracle_limit_reached` | `{subscribed}` | `OracleOverlay` LIMIT_REACHED branch |
