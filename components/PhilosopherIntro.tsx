@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import OracleOverlay from "./OracleOverlay";
 import { getOracleScenarios } from "@/lib/oracle-scenarios";
 import { ICHING_CONTEXT_DRAFT_KEY, unsealIchingContext } from "@/lib/iching-context";
@@ -36,10 +36,19 @@ export default function PhilosopherIntro({
     };
   }, []);
 
+  // Close handler: also clear the #oracle hash so re-navigating with the
+  // same hash works (hashchange fires on the NEXT push, not on a duplicate).
+  const handleConsultClose = useCallback(() => {
+    setConsultOpen(false);
+    if (window.location.hash === "#oracle") {
+      // replaceState doesn't add a history entry — silently cleans the URL
+      history.replaceState(null, "", window.location.pathname + window.location.search);
+    }
+  }, []);
+
   useEffect(() => {
     // Deep link (#oracle) from CTAs or a login round-trip: open the consult
     // overlay so the user lands IN the consultation, not one click away.
-    // Only consultOpen is touched — the typing-intro overlay is unaffected.
     if (window.location.hash === "#oracle") {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setConsultOpen(true);
@@ -52,6 +61,19 @@ export default function PhilosopherIntro({
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Listen for hash changes so re-entering #oracle (e.g. returning from an
+  // article via the back button, then clicking a CTA again) re-opens the
+  // overlay without requiring a full component remount.
+  useEffect(() => {
+    const onHashChange = () => {
+      if (window.location.hash === "#oracle") {
+        setConsultOpen(true);
+      }
+    };
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
 
   useEffect(() => {
@@ -150,7 +172,7 @@ export default function PhilosopherIntro({
           name={name}
           nameZh={nameZh}
           color={color}
-          onClose={() => setConsultOpen(false)}
+          onClose={handleConsultClose}
         />
       )}
     </>

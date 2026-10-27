@@ -128,6 +128,13 @@ export default async function HexagramDetailPage({
 
         <CitationSnippet text={generateCitationSnippet({ type: "hexagram", data: h })} />
 
+        {/* In-article AI study entry — only on designated high-traffic hexagrams.
+            Placed after the intro (breadcrumb + citation) and before the long
+            interpretation (Judgment/Image/Modern Application). */}
+        {(h.slug === "gen-mountain" || h.slug === "kun-oppression") && (
+          <ArticleStudyCTA hexagramNumber={h.number} hexagramSlug={h.slug} />
+        )}
+
         {/* Judgment */}
         <section className="mb-10">
           <h2 className="text-2xl font-bold text-ink mb-4">Judgment (卦辞)</h2>
@@ -162,11 +169,6 @@ export default async function HexagramDetailPage({
             )}
           </div>
         </section>
-
-        {/* In-article AI study entry — only on designated high-traffic hexagrams */}
-        {(h.slug === "gen-mountain" || h.slug === "kun-oppression") && (
-          <ArticleStudyCTA hexagramNumber={h.number} hexagramSlug={h.slug} />
-        )}
 
         {/* Modern Application */}
         {h.modern_application && (
