@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { clearDraft } from "@/lib/draft";
 import { ICHING_CONTEXT_DRAFT_KEY } from "@/lib/iching-context";
 import { logEvent } from "@/lib/analytics";
@@ -9,13 +8,17 @@ import { logEvent } from "@/lib/analytics";
  * "Try I Ching" entry — links directly to the existing Oracle tool
  * (Zhou Gong, /sophies-journey/prologue-zhougong#oracle).
  *
- * - Uses next/link for client-side navigation with prefetch; renders as a
- *   semantic <a> so new-tab (Cmd+Click) and keyboard navigation work.
- * - Clears any inherited article study context (gen/kun) so the user enters
- *   the Oracle in its default state, not accidentally studying a hexagram
- *   they were reading about earlier.
- * - Does NOT pre-fill a question, auto-submit, consume quota, or bypass login.
- *   Login flow is handled by the Oracle itself when the user consults.
+ * Uses a plain <a> tag (NOT next/link) because full page navigation is
+ * required for reliable #oracle hash handling. When the user has previously
+ * visited the Oracle page (e.g. from an article study CTA), Next.js's
+ * client-side router retains stale state and <Link> can produce a doubled
+ * hash fragment (#oracle#oracle). A full page load always fresh-mounts the
+ * component and sets the hash correctly.
+ *
+ * - <a href="..."> default behavior = full page navigation (what we want)
+ * - Cmd+Click / middle-click opens in new tab (href used directly)
+ * - onClick fires before navigation to clear drafts + fire analytics
+ * - Does NOT pre-fill, auto-submit, consume quota, or bypass login.
  */
 export default function TryIChingLink({
   source,
@@ -40,12 +43,13 @@ export default function TryIChingLink({
   };
 
   return (
-    <Link
+    // eslint-disable-next-line @next/next/no-html-link-for-pages -- full page navigation is intentional for hash reliability (see comment above)
+    <a
       href="/sophies-journey/prologue-zhougong#oracle"
       onClick={handleClick}
       className={className}
     >
       {children}
-    </Link>
+    </a>
   );
 }
