@@ -147,7 +147,7 @@ export default function Hero() {
           }}
         >
           <a
-            href="#journey"
+            href="/consult"
             style={{
               display: "inline-block",
               padding: "12px 28px",
@@ -159,7 +159,7 @@ export default function Hero() {
               textDecoration: "none",
             }}
           >
-            Begin the Journey →
+            Get an I Ching Reading →
           </a>
           <Link
             href="/skills"
