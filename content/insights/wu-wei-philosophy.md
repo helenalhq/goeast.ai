@@ -4,7 +4,8 @@ title: "Wu Wei: The Chinese Philosophy of Effortless Action"
 title_zh: "无为： effortless action 的中国哲学"
 philosopher_slug: laozi
 concept_slugs: [wuwei, dao, ziran]
-published_at: 2026-10-29
+published_at: "2026-06-30"
+updated_at: "2026-10-29"
 content_zh: |
   无为是道家哲学的核心概念，常被误解为"什么都不做"。实际上，它指的是顺应自然、不强行干预的智慧。
 
@@ -109,7 +110,7 @@ content_zh: |
 takeaways:
   - Wu Wei is not laziness; it is aligned, timely action that works with natural patterns.
   - Water is the central metaphor—soft overcomes hard by flowing around obstacles.
-  - Modern psychology's "flow state" closely mirrors Wu Wei.
+  - Modern psychology's "flow state" shares similarities with Wu Wei, though the two concepts are distinct (flow is a psychological state; Wu Wei is a life philosophy).
   - Wu Wei applies to leadership, creativity, decision-making, and daily stress.
 faqs:
   - question: Does Wu Wei mean doing nothing?
@@ -259,7 +260,7 @@ When facing resistance, ask: "Am I rowing against the current, or can I adjust m
 
 ### Flow State
 
-Psychologist Mihaly Csikszentmihalyi's concept of "flow" closely mirrors Wu Wei:
+Psychologist Mihaly Csikszentmihalyi's concept of "flow" (described in his 1990 book *Flow: The Psychology of Optimal Experience*) shares notable similarities with Wu Wei, though the two are distinct:
 
 **Flow characteristics:**
 - Complete immersion in the activity
@@ -268,7 +269,7 @@ Psychologist Mihaly Csikszentmihalyi's concept of "flow" closely mirrors Wu Wei:
 - Distorted sense of time
 - Intrinsic reward
 
-**The connection:** Flow happens when we stop trying to control and simply engage fully with the present moment.
+**The connection and the difference:** Both involve effortless engagement. Flow describes a psychological state that arises during immersive activity; Wu Wei is a broader philosophical principle about how to approach all of life — including knowing when not to act at all. Flow is something you stumble into; Wu Wei is something you cultivate. (See Slingerland, *Trying Not to Try*, 2014, for an accessible comparison.)
 
 ### Mindfulness and Acceptance
 
@@ -351,3 +352,10 @@ Develop sensitivity to timing and context:
 - [The Concept of Wu Wei (无为)](/glossary/wuwei)
 - [The Meaning of Ziran (自然)](/glossary/ziran)
 - [Yin Yang Explained](/insights/yin-yang-explained)
+
+## Sources
+
+- Dao De Jing chapters 8, 17, and 37 — classical text; English rendering follows common academic translations (see the [glossary entry on Dao](/glossary/dao) for context). Checked 2026-10-29.
+- Slingerland, Edward. *Trying Not to Try: The Art and Science of Spontaneity*. Crown, 2014 — accessible comparison of Wu Wei and flow state. Checked 2026-10-29.
+- Csikszentmihalyi, Mihaly. *Flow: The Psychology of Optimal Experience*. Harper & Row, 1990 — original description of the flow concept. Checked 2026-10-29.
+- [GoEast glossary: Wu Wei (无为)](/glossary/wuwei) — site-internal reference for the concept's core meaning.

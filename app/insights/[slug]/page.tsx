@@ -28,8 +28,10 @@ export async function generateMetadata({
   const insight = getInsightBySlug(slug);
   if (!insight) return {};
   const philosopher = insight.philosopher_slug ? PHILOSOPHER_SLUGS[insight.philosopher_slug] : null;
+  // Meta description: prefer the first takeaway as a standalone summary when it
+  // fits; prepend the title only when the combined length stays within budget.
   const description = insight.takeaways?.length
-    ? clipText(`${insight.title}. ${insight.takeaways[0]}`, 155)
+    ? clipText(insight.takeaways[0], 155)
     : `${insight.title}. ${philosopher?.name ? `Learn about ${philosopher.name}'s philosophy and its modern applications.` : 'Explore Chinese philosophy concepts and their modern applications.'}`;
   const ogImageUrl = `https://www.goeast.ai/insights/opengraph-image`;
   return {
@@ -42,7 +44,7 @@ export async function generateMetadata({
       type: "article",
       images: [{ url: ogImageUrl, width: 1200, height: 630 }],
       publishedTime: insight.published_at || undefined,
-      modifiedTime: insight.published_at || undefined,
+      modifiedTime: insight.updated_at || insight.published_at || undefined,
       siteName: "GoEast.ai",
     },
     twitter: {
@@ -78,7 +80,7 @@ export default async function InsightDetailPage({
           url: `https://www.goeast.ai/insights/${insight.slug}`,
           image: `https://www.goeast.ai/insights/opengraph-image`,
           datePublished: insight.published_at || undefined,
-          dateModified: insight.published_at || undefined,
+          dateModified: insight.updated_at || insight.published_at || undefined,
           author: { "@type": "Organization", name: "GoEast Editorial Team", url: "https://www.goeast.ai/about" },
           publisher: {
             "@type": "Organization",

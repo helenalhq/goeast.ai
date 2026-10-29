@@ -29,7 +29,9 @@ export function getInsightBySlug(slug: string): Insight | null {
     title_zh: data.title_zh,
     philosopher_slug: data.philosopher_slug,
     concept_slugs: data.concept_slugs || [],
-    published_at: data.published_at || "",
+    // gray-matter parses unquoted YAML dates as Date objects — coerce to ISO string
+    published_at: typeof data.published_at === "string" ? data.published_at : data.published_at?.toISOString?.() || "",
+    updated_at: typeof data.updated_at === "string" ? data.updated_at : data.updated_at?.toISOString?.() || undefined,
     takeaways: Array.isArray(data.takeaways) ? data.takeaways : undefined,
     faqs: Array.isArray(data.faqs) ? data.faqs : undefined,
     how_to: data.how_to && typeof data.how_to === "object" && Array.isArray(data.how_to.steps) ? data.how_to : undefined,

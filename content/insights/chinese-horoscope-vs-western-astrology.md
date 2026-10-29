@@ -6,16 +6,17 @@ philosopher_slug: null
 concept_slugs:
   - yin-yang
   - qi
-published_at: 2026-10-29
+published_at: "2026-07-12"
+updated_at: "2026-10-29"
 takeaways:
   - Western astrology uses the tropical zodiac (sun position); Chinese astrology uses lunar calendar and time-based star placement.
   - Zi Wei Dou Shu (紫微斗数) is the most sophisticated Chinese astrological system, mapping 14 major stars across 12 life palaces.
   - Unlike Western horoscopes which focus on personality, Zi Wei Dou Shu offers detailed traditional interpretations for specific life areas (career, wealth, health, relationships).
   - Both systems can be complementary — Western astrology for psychological insight, Zi Wei Dou Shu for practical life planning.
-  - Your Zi Wei chart requires your birth date, time, and gender to generate accurately.
+  - Your Zi Wei chart requires your birth date, time, and gender to generate.
 faqs:
-  - question: Is Zi Wei Dou Shu more accurate than Western astrology?
-    answer: 'Accuracy depends on what you measure. Zi Wei Dou Shu provides more granular, area-specific insights (career palace, wealth palace, etc.) while Western astrology excels at psychological profiling. Many practitioners use both.'
+  - question: How does Zi Wei Dou Shu differ from Western astrology in what it offers?
+    answer: 'They serve different purposes within their traditions. Zi Wei Dou Shu organizes interpretation around 12 life palaces (career, wealth, relationships, etc.), while Western astrology focuses on psychological themes and personality patterns. Many practitioners study both as complementary cultural systems.'
     question_zh: 紫微斗数比西方星座更准吗？
     answer_zh: '"准确性"取决于衡量标准。紫微斗数在特定领域（事业宫、财帛宫等）提供更细致的分析，西方星座擅长心理画像。很多从业者两者兼用。'
   - question: What do I need to generate my Zi Wei Dou Shu chart?
@@ -30,7 +31,7 @@ faqs:
 
 # Chinese Horoscope vs Western Astrology: Zi Wei Dou Shu Explained
 
-**Quick answer:** "Chinese horoscope," "Zi Wei Dou Shu (紫微斗数)," and "Western astrology" are **three different systems**, not interchangeable terms. The Chinese zodiac (12 animal signs) is a folk tradition; Zi Wei Dou Shu is a detailed star-based charting system using your birth date, time, and gender; and Western astrology uses planetary positions (not just sun signs) to build a psychological profile. This guide compares them accurately.
+**Quick answer:** "Chinese horoscope," "Zi Wei Dou Shu (紫微斗数)," and "Western astrology" are **three different systems**, not interchangeable terms. The Chinese zodiac (12 animal signs) is a folk tradition; Zi Wei Dou Shu is a detailed star-based charting system using your birth date, time, and gender; and Western astrology uses planetary positions (not just sun signs) to build a psychological profile. This guide compares their traditions, methods, and cultural contexts.
 
 If you've ever checked your horoscope, you probably used the Western zodiac — Aries, Taurus, Gemini, and so on. It's based on where the sun was when you were born.
 
@@ -54,7 +55,7 @@ This guide explains how the systems differ and what each is traditionally used f
 
 Western astrology divides the ecliptic (the sun's apparent path) into 12 equal segments. Your "sign" is which segment the sun occupied at your birth.
 
-A full natal chart adds the positions of planets, the rising sign (ascendant), and aspects (angles between planets). The result is a psychological profile: your personality traits, emotional patterns, and relationship tendencies.
+A full natal chart adds the positions of planets, the rising sign (ascendant), and aspects (angles between planets). The result is a personality-based reading: traits, emotional patterns, and relationship themes as understood within the Western astrological tradition.
 
 **Strengths:** Intuitive, accessible, excellent for self-understanding.
 **Limitations:** Broad generalizations (everyone born in the same month shares a sun sign), less specific about life events.
@@ -145,3 +146,9 @@ Think of Western astrology as a personality assessment and Zi Wei Dou Shu as a s
 - [Yin Yang Explained](/insights/yin-yang-explained) — The core duality that underlies all Chinese metaphysics
 - [Five Elements in Chinese Thought](/insights/five-elements-systems) — How wood, fire, earth, metal, and water shape the system
 - [I Ching — Book of Changes](/iching) — The divination tradition that predates astrology by 2,000 years
+
+## Sources
+
+- Zi Wei Dou Shu system overview and 12-palace structure — based on traditional Chinese astrological texts; see [GoEast's Zi Wei Dou Shu guide](/ziwei) for the palace and star system used on this site. Checked 2026-10-29.
+- Western astrology natal chart basics — standard references include Parker, Julia & Derek. *Parker's Astrology*. DK, 2010. Checked 2026-10-29.
+- Chinese zodiac (12 animal signs) as folk tradition — distinct from Zi Wei Dou Shu; see [Wikipedia: Chinese zodiac](https://en.wikipedia.org/wiki/Chinese_zodiac) for an overview. Checked 2026-10-29.

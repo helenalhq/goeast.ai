@@ -253,6 +253,7 @@ export interface InsightMeta {
   philosopher_slug?: string;
   concept_slugs?: string[];
   published_at: string;
+  updated_at?: string;
   takeaways?: string[];
   faqs?: InsightFAQ[];
   how_to?: InsightHowTo;

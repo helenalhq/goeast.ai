@@ -52,7 +52,8 @@ describe("content regression — editorial hygiene", () => {
     for (const f of EDITED) {
       const text = fs.readFileSync(path.join(INSIGHTS_DIR, f), "utf8");
       // Articles are updated on different dates; verify a recent date is present
-      expect(text, f).toMatch(/published_at: 2026-10-(22|29)/);
+      // published_at keeps the original publish date; updated_at has the re-verification date
+      expect(text, f).toMatch(/updated_at: "2026-10-(22|29)"|published_at: 2026-10-(22|29)/);
     }
     for (const f of withSources) {
       const text = fs.readFileSync(path.join(INSIGHTS_DIR, f), "utf8");
