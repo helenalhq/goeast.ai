@@ -18,7 +18,14 @@ export type AnalyticsEvent =
   | "login_succeeded"
   | "upgrade_clicked"
   | "pricing_example_viewed"
-  | "newsletter_subscribed";
+  | "newsletter_subscribed"
+  | "consult_entry_viewed"
+  | "consult_flow_started"
+  | "consult_question_confirmed"
+  | "consult_generation_started"
+  | "consult_generation_completed"
+  | "consult_generation_failed"
+  | "consult_next_step_saved";
 
 type AnalyticsData = Record<string, string | number | boolean>;
 
