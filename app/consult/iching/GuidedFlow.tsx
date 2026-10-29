@@ -214,9 +214,25 @@ export default function GuidedFlow({ hexagrams }: { hexagrams: HexagramData[] })
         aiResponse: accumulated,
         completedAt: new Date().toISOString(),
       };
+      // Always save to sessionStorage (tab-local, works without login)
       saveConsultResult(result);
       clearDraft(CONSULT_FLOW_DRAFT_KEY);
       logEvent("consult_generation_completed");
+      // Also persist to DB for logged-in users (survives tab close / re-login).
+      // Fire-and-forget: DB save failure doesn't block navigation.
+      fetch("/api/consult/result", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionId: result.sessionId,
+          question: result.question,
+          context: result.context,
+          cast: result.cast,
+          aiResponse: result.aiResponse,
+        }),
+      }).catch(() => {
+        // Not logged in or DB unavailable — sessionStorage still has the result
+      });
       router.push(`/consult/iching/result?session=${encodeURIComponent(result.sessionId)}`);
     } catch {
       setError("The oracle could not be reached. Please try again.");

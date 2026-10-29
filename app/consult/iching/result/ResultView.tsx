@@ -49,14 +49,44 @@ export default function ResultView() {
   const [result, setResult] = useState<ConsultResult | null | undefined>(undefined); // undefined = loading
   const [nextStepInput, setNextStepInput] = useState("");
   const [savedFlash, setSavedFlash] = useState(false);
+  const [restoredFromCloud, setRestoredFromCloud] = useState(false);
 
-  /* eslint-disable react-hooks/set-state-in-effect -- one-time hydration from sessionStorage, an external store */
   useEffect(() => {
-    const loaded = loadConsultResult(sessionId);
-    setResult(loaded);
-    setNextStepInput(loaded?.nextStep || "");
+    let cancelled = false;
+
+    async function load() {
+      // 1. Try sessionStorage first (instant, same-tab)
+      const local = loadConsultResult(sessionId);
+      if (local && !cancelled) {
+        setResult(local);
+        setNextStepInput(local.nextStep || "");
+        return;
+      }
+
+      // 2. Try DB restore (cross-tab, cross-session, requires login)
+      try {
+        const res = await fetch(`/api/consult/result?session_id=${encodeURIComponent(sessionId || "")}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.result && !cancelled) {
+            setResult(data.result);
+            setNextStepInput(data.result.nextStep || "");
+            setRestoredFromCloud(true);
+            // Cache locally for subsequent refreshes
+            saveConsultNextStep(data.result.sessionId, data.result.nextStep || "", data.result);
+            return;
+          }
+        }
+      } catch {
+        // Not logged in or network error — fall through
+      }
+
+      if (!cancelled) setResult(null);
+    }
+
+    load();
+    return () => { cancelled = true; };
   }, [sessionId]);
-  /* eslint-enable react-hooks/set-state-in-effect */
 
   if (result === undefined) {
     return <div className="p-6 bg-cream rounded-xl border border-sand text-center text-warm">Loading…</div>;
@@ -67,8 +97,9 @@ export default function ResultView() {
       <div className="p-6 sm:p-8 bg-cream rounded-xl border border-sand text-center">
         <h1 className="font-serif text-2xl text-ink mb-3">This reading is no longer available</h1>
         <p className="text-sm text-ink/70 mb-6">
-          Readings live in this tab only — if it was closed or the reading was started in
-          another tab, you can start a new consultation.
+          {sessionId
+            ? "This reading was not found in your saved results. If you were logged in when it was created, try logging in again."
+            : "No reading session was specified."}
         </p>
         <Link
           href="/consult/iching"
@@ -85,90 +116,110 @@ export default function ResultView() {
     result.cast.transformedNumber !== undefined ? getHexagramByNumber(result.cast.transformedNumber) : null;
   const sections = parseConsultResponse(result.aiResponse);
 
-  const handleSaveNextStep = () => {
-    saveConsultNextStep(result.sessionId, nextStepInput.trim(), { ...result, nextStep: nextStepInput.trim() });
+  const handleSaveNextStep = async () => {
+    const trimmed = nextStepInput.trim();
+    saveConsultNextStep(result.sessionId, trimmed, { ...result, nextStep: trimmed });
     setSavedFlash(true);
     window.setTimeout(() => setSavedFlash(false), 2000);
-    if (nextStepInput.trim()) {
+    if (trimmed) {
       logEvent("consult_next_step_saved");
+      // Also persist to DB if logged in (fire-and-forget)
+      fetch("/api/consult/result", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId: result.sessionId, nextStep: trimmed }),
+      }).catch(() => {});
     }
   };
 
-  // Split the AI interpretation into two perspectives:
-  // Perspective 1 = the main interpretation
-  // Perspective 2 = "going deeper" (Pro) or the latter half of interpretation if no deeper section
+  // Split the AI interpretation into two perspectives
   const interpretationParas = sections.interpretation.split(/\n\s*\n/).filter(Boolean);
   const perspective1 = interpretationParas.slice(0, Math.ceil(interpretationParas.length / 2)).join("\n\n");
   const perspective2 = sections.deeper || interpretationParas.slice(Math.ceil(interpretationParas.length / 2)).join("\n\n");
 
   return (
     <div className="bg-white/50 rounded-xl border border-sand overflow-hidden">
+      {restoredFromCloud && (
+        <div className="px-5 sm:px-6 py-2 bg-cream/60 text-xs text-warm text-center">
+          Restored from your saved readings
+        </div>
+      )}
+
       {/* 1. Question */}
       <Section title="Your Question">
         <p className="text-ink leading-relaxed whitespace-pre-wrap">{result.question}</p>
       </Section>
 
-      {/* 2. Hexagram & Basis — program-generated, not AI */}
+      {/* 2. Hexagram — program-generated, not AI */}
       <Section title="Your Hexagram">
         {hexagram ? (
-          <>
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-8">
-              <div className="text-center sm:text-left">
-                <p className="text-ink font-medium">
-                  Hexagram {hexagram.number} · {hexagram.name} ({hexagram.name_zh})
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-8">
+            <div className="text-center sm:text-left">
+              <p className="text-ink font-medium">
+                Hexagram {hexagram.number} · {hexagram.name} ({hexagram.name_zh})
+              </p>
+              {result.cast.changingLines.length > 0 ? (
+                <p className="text-sm text-ink/70 mt-1">
+                  Changing line{result.cast.changingLines.length > 1 ? "s" : ""}: {result.cast.changingLines.join(", ")}
                 </p>
-                {result.cast.changingLines.length > 0 ? (
-                  <p className="text-sm text-ink/70 mt-1">
-                    Changing line{result.cast.changingLines.length > 1 ? "s" : ""}: {result.cast.changingLines.join(", ")}
-                  </p>
-                ) : (
-                  <p className="text-sm text-warm/60 mt-1">No changing lines — a static cast</p>
-                )}
-                <HexagramLines binary={hexagram.binary} changingLines={result.cast.changingLines} />
-              </div>
-              {transformed && (
-                <div className="text-center sm:text-left sm:border-l sm:border-sand sm:pl-8">
-                  <p className="text-ink/80 text-sm mb-1">Transforms to 之卦</p>
-                  <p className="text-ink font-medium">
-                    Hexagram {transformed.number} · {transformed.name} ({transformed.name_zh})
-                  </p>
-                  <HexagramLines binary={transformed.binary} changingLines={[]} />
-                </div>
+              ) : (
+                <p className="text-sm text-warm/60 mt-1">No changing lines — a static cast</p>
               )}
+              <HexagramLines binary={hexagram.binary} changingLines={result.cast.changingLines} />
             </div>
-          </>
+            {transformed && (
+              <div className="text-center sm:text-left sm:border-l sm:border-sand sm:pl-8">
+                <p className="text-ink/80 text-sm mb-1">Transforms to 之卦</p>
+                <p className="text-ink font-medium">
+                  Hexagram {transformed.number} · {transformed.name} ({transformed.name_zh})
+                </p>
+                <HexagramLines binary={transformed.binary} changingLines={[]} />
+              </div>
+            )}
+          </div>
         ) : (
           <p className="text-ink/70 text-sm">Hexagram {result.cast.hexagramNumber}</p>
         )}
       </Section>
 
-      {/* 3. Traditional Teaching — from structured data only, NOT AI */}
-      <Section title="Classical Text">
-        <p className="text-xs text-warm/70 mb-2">
-          From the I Ching (Book of Changes). Source: GoEast hexagram database.
-        </p>
+      {/* 3. Classical Text — original Chinese + English rendering, clearly sourced */}
+      <Section title="Classical Text 卦辞">
         {hexagram && (
           <>
-            <div className="mb-3">
-              <p className="text-xs font-semibold text-warm mb-1">Judgment 卦辞</p>
-              <blockquote className="pl-4 border-l-2 border-china-red/30 text-ink/90 leading-relaxed italic">
+            <div className="mb-4">
+              <p className="text-xs font-semibold text-warm mb-1">Original Chinese 原文</p>
+              <blockquote className="pl-4 border-l-2 border-china-red/30 text-ink leading-relaxed text-base font-serif">
+                {hexagram.judgment_zh}
+              </blockquote>
+            </div>
+            <div className="mb-4">
+              <p className="text-xs font-semibold text-warm mb-1">
+                English rendering <span className="font-normal text-warm/60">(traditional translation style, GoEast database)</span>
+              </p>
+              <blockquote className="pl-4 border-l-2 border-warm/30 text-ink/80 leading-relaxed italic">
                 {hexagram.judgment_en}
               </blockquote>
-              <p className="text-sm text-warm/60 mt-1">{hexagram.judgment_zh}</p>
+              <p className="text-xs text-warm/50 mt-1">
+                Note: English text is an editorial rendering in the tradition of standard translations
+                (e.g., Wilhelm/Baynes); it is not a verified quotation of any specific published translation.
+              </p>
             </div>
-            <div>
-              <p className="text-xs font-semibold text-warm mb-1">Image 象辞</p>
-              <blockquote className="pl-4 border-l-2 border-warm/30 text-ink/90 leading-relaxed italic">
-                {hexagram.image_en}
-              </blockquote>
-              <p className="text-sm text-warm/60 mt-1">{hexagram.image_zh}</p>
-            </div>
+            {hexagram.image_zh && (
+              <div className="mb-4">
+                <p className="text-xs font-semibold text-warm mb-1">Image 象辞 (Original)</p>
+                <blockquote className="pl-4 border-l-2 border-gold/30 text-ink leading-relaxed text-base font-serif">
+                  {hexagram.image_zh}
+                </blockquote>
+                <p className="text-sm text-warm/70 mt-1 italic">{hexagram.image_en}</p>
+              </div>
+            )}
             {transformed && (
               <div className="mt-4 pt-3 border-t border-sand/50">
-                <p className="text-xs font-semibold text-warm mb-1">Transformed hexagram judgment</p>
-                <blockquote className="pl-4 border-l-2 border-gold/30 text-ink/90 leading-relaxed italic">
-                  {transformed.judgment_en}
+                <p className="text-xs font-semibold text-warm mb-1">Transformed hexagram ({transformed.name_zh}) — Original</p>
+                <blockquote className="pl-4 border-l-2 border-gold/30 text-ink leading-relaxed text-base font-serif">
+                  {transformed.judgment_zh}
                 </blockquote>
+                <p className="text-sm text-warm/70 mt-1 italic">{transformed.judgment_en}</p>
               </div>
             )}
           </>
@@ -181,8 +232,6 @@ export default function ResultView() {
           The following is generated by AI based on your question and hexagram. It is
           material for reflection — not a prediction, not professional advice.
         </p>
-        {/* Merge AI's "traditional teaching" content here (it often contains
-            contextual interpretation mixed with quotes) */}
         {sections.traditional && (
           <div className="mb-3">
             <div className="prose prose-sm prose-warm max-w-none">
@@ -195,7 +244,7 @@ export default function ResultView() {
         </div>
       </Section>
 
-      {/* 5. Two Perspectives — distinct angles on the same situation */}
+      {/* 5. Second Perspective */}
       {(perspective2 || sections.deeper) && (
         <Section title="A Second Perspective">
           <p className="text-xs text-warm/70 mb-3">
@@ -207,14 +256,16 @@ export default function ResultView() {
         </Section>
       )}
 
-      {/* 6. Reflection questions */}
+      {/* 6. Reflection questions — rendered as markdown for bold/lists */}
       {sections.reflection.length > 0 && (
         <Section title="Questions to Sit With">
           <ul className="space-y-2">
             {sections.reflection.map((q, i) => (
               <li key={i} className="text-ink/85 leading-relaxed flex gap-2">
-                <span className="text-warm">•</span>
-                <span>{q}</span>
+                <span className="text-warm flex-shrink-0">•</span>
+                <div className="prose prose-sm prose-warm max-w-none p-0 m-0">
+                  <ReactMarkdown>{q}</ReactMarkdown>
+                </div>
               </li>
             ))}
           </ul>
@@ -224,8 +275,8 @@ export default function ResultView() {
       {/* 7. My Next Step */}
       <Section title="My Next Step">
         <p className="text-xs text-warm/80 mb-2">
-          Optional — write the one small thing you&apos;ll do, in your own words. It stays in
-          this tab.
+          Optional — write the one small thing you&apos;ll do, in your own words.
+          {restoredFromCloud ? " Saved to your account." : " Saved in this tab."}
         </p>
         <div className="flex flex-col sm:flex-row gap-2">
           <input
