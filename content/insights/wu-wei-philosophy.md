@@ -4,7 +4,7 @@ title: "Wu Wei: The Chinese Philosophy of Effortless Action"
 title_zh: "无为： effortless action 的中国哲学"
 philosopher_slug: laozi
 concept_slugs: [wuwei, dao, ziran]
-published_at: 2026-10-22
+published_at: 2026-10-29
 content_zh: |
   无为是道家哲学的核心概念，常被误解为"什么都不做"。实际上，它指的是顺应自然、不强行干预的智慧。
 
@@ -132,6 +132,8 @@ faqs:
 
 # Wu Wei: The Chinese Philosophy of Effortless Action
 
+**Quick answer:** Wu Wei (无为) means acting in alignment with the natural flow of a situation rather than forcing outcomes. It does *not* mean doing nothing, being lazy, or passively letting things happen. It means knowing when to act, when to wait, and how to act with minimum friction.
+
 Wu Wei (无为) is one of the most profound yet misunderstood concepts in Chinese philosophy. Literally translated as "non-action" or "not doing," it actually refers to the wisdom of aligning with the natural flow of life rather than forcing outcomes.
 
 ## What Wu Wei Actually Means
@@ -147,6 +149,22 @@ Wu Wei doesn't mean doing nothing. It means:
 ### The Core Insight
 
 Wu Wei recognizes that sometimes the most effective action is non-action. Like a sailor who adjusts the sails to work with the wind rather than rowing against it.
+
+## What Wu Wei Is NOT
+
+Understanding Wu Wei requires distinguishing it from three common misconceptions:
+
+### Wu Wei is not laziness
+
+Laziness is the absence of effort — doing nothing because you don't want to act. Wu Wei is the *right* effort at the *right* time. A martial artist using an opponent's momentum isn't being lazy; they're acting with precision and timing. Wu Wei requires keen awareness and preparation. When conditions call for swift, decisive action, Wu Wei responds immediately.
+
+### Wu Wei is not passivity or "going with the flow"
+
+"Going with the flow" implies drifting without direction. Wu Wei has a clear sense of purpose but chooses the path of least resistance toward that purpose. A river flows around a rock — it doesn't stop or reverse. It finds the natural opening.
+
+### Wu Wei is not the same as psychological "flow state"
+
+Mihaly Csikszentmihalyi's flow concept and Wu Wei share similarities — both involve effortless engagement — but they are distinct. Flow describes a *psychological state* experienced during immersive activity. Wu Wei is a *philosophical principle* about how to approach all of life, including knowing when not to act at all. Flow is something you stumble into; Wu Wei is something you cultivate. We discuss the overlap further below.
 
 ## The Water Metaphor
 

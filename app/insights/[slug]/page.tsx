@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getInsightWithHtml, getInsightSlugs, getInsightBySlug } from "@/lib/insights";
 import { PHILOSOPHER_SLUGS } from "@/lib/types";
 import OracleCta from "@/components/OracleCta";
+import ZiWeiToolCTA from "@/components/ZiWeiToolCTA";
 import JsonLd from "@/components/JsonLd";
 import CitationSnippet from "@/components/CitationSnippet";
 import EmailCapture from "@/components/EmailCapture";
@@ -218,13 +219,18 @@ export default async function InsightDetailPage({
           return <FAQ items={faqs} jsonLd={generateFAQJsonLd(faqs)} />;
         })()}
 
-        {/* Oracle CTA — only where an Oracle context actually exists */}
+        {/* Experience CTA — matches the article's topic */}
         {insight.philosopher_slug ? (
           <OracleCta
             philosopherSlug={insight.philosopher_slug}
             philosopherName={philosopher?.name}
             philosopherNameZh={philosopher?.name_zh}
             schoolId={philosopher?.school}
+          />
+        ) : insight.slug === "chinese-horoscope-vs-western-astrology" ? (
+          <ZiWeiToolCTA
+            sourceArticle={`/insights/${insight.slug}`}
+            message="Curious what your own Zi Wei chart looks like? Generate one free — it takes less than a minute."
           />
         ) : (
           <div className="mt-12 p-6 bg-cream/60 rounded-sm text-center">

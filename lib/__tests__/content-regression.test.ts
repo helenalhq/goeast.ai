@@ -51,12 +51,13 @@ describe("content regression — editorial hygiene", () => {
     const withSources = ["wechat-pay-foreigner.md", "china-esim-foreigner-guide.md", "china-food-delivery-foreigner-guide.md"];
     for (const f of EDITED) {
       const text = fs.readFileSync(path.join(INSIGHTS_DIR, f), "utf8");
-      expect(text, f).toContain("published_at: 2026-10-22");
+      // Articles are updated on different dates; verify a recent date is present
+      expect(text, f).toMatch(/published_at: 2026-10-(22|29)/);
     }
     for (const f of withSources) {
       const text = fs.readFileSync(path.join(INSIGHTS_DIR, f), "utf8");
       expect(text, f).toMatch(/## Sources\n/);
-      expect(text, f).toContain("checked 2026-10-22");
+      expect(text, f).toMatch(/checked 2026-10-(22|29)/);
     }
   });
 

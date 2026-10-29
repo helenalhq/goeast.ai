@@ -19,6 +19,7 @@ client event — the browser never claims a payment happened.
 | Enter Oracle with a cast | `oracle_opened_with_hexagram` | `{mode: "cast"\|"study", source_article?}` | `OracleOverlay` mount effect (context restored); `source_article` present only when the visit came from an article CTA (one-time, cleared after read) |
 | Hexagram article study CTA click | `hexagram_study_clicked` | `{hexagram, source_article, cta_position}` | `ArticleStudyCTA` on gen-mountain / kun-oppression pages |
 | Try I Ching entry click | `try_iching_clicked` | `{source: "pricing"\|"writing-habit-example"}` | `TryIChingLink` on /pricing and /examples/iching-writing-habit |
+| Zi Wei tool entry click | `ziwei_tool_clicked` | `{source_article, cta_position}` | `ZiWeiToolCTA` on astrology-related insight articles |
 | Consultation starts | `oracle_consult_started` | `{philosopher, with_context}` | `OracleOverlay.consult` (post login-gate) |
 | Reading delivered | `oracle_reading_delivered` | `{philosopher}` | `OracleOverlay` SSE `[DONE]` (success only) |
 | Quota exhausted | `oracle_limit_reached` | `{subscribed}` | `OracleOverlay` LIMIT_REACHED branch |
