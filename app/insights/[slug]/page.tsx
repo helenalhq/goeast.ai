@@ -4,6 +4,7 @@ import { getInsightWithHtml, getInsightSlugs, getInsightBySlug } from "@/lib/ins
 import { PHILOSOPHER_SLUGS } from "@/lib/types";
 import OracleCta from "@/components/OracleCta";
 import ZiWeiToolCTA from "@/components/ZiWeiToolCTA";
+import ArticleConsultCTA from "@/components/ArticleConsultCTA";
 import JsonLd from "@/components/JsonLd";
 import CitationSnippet from "@/components/CitationSnippet";
 import EmailCapture from "@/components/EmailCapture";
@@ -173,6 +174,23 @@ export default async function InsightDetailPage({
 
         {/* Content */}
         <div className="prose prose-warm max-w-none mb-10" dangerouslySetInnerHTML={{ __html: insight.content }} />
+
+        {/* In-article consultation CTA — only on high-traffic philosophy articles */}
+        {(insight.slug === "confucius-leadership" || insight.slug === "taoism-vs-confucianism") && (
+          <ArticleConsultCTA
+            sourceArticle={`/insights/${insight.slug}`}
+            title={
+              insight.slug === "confucius-leadership"
+                ? "Facing a leadership decision right now?"
+                : "Wondering how these philosophies apply to your life?"
+            }
+            subtitle={
+              insight.slug === "confucius-leadership"
+                ? "Bring a real challenge to the I Ching Oracle. Get a classical teaching, an AI interpretation, and two perspectives — in about two minutes."
+                : "Bring a real question about balance, timing, or a decision you're weighing. Get a structured I Ching reading with classical text and AI interpretation."
+            }
+          />
+        )}
 
         {/* Philosopher link */}
         {philosopher && (

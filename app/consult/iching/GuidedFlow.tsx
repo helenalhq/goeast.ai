@@ -298,9 +298,15 @@ export default function GuidedFlow({ hexagrams }: { hexagrams: HexagramData[] })
           className="w-full p-4 bg-white/70 border border-sand rounded-lg text-ink leading-relaxed focus:outline-none focus:border-warm"
           placeholder={assembled}
         />
-        <p className="text-xs text-warm mt-1 mb-5">
+        <p className="text-xs text-warm mt-1 mb-3">
           {finalQuestion.trim().length}/500 characters
         </p>
+        <div className="mb-5 p-3 bg-sand/20 rounded-lg text-xs text-warm leading-relaxed">
+          <strong>What happens next:</strong> The coins are cast, then you&apos;ll receive a classical
+          teaching, an AI interpretation, and reflection questions. AI reading requires a free
+          account (3/day free, Pro 10/day). You&apos;ll be prompted to log in if needed — your
+          question and answers are preserved.
+        </div>
         {error && (
           <div className="mb-5 p-4 bg-china-red/10 border border-china-red/30 rounded-lg text-sm text-china-red">
             {error}
