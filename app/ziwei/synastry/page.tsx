@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import ZiweiSynastry from "@/components/ZiweiSynastry";
+import SynastryHistoryList from "@/components/SynastryHistoryList";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -106,6 +107,9 @@ export default function ZiweiSynastryPage() {
       <section className="px-4 pb-12">
         <ZiweiSynastry />
       </section>
+
+      {/* History — for logged-in users */}
+      <SynastryHistoryList />
 
       {/* FAQ */}
       <section className="max-w-3xl mx-auto px-4 pb-16">

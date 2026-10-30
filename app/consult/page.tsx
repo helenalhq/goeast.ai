@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import EntryViewTracker from "./EntryViewTracker";
 import MyReadings from "./MyReadings";
+import SynastryHistoryList from "@/components/SynastryHistoryList";
 
 export const metadata: Metadata = {
   title: "Consult — Organize a Question | GoEast.ai",
@@ -92,6 +93,7 @@ export default function ConsultPage() {
 
       {/* Recent readings for logged-in users — minimal history entry point */}
       <MyReadings />
+      <SynastryHistoryList />
     </div>
   );
 }
