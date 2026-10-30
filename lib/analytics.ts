@@ -14,6 +14,7 @@ export type AnalyticsEvent =
   | "ziwei_chart_generated"
   | "ziwei_reading_started"
   | "synastry_analysis_started"
+  | "synastry_analysis_completed"
   | "login_page_viewed_with_target"
   | "login_succeeded"
   | "upgrade_clicked"

@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import {
+  newSynastrySessionId,
+  saveSynastryResult,
+  persistSynastryResult,
+} from "@/lib/synastry-session";
+import type { SynastryChart, SynastryPersonInput } from "@/lib/synastry-session";
 import { getHourLabel } from "@/lib/ziwei-prompts";
 import ReactMarkdown from "react-markdown";
 import Link from "next/link";
@@ -24,10 +31,13 @@ const BIRTH_HOURS = Array.from({ length: 12 }, (_, i) => ({
   label_zh: getHourLabel(i, "zh"),
 }));
 
-interface PersonInput {
-  birthDate: string;
-  birthHour: number;
-  gender: "male" | "female";
+/** -1 = explicitly "unknown"; null = no selection yet. Both block analysis. */
+const HOUR_UNKNOWN = -1;
+
+type PersonInput = SynastryPersonInput;
+
+function isHourUnknown(hour: number | null): boolean {
+  return hour === null || hour === HOUR_UNKNOWN;
 }
 
 function PersonForm({
@@ -57,16 +67,34 @@ function PersonForm({
         <div>
           <label className="block text-xs text-warm mb-1">Birth Hour · 出生时辰</label>
           <select
-            value={person.birthHour}
-            onChange={(e) => onChange({ ...person, birthHour: Number(e.target.value) })}
+            value={person.birthHour === null ? "" : person.birthHour}
+            onChange={(e) =>
+              onChange({
+                ...person,
+                birthHour: e.target.value === "" ? null : Number(e.target.value),
+              })
+            }
             className="w-full px-3 py-2 text-sm border border-sand rounded-lg focus:outline-none focus:border-china-red"
           >
+            <option value="">Select hour… / 请选择时辰</option>
             {BIRTH_HOURS.map((h) => (
               <option key={h.value} value={h.value}>
                 {h.label_zh} ({h.label_en})
               </option>
             ))}
+            <option value={HOUR_UNKNOWN}>Unknown / 未知时辰</option>
           </select>
+          <p className="mt-1 text-[11px] leading-snug text-warm/70">
+            Use the local time at the birth place. The system uses the Chinese double-hour (时辰) system.
+            请使用出生地当地时间，系统按中国传统时辰排盘。
+          </p>
+          {isHourUnknown(person.birthHour) && (
+            <p className="mt-2 p-2 text-xs leading-snug text-red-700 bg-red-50 border border-red-200 rounded-lg">
+              Birth hour is required for accurate chart calculation. Zi Wei Dou Shu places stars based on the
+              two-hour Chinese time period — without it, the Life Palace position and all star placements may be
+              wrong. 出生时辰为排盘必需，缺失时命宫位置与星曜布局可能有误。
+            </p>
+          )}
         </div>
         <div>
           <label className="block text-xs text-warm mb-1">Gender · 性别</label>
@@ -103,8 +131,9 @@ function PersonForm({
 const SYNASTRY_DRAFT_KEY = "ziwei-synastry";
 
 export default function ZiweiSynastry() {
-  const [personA, setPersonA] = useState<PersonInput>({ birthDate: "", birthHour: 0, gender: "male" });
-  const [personB, setPersonB] = useState<PersonInput>({ birthDate: "", birthHour: 0, gender: "female" });
+  const router = useRouter();
+  const [personA, setPersonA] = useState<PersonInput>({ birthDate: "", birthHour: null, gender: "male" });
+  const [personB, setPersonB] = useState<PersonInput>({ birthDate: "", birthHour: null, gender: "female" });
   const [relationshipType, setRelationshipType] = useState<RelationshipType>("romantic");
   const [language, setLanguage] = useState<"en" | "zh" | "both">("both");
   const [interpretation, setInterpretation] = useState("");
@@ -154,11 +183,40 @@ export default function ZiweiSynastry() {
       return;
     }
 
+    if (isHourUnknown(personA.birthHour) || isHourUnknown(personB.birthHour)) {
+      setError(
+        "Birth hour is required for both persons — without it the chart cannot be calculated accurately. 请提供双方的出生时辰。"
+      );
+      return;
+    }
+
     setLoading(true);
     setError("");
     setInterpretation("");
 
     logEvent("synastry_analysis_started");
+
+    // Finalize: persist locally, mirror to the account DB (fire-and-forget),
+    // then move to the dedicated result page.
+    const finalize = (fullText: string, cA: SynastryChart | null, cB: SynastryChart | null) => {
+      const sessionId = newSynastrySessionId();
+      const result = {
+        sessionId,
+        personA,
+        personB,
+        relationshipType,
+        language,
+        chartA: cA,
+        chartB: cB,
+        aiResponse: fullText,
+        completedAt: new Date().toISOString(),
+      };
+      saveSynastryResult(result);
+      // Fire-and-forget — the result page falls back to sessionStorage if this fails.
+      persistSynastryResult(result);
+      logEvent("synastry_analysis_completed");
+      router.push(`/ziwei/synastry/result?session=${sessionId}`);
+    };
 
     try {
       const response = await fetch("/api/ziwei/synastry", {
@@ -193,6 +251,9 @@ export default function ZiweiSynastry() {
 
       const decoder = new TextDecoder();
       let buffer = "";
+      let fullText = "";
+      let localChartA: SynastryChart | null = null;
+      let localChartB: SynastryChart | null = null;
 
       while (true) {
         const { done, value } = await reader.read();
@@ -206,12 +267,16 @@ export default function ZiweiSynastry() {
           if (!line.startsWith("data: ")) continue;
           const data = line.slice(6);
           if (data === "[DONE]") {
-            setLoading(false);
+            finalize(fullText, localChartA, localChartB);
             return;
           }
           try {
             const parsed = JSON.parse(data);
-            if (parsed.type === "content" && parsed.content) {
+            if (parsed.type === "charts") {
+              localChartA = parsed.dataA ?? null;
+              localChartB = parsed.dataB ?? null;
+            } else if (parsed.type === "content" && parsed.content) {
+              fullText += parsed.content;
               setInterpretation((prev) => prev + parsed.content);
             } else if (parsed.type === "error") {
               setError(parsed.error);
@@ -222,6 +287,11 @@ export default function ZiweiSynastry() {
             // Skip unparseable
           }
         }
+      }
+      // Stream ended without an explicit [DONE] — still save what we have.
+      if (fullText) {
+        finalize(fullText, localChartA, localChartB);
+        return;
       }
       setLoading(false);
     } catch (err) {
@@ -322,7 +392,13 @@ export default function ZiweiSynastry() {
       <div className="text-center mb-8">
         <button
           onClick={handleAnalyze}
-          disabled={loading || !personA.birthDate || !personB.birthDate}
+          disabled={
+            loading ||
+            !personA.birthDate ||
+            !personB.birthDate ||
+            isHourUnknown(personA.birthHour) ||
+            isHourUnknown(personB.birthHour)
+          }
           className="px-8 py-3 bg-china-red text-white rounded-full font-medium hover:bg-china-red/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? "Analyzing... · 分析中..." : "Start Synastry · 开始合盘"}

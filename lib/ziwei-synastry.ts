@@ -89,6 +89,25 @@ export function getSynastrySystemPrompt(language: string): string {
   return `${SYNASTRY_SYSTEM_PROMPT}\n\n---\n\nPlease provide the reading in BOTH English and Chinese (双语解读). Use English first, then Chinese.`;
 }
 
+/**
+ * Brightness (亮度) mapping — iztro returns Chinese values that the AI may
+ * mistranslate (e.g., "不" → "not"). Standardize to bilingual notation.
+ */
+export const BRIGHTNESS_MAP: Record<string, string> = {
+  "庙": "庙 (Miao — Brightest)",
+  "旺": "旺 (Wang — Prosperous)",
+  "得": "得 (De — Gaining)",
+  "利": "利 (Li — Beneficial)",
+  "平": "平 (Ping — Neutral)",
+  "不": "不 (Bu — Dull)",
+  "陷": "陷 (Xian — Fallen)",
+};
+
+export function mapBrightness(raw: string | undefined | null): string {
+  if (!raw) return "";
+  return BRIGHTNESS_MAP[raw] || raw;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function summarizePalaces(astrolabe: any): string {
   if (!astrolabe?.palaces) return "No palace data available";
@@ -96,7 +115,7 @@ function summarizePalaces(astrolabe: any): string {
   return astrolabe.palaces.map((p: any) => {
     const majorStars = (p.majorStars || [])
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .map((s: any) => `${s.name}${s.brightness ? `(${s.brightness})` : ""}${s.mutagen ? `[${s.mutagen}]` : ""}`)
+      .map((s: any) => `${s.name}${mapBrightness(s.brightness) ? `(${mapBrightness(s.brightness)})` : ""}${s.mutagen ? `[${s.mutagen}]` : ""}`)
       .join(", ");
     return `${p.name}(${p.heavenlyStem}${p.earthlyBranch}): ${majorStars || "无主星"}`;
   }).join("\n");
