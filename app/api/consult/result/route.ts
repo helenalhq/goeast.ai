@@ -16,9 +16,9 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { sessionId, question, context, cast, aiResponse } = body;
+  const { sessionId, question, context, cast: castData, aiResponse } = body;
 
-  if (!sessionId || !question || !cast || !aiResponse) {
+  if (!sessionId || !question || !castData || !aiResponse) {
     return NextResponse.json({ error: "sessionId, question, cast, and aiResponse are required" }, { status: 400 });
   }
 
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
       user_id: user.id,
       question,
       context: context || {},
-      cast,
+      cast_data: castData,
       ai_response: aiResponse,
       updated_at: new Date().toISOString(),
     },
@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
       sessionId: data.session_id,
       question: data.question,
       context: data.context,
-      cast: data.cast,
+      cast: data.cast_data,
       aiResponse: data.ai_response,
       completedAt: data.created_at,
       nextStep: data.next_step || undefined,

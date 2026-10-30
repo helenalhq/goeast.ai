@@ -1,5 +1,6 @@
 -- Consultation results for logged-in users — minimal persistence.
 -- Ownership enforced by RLS: only the owner can read/write.
+-- Note: "cast" is a PostgreSQL reserved word, so the column is named "cast_data".
 
 CREATE TABLE consult_results (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -7,7 +8,7 @@ CREATE TABLE consult_results (
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   question TEXT NOT NULL,
   context JSONB NOT NULL DEFAULT '{}',
-  cast JSONB NOT NULL DEFAULT '{}',
+  cast_data JSONB NOT NULL DEFAULT '{}',
   ai_response TEXT NOT NULL,
   next_step TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -15,7 +16,6 @@ CREATE TABLE consult_results (
 );
 
 CREATE INDEX idx_consult_results_user ON consult_results(user_id, created_at DESC);
-CREATE UNIQUE INDEX idx_consult_results_session ON consult_results(session_id);
 
 ALTER TABLE consult_results ENABLE ROW LEVEL SECURITY;
 
