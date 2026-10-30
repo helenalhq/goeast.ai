@@ -233,6 +233,29 @@ export default function ZiweiSynastry() {
 
   return (
     <div className="max-w-4xl mx-auto">
+      {/* Delivery Preview — show before input so users know what they'll get */}
+      <div className="mb-8 p-5 bg-cream rounded-xl border border-sand">
+        <h3 className="font-serif text-lg text-ink mb-2">What Your Report Includes</h3>
+        <ul className="text-sm text-warm space-y-1.5 mb-3">
+          <li className="flex gap-2"><span className="text-china-red">•</span> How you interact — grounded in both charts&apos; Life Palace stars</li>
+          <li className="flex gap-2"><span className="text-china-red">•</span> Communication differences — what each chart suggests about expression</li>
+          <li className="flex gap-2"><span className="text-china-red">•</span> Where friction can arise — specific scenarios, not vague warnings</li>
+          <li className="flex gap-2"><span className="text-china-red">•</span> One actionable step for each person</li>
+          <li className="flex gap-2"><span className="text-china-red">•</span> Three questions to discuss together</li>
+        </ul>
+        <div className="flex flex-wrap gap-3 items-center">
+          <Link
+            href="/ziwei/synastry/example"
+            className="text-sm text-china-red hover:underline"
+          >
+            See a completed example →
+          </Link>
+          <span className="text-xs text-warm/60">
+            Free account required · 3 free readings/day · chart casting is free, no login needed
+          </span>
+        </div>
+      </div>
+
       {/* Input Forms */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <PersonForm label="Person A · 甲方" person={personA} onChange={setPersonA} />
