@@ -170,7 +170,7 @@ export default function SynastryResultView() {
   const relLabel = RELATIONSHIP_LABELS[result.relationshipType as RelationshipType];
 
   return (
-    <div className="bg-white/50 rounded-xl border border-sand overflow-hidden">
+    <div className="bg-paper-panel rounded-xl border border-sand overflow-hidden shadow-sm">
       {restoredFromCloud && (
         <div className="px-5 sm:px-6 py-2 bg-cream/60 text-xs text-warm text-center">
           Restored from your saved readings · 已从账户恢复

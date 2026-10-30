@@ -3,196 +3,264 @@ import Link from "next/link";
 export default function Hero() {
   return (
     <section
-      className="relative text-center overflow-hidden"
+      className="relative"
       style={{
         minHeight: 520,
         display: "flex",
         alignItems: "center",
-        justifyContent: "center",
-        background: "linear-gradient(170deg, #1a1410 0%, #2c1810 50%, #3d2518 100%)",
+        background: "#101923",
+        overflow: "hidden",
+        maxWidth: "100%",
       }}
     >
-      {/* SVG Mountain Silhouettes */}
+      {/* Subtle radial glow — static, not animated */}
+      <div
+        style={{
+          position: "absolute",
+          top: "-20%",
+          right: "-10%",
+          width: "60%",
+          height: "80%",
+          background:
+            "radial-gradient(ellipse, rgba(142,109,69,0.08) 0%, transparent 70%)",
+          pointerEvents: "none",
+        }}
+      />
+
+      {/* SVG Mountain Silhouettes — kept from original, adjusted for deep blue */}
       <div
         style={{
           position: "absolute",
           bottom: 0,
           left: 0,
           width: "100%",
-          height: "55%",
+          height: "45%",
           pointerEvents: "none",
+          overflow: "hidden",
         }}
       >
         <svg
           viewBox="0 0 1920 600"
-          preserveAspectRatio="xMidYMax slice"
+          preserveAspectRatio="none"
           fill="none"
-          style={{ width: "100%", height: "100%" }}
+          style={{ width: "100%", height: "100%", display: "block" }}
         >
-          {/* Far mountains */}
           <path
-            d="M0,380 Q120,220 320,310 Q480,180 680,290 Q840,160 1020,270 Q1180,190 1340,260 Q1500,170 1680,250 Q1800,200 1920,240 L1920,600 L0,600Z"
-            fill="white"
-            opacity="0.04"
+            d="M0 600V280L180 180L360 260L520 140L700 240L880 180L1060 280L1240 200L1420 260L1600 160L1780 240L1920 200V600H0Z"
+            fill="#0D151E"
           />
-          {/* Mid mountains */}
           <path
-            d="M0,440 Q200,320 420,390 Q560,280 760,360 Q920,290 1100,350 Q1260,300 1420,340 Q1600,280 1780,330 Q1860,310 1920,320 L1920,600 L0,600Z"
-            fill="white"
-            opacity="0.055"
+            d="M0 600V380L220 280L420 360L580 240L760 340L940 280L1120 380L1300 300L1480 360L1660 260L1840 320L1920 300V600H0Z"
+            fill="#0A111A"
           />
-          {/* Near mountains */}
           <path
-            d="M0,500 Q160,420 360,460 Q520,390 700,440 Q860,400 1040,430 Q1200,390 1380,420 Q1540,400 1700,430 Q1820,410 1920,420 L1920,600 L0,600Z"
-            fill="white"
-            opacity="0.07"
-          />
-          {/* Mist layer */}
-          <path
-            d="M0,540 Q400,510 800,530 Q1200,500 1600,520 Q1800,510 1920,520 L1920,600 L0,600Z"
-            fill="white"
-            opacity="0.03"
+            d="M0 600V480L240 400L480 460L660 360L840 440L1020 380L1200 480L1380 400L1560 460L1740 380L1920 440V600H0Z"
+            fill="#070E16"
           />
         </svg>
       </div>
 
-      {/* Content */}
+      {/* Content — left text + right hexagram card on desktop; stacked on mobile */}
       <div
+        className="relative"
         style={{
-          position: "relative",
-          zIndex: 2,
-          padding: "80px 24px 100px",
-          maxWidth: 720,
+          maxWidth: 1152,
+          margin: "0 auto",
+          padding: "64px 32px",
+          width: "100%",
+          display: "grid",
+          gridTemplateColumns: "1fr auto",
+          gap: 64,
+          alignItems: "center",
         }}
       >
-        {/* Eyebrow — mono small text */}
-        <p
-          className="font-mono"
-          style={{
-            fontSize: 11,
-            letterSpacing: "0.2em",
-            textTransform: "uppercase",
-            color: "rgba(255,255,255,0.35)",
-            marginBottom: 24,
-          }}
-        >
-          Sophie&apos;s Journey East · 苏菲的东方之旅
-        </p>
-
-        {/* English main title — serif large */}
-        <h1
-          className="font-serif"
-          style={{
-            fontSize: "clamp(34px, 5.5vw, 56px)",
-            fontWeight: 700,
-            color: "#fff",
-            lineHeight: 1.2,
-            marginBottom: 8,
-            letterSpacing: "0.02em",
-          }}
-        >
-          AI Chinese Philosophy &amp; Practical China Guides
-        </h1>
-
-        {/* Chinese subtitle — serif, subdued */}
-        <p
-          className="font-serif"
-          style={{
-            fontSize: "clamp(18px, 3vw, 28px)",
-            fontWeight: 400,
-            color: "rgba(255,255,255,0.45)",
-            marginBottom: 28,
-          }}
-        >
-          人工智能驱动的中国哲学与中国实用指南
-        </p>
-
-        {/* Functional description — English primary */}
-        <p
-          style={{
-            fontSize: 17,
-            color: "rgba(255,255,255,0.75)",
-            lineHeight: 1.8,
-            marginBottom: 12,
-            maxWidth: 560,
-            marginLeft: "auto",
-            marginRight: "auto",
-          }}
-        >
-          AI-powered Chinese philosophy exploration — from Confucius to the I Ching,
-          <br />
-          3,000 years of thought, reawakened through AI conversation.
-        </p>
-
-        {/* Poetic sub-text — Chinese secondary */}
-        <p
-          className="font-serif"
-          style={{
-            fontSize: 14,
-            color: "rgba(255,255,255,0.30)",
-            fontStyle: "italic",
-            marginBottom: 36,
-          }}
-        >
-          跨越书页，一位少女东行，遇见塑造文明的哲人。
-        </p>
-
-        {/* Buttons — rounded-sm */}
-        <div
-          style={{
-            display: "flex",
-            gap: 16,
-            justifyContent: "center",
-            flexWrap: "wrap",
-          }}
-        >
-          <a
-            href="/consult"
+        {/* Left: text content */}
+        <div>
+          {/* Eyebrow */}
+          <p
             style={{
-              display: "inline-block",
-              padding: "12px 28px",
-              background: "#c0392b",
-              color: "#fff",
-              fontSize: 15,
+              fontSize: 13,
+              letterSpacing: "0.15em",
+              color: "#8e6d45",
+              textTransform: "uppercase",
+              marginBottom: 16,
               fontWeight: 500,
-              borderRadius: 4,
-              textDecoration: "none",
             }}
           >
-            Get an I Ching Reading →
-          </a>
-          <Link
-            href="/skills"
+            东方观象台 · Observatory
+          </p>
+
+          {/* H1 — SEO preserved */}
+          <h1
+            className="font-serif"
+            style={{
+              fontSize: "clamp(32px, 4.5vw, 48px)",
+              fontWeight: 700,
+              color: "#F2EDE4",
+              lineHeight: 1.3,
+              marginBottom: 12,
+              letterSpacing: "0.01em",
+            }}
+          >
+            AI Chinese Philosophy &amp; Practical China Guides
+          </h1>
+
+          {/* Chinese subtitle */}
+          <p
+            className="font-serif"
+            style={{
+              fontSize: "clamp(16px, 2.5vw, 22px)",
+              fontWeight: 400,
+              color: "#A8B3BE",
+              marginBottom: 28,
+            }}
+          >
+            人工智能驱动的中国哲学与中国实用指南
+          </p>
+
+          {/* Description */}
+          <p
+            style={{
+              fontSize: 16,
+              color: "#A8B3BE",
+              lineHeight: 1.7,
+              marginBottom: 32,
+              maxWidth: 480,
+            }}
+          >
+            I Ching consultation, Zi Wei Dou Shu natal charts, and relationship
+            synastry — grounded in 3,000 years of Chinese philosophy, interpreted by AI.
+          </p>
+
+          {/* Primary CTA */}
+          <div
+            style={{
+              display: "flex",
+              gap: 16,
+              flexWrap: "wrap",
+            }}
+          >
+            <a
+              href="/consult"
+              style={{
+                display: "inline-block",
+                padding: "16px 36px",
+                background: "#B84938",
+                color: "#fff",
+                fontSize: 16,
+                fontWeight: 500,
+                borderRadius: 8,
+                textDecoration: "none",
+                transition: "background 120ms ease-out",
+              }}
+            >
+              Begin a Free Consultation →
+            </a>
+            <Link
+              href="/insights"
+              style={{
+                display: "inline-block",
+                padding: "16px 24px",
+                background: "transparent",
+                color: "#A8B3BE",
+                fontSize: 15,
+                fontWeight: 400,
+                borderRadius: 8,
+                border: "1px solid rgba(168,179,190,0.25)",
+                textDecoration: "none",
+                transition: "border-color 120ms ease-out, color 120ms ease-out",
+              }}
+            >
+              Explore Guides
+            </Link>
+          </div>
+
+          {/* Free quota note */}
+          <p
+            style={{
+              fontSize: 13,
+              color: "#A8B3BE",
+              marginTop: 14,
+            }}
+          >
+            Free · 3 readings per day · No coins needed
+          </p>
+        </div>
+
+        {/* Right: example hexagram card (hidden on mobile — stacked layout puts it below CTA) */}
+        <div
+          className="hidden md:block"
+          style={{
+            background: "#192633",
+            border: "1px solid #253548",
+            borderRadius: 12,
+            padding: 32,
+            textAlign: "center",
+            minWidth: 200,
+          }}
+        >
+          <p
+            className="font-serif"
+            style={{ fontSize: 18, color: "#F2EDE4", marginBottom: 4 }}
+          >
+            恒 Heng · Duration
+          </p>
+          <p style={{ fontSize: 12, color: "#A8B3BE", marginBottom: 16 }}>
+            Hexagram 32 · Example
+          </p>
+          <div
+            style={{
+              fontFamily: '"JetBrains Mono", monospace',
+              fontSize: 22,
+              lineHeight: 1.8,
+              color: "#F2EDE4",
+            }}
+          >
+            ━━━━━
+            <br />
+            ━ ━ ━
+            <br />
+            <span style={{ color: "#B84938", fontWeight: "bold" }}>━━━━━ ◦</span>
+            <br />
+            ━━━━━
+            <br />
+            ━ ━ ━
+            <br />
+            ━ ━ ━
+          </div>
+          <span
             style={{
               display: "inline-block",
-              padding: "12px 28px",
-              background: "transparent",
-              color: "rgba(255,255,255,0.65)",
-              fontSize: 15,
-              fontWeight: 400,
+              marginTop: 16,
+              fontSize: 11,
+              padding: "2px 8px",
               borderRadius: 4,
-              border: "1px solid rgba(255,255,255,0.20)",
-              textDecoration: "none",
+              background: "rgba(142,109,69,0.2)",
+              color: "#8e6d45",
+              fontWeight: 500,
             }}
           >
-            Browse Skills
-          </Link>
+            示例 Example
+          </span>
         </div>
       </div>
 
-      {/* Hero bottom fade to cream */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: 120,
-          background: "linear-gradient(to bottom, transparent, #faf5ef)",
-          zIndex: 1,
-          pointerEvents: "none",
-        }}
-      />
+
+      {/* Responsive grid override for mobile */}
+      <style>{`
+        @media (max-width: 767px) {
+          section > div.relative {
+            grid-template-columns: 1fr !important;
+            gap: 24px !important;
+            padding: 48px 16px 72px !important;
+            max-width: 100% !important;
+            overflow-x: hidden !important;
+          }
+          section {
+            min-height: auto !important;
+          }
+        }
+      `}</style>
     </section>
   );
 }

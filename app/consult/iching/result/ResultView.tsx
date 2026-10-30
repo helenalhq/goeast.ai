@@ -32,14 +32,14 @@ function HexagramLines({ binary, changingLines }: { binary: string; changingLine
       {rows.reverse().map((r, i) => (
         <div key={i} className="flex items-center gap-1">
           {r.yang ? (
-            <span className="block h-1.5 w-16 bg-ink rounded-sm" />
+            <span className="block h-1.5 w-16 bg-paper-ink rounded-sm" />
           ) : (
             <>
-              <span className="block h-1.5 w-7 bg-ink rounded-sm" />
+              <span className="block h-1.5 w-7 bg-paper-ink rounded-sm" />
               <span className="block h-1.5 w-7 bg-ink rounded-sm ml-2" />
             </>
           )}
-          {r.changing && <span className="text-china-red text-xs font-bold ml-1">◦</span>}
+          {r.changing && <span className="text-cinnabar text-xs font-bold ml-1">◦</span>}
         </div>
       ))}
     </div>
@@ -202,7 +202,7 @@ export default function ResultView() {
   const perspective2 = sections.deeper || interpretationParas.slice(Math.ceil(interpretationParas.length / 2)).join("\n\n");
 
   return (
-    <div className="bg-white/50 rounded-xl border border-sand overflow-hidden">
+    <div className="bg-paper-panel rounded-xl border border-sand overflow-hidden shadow-sm">
       {restoredFromCloud && (
         <div className="px-5 sm:px-6 py-2 bg-cream/60 text-xs text-warm text-center">
           Restored from your saved readings

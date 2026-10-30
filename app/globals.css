@@ -4,6 +4,7 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
@@ -21,4 +22,93 @@ h1, h2, h3 {
   display: block;
   overflow-x: auto;
   max-width: 100%;
+}
+
+/* ========================================
+   Observatory V1 — Animation & Interaction
+   ======================================== */
+
+/* Hexagram line reveal — subtle fade-in, skippable */
+@keyframes hex-reveal {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hex-reveal {
+  animation: hex-reveal 150ms ease-out both;
+}
+
+/* Panel/card hover elevation */
+.card-hover {
+  transition: border-color 180ms ease-out, box-shadow 180ms ease-out;
+}
+.card-hover:hover {
+  box-shadow: 0 4px 12px rgba(16, 25, 35, 0.08);
+}
+
+/* Focus visibility — consistent with cinnabar accent */
+:focus-visible {
+  outline: 2px solid #B84938;
+  outline-offset: 2px;
+}
+
+/* Collapsible chart data — smooth rotate on details marker */
+details.chart-data summary {
+  list-style: none;
+  cursor: pointer;
+  transition: color 120ms ease-out;
+}
+details.chart-data summary::-webkit-details-marker {
+  display: none;
+}
+details.chart-data summary::before {
+  content: "▸";
+  display: inline-block;
+  margin-right: 8px;
+  color: #5C6B77;
+  transition: transform 200ms ease-in-out;
+}
+details.chart-data[open] summary::before {
+  transform: rotate(90deg);
+}
+details.chart-data summary:hover {
+  color: #B84938;
+}
+
+/* Step indicator pulse (only on active dot) */
+@keyframes step-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(184, 73, 56, 0.3); }
+  50% { box-shadow: 0 0 0 4px rgba(184, 73, 56, 0.15); }
+}
+.step-dot-active {
+  animation: step-pulse 2s ease-in-out infinite;
+}
+
+/* Saved status flash */
+@keyframes saved-flash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+.saved-flash {
+  animation: saved-flash 400ms ease-in-out;
+}
+
+/* Reduced motion — disable all animations, keep information accessible */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .hex-reveal {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+
+  .step-dot-active {
+    animation: none;
+  }
 }

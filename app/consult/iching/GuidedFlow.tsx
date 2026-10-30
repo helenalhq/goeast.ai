@@ -284,7 +284,13 @@ export default function GuidedFlow({ hexagrams }: { hexagrams: HexagramData[] })
   if (phase === "confirm") {
     return (
       <div className="p-6 sm:p-8 bg-cream rounded-xl border border-sand">
-        <p className="text-xs uppercase tracking-widest text-warm mb-2">Step 4 · Confirm</p>
+        <div className="flex items-center gap-2 mb-3">
+          {[1,2,3].map(n => (
+            <span key={n} className="inline-block w-2.5 h-2.5 rounded-full bg-jade" />
+          ))}
+          <span className="w-2.5 h-2.5 rounded-full bg-cinnabar step-dot-active inline-block" />
+          <span className="text-xs text-warm ml-2">Step 4 · Confirm</span>
+        </div>
         <h1 className="font-serif text-2xl text-ink mb-1">This is the question you&apos;ll ask</h1>
         <p className="text-sm text-ink/70 mb-5">
           Edit anything below, then cast the coins. Starting the reading uses one of your
@@ -356,7 +362,12 @@ export default function GuidedFlow({ hexagrams }: { hexagrams: HexagramData[] })
 
       {step === 1 && (
         <div>
-          <p className="text-xs uppercase tracking-widest text-warm mb-2">Step 1 of 3</p>
+          <div className="flex items-center gap-2 mb-3">
+          {[1,2,3].map(n => (
+            <span key={n} className={`inline-block w-2.5 h-2.5 rounded-full transition-colors ${n === 1 ? "bg-cinnabar step-dot-active" : n < 1 ? "bg-jade" : "bg-sand"}`} />
+          ))}
+          <span className="text-xs text-warm ml-2">Step 1 of 3</span>
+        </div>
           <h1 className="font-serif text-2xl text-ink mb-5">What would you like to discuss?</h1>
           <div className="grid gap-3 sm:grid-cols-2 mb-5">
             {EXAMPLE_TOPICS.map((t) => (
@@ -387,7 +398,12 @@ export default function GuidedFlow({ hexagrams }: { hexagrams: HexagramData[] })
 
       {step === 2 && (
         <div>
-          <p className="text-xs uppercase tracking-widest text-warm mb-2">Step 2 of 3</p>
+          <div className="flex items-center gap-2 mb-3">
+          {[1,2,3].map(n => (
+            <span key={n} className={`inline-block w-2.5 h-2.5 rounded-full transition-colors ${n === 2 ? "bg-cinnabar step-dot-active" : n < 2 ? "bg-jade" : "bg-sand"}`} />
+          ))}
+          <span className="text-xs text-warm ml-2">Step 2 of 3</span>
+        </div>
           <h1 className="font-serif text-2xl text-ink mb-2">Where are you stuck?</h1>
           <p className="text-sm text-ink/70 mb-4">
             A sentence or two about what makes this hard right now.
@@ -405,7 +421,12 @@ export default function GuidedFlow({ hexagrams }: { hexagrams: HexagramData[] })
 
       {step === 3 && (
         <div>
-          <p className="text-xs uppercase tracking-widest text-warm mb-2">Step 3 of 3</p>
+          <div className="flex items-center gap-2 mb-3">
+          {[1,2,3].map(n => (
+            <span key={n} className={`inline-block w-2.5 h-2.5 rounded-full transition-colors ${n === 3 ? "bg-cinnabar step-dot-active" : n < 3 ? "bg-jade" : "bg-sand"}`} />
+          ))}
+          <span className="text-xs text-warm ml-2">Step 3 of 3</span>
+        </div>
           <h1 className="font-serif text-2xl text-ink mb-2">
             Any constraints, or what kind of insight are you seeking?
           </h1>
