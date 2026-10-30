@@ -21,6 +21,7 @@ export type ConsultResult = {
   aiResponse: string;
   completedAt: string;
   nextStep?: string;
+  persistedToAccount?: boolean;
 };
 
 /** Draft shape for the guided-flow wizard (steps 1-3 + final question). */

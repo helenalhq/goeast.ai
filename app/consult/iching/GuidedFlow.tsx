@@ -202,37 +202,49 @@ export default function GuidedFlow({ hexagrams }: { hexagrams: HexagramData[] })
         return;
       }
 
+      // Generate session ID once, use for both DB save and local result.
+      const sessionId = newSessionId();
+      const context = {
+        topic: draft.topic === "__custom__" ? draft.customTopic.trim() : draft.topic,
+        stuck: draft.stuck.trim(),
+        constraint: draft.constraint.trim(),
+      };
+
+      // Persist to DB for logged-in users (survives tab close / re-login).
+      // Wait up to 3s so the result page can show accurate save status.
+      let persistedToAccount = false;
+      try {
+        const saveRes = await Promise.race([
+          fetch("/api/consult/result", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              sessionId,
+              question: finalQuestion,
+              context,
+              cast: castResult,
+              aiResponse: accumulated,
+            }),
+          }),
+          new Promise<never>((_, reject) => setTimeout(() => reject(new Error("save-timeout")), 3000)),
+        ]);
+        persistedToAccount = saveRes.ok;
+      } catch {
+        // Not logged in, DB unavailable, or timeout — sessionStorage still works
+      }
+
       const result: ConsultResult = {
-        sessionId: newSessionId(),
+        sessionId,
         question: finalQuestion,
-        context: {
-          topic: draft.topic === "__custom__" ? draft.customTopic.trim() : draft.topic,
-          stuck: draft.stuck.trim(),
-          constraint: draft.constraint.trim(),
-        },
+        context,
         cast: castResult,
         aiResponse: accumulated,
         completedAt: new Date().toISOString(),
+        persistedToAccount,
       };
-      // Always save to sessionStorage (tab-local, works without login)
       saveConsultResult(result);
       clearDraft(CONSULT_FLOW_DRAFT_KEY);
       logEvent("consult_generation_completed");
-      // Also persist to DB for logged-in users (survives tab close / re-login).
-      // Fire-and-forget: DB save failure doesn't block navigation.
-      fetch("/api/consult/result", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          sessionId: result.sessionId,
-          question: result.question,
-          context: result.context,
-          cast: result.cast,
-          aiResponse: result.aiResponse,
-        }),
-      }).catch(() => {
-        // Not logged in or DB unavailable — sessionStorage still has the result
-      });
       router.push(`/consult/iching/result?session=${encodeURIComponent(result.sessionId)}`);
     } catch {
       setError("The oracle could not be reached. Please try again.");

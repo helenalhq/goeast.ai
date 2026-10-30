@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import EntryViewTracker from "./EntryViewTracker";
+import MyReadings from "./MyReadings";
 
 export const metadata: Metadata = {
   title: "Consult — Organize a Question | GoEast.ai",
@@ -88,6 +89,9 @@ export default function ConsultPage() {
           happen, never a reason to fear, and never a reason to pay.
         </p>
       </main>
+
+      {/* Recent readings for logged-in users — minimal history entry point */}
+      <MyReadings />
     </div>
   );
 }

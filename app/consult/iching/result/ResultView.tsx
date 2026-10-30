@@ -276,7 +276,7 @@ export default function ResultView() {
       <Section title="My Next Step">
         <p className="text-xs text-warm/80 mb-2">
           Optional — write the one small thing you&apos;ll do, in your own words.
-          {restoredFromCloud ? " Saved to your account." : " Saved in this tab."}
+          {restoredFromCloud || result.persistedToAccount ? " Saved to your account." : " Saved in this tab."}
         </p>
         <div className="flex flex-col sm:flex-row gap-2">
           <input
