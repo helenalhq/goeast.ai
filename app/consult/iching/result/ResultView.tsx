@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import ReactMarkdown from "react-markdown";
@@ -8,6 +8,18 @@ import { loadConsultResult, parseConsultResponse, saveConsultNextStep } from "@/
 import type { ConsultResult } from "@/lib/consult-session";
 import { getHexagramByNumber } from "@/lib/iching-data";
 import { logEvent } from "@/lib/analytics";
+
+/**
+ * Account-save status lifecycle:
+ *   "checking"  → loaded from local cache, confirming with server
+ *   "saved"     → server confirmed this result exists in the account
+ *   "local"     → not in account (not logged in, or save failed)
+ *   "error"     → server unreachable, status unknown (local copy intact)
+ */
+type AccountSaveStatus = "checking" | "saved" | "local" | "error";
+
+/** Next-step save status for the inline editor. */
+type NextStepStatus = "idle" | "saving" | "saved" | "error";
 
 /** Render one hexagram's six lines top-down (data is bottom-up). */
 function HexagramLines({ binary, changingLines }: { binary: string; changingLines: number[] }) {
@@ -48,11 +60,16 @@ export default function ResultView() {
   const sessionId = searchParams.get("session");
   const [result, setResult] = useState<ConsultResult | null | undefined>(undefined); // undefined = loading
   const [nextStepInput, setNextStepInput] = useState("");
-  const [savedFlash, setSavedFlash] = useState(false);
+  const [accountStatus, setAccountStatus] = useState<AccountSaveStatus>("checking");
+  const [nextStepStatus, setNextStepStatus] = useState<NextStepStatus>("idle");
   const [restoredFromCloud, setRestoredFromCloud] = useState(false);
+  // Guard against stale async responses overwriting newer state
+  const statusReqId = useRef(0);
+  const nextStepReqId = useRef(0);
 
   useEffect(() => {
     let cancelled = false;
+    const myReqId = ++statusReqId.current;
 
     async function load() {
       // 1. Try sessionStorage first (instant, same-tab)
@@ -60,25 +77,57 @@ export default function ResultView() {
       if (local && !cancelled) {
         setResult(local);
         setNextStepInput(local.nextStep || "");
+        // Show content immediately, then confirm account status with server
+        setAccountStatus("checking");
+        try {
+          const res = await fetch(`/api/consult/result?session_id=${encodeURIComponent(sessionId || "")}`);
+          if (cancelled || myReqId !== statusReqId.current) return; // stale response
+          if (res.ok) {
+            const data = await res.json();
+            if (data.result) {
+              setAccountStatus("saved");
+              // Use the server's nextStep if it's newer than local (e.g. another tab saved)
+              if (data.result.nextStep && data.result.nextStep !== local.nextStep) {
+                setNextStepInput(data.result.nextStep);
+                saveConsultNextStep(local.sessionId, data.result.nextStep, { ...local, nextStep: data.result.nextStep });
+              }
+            } else {
+              setAccountStatus("local"); // logged in but not found in account
+            }
+          } else if (res.status === 401) {
+            setAccountStatus("local"); // not logged in
+          } else {
+            setAccountStatus("error"); // server error, but local copy works
+          }
+        } catch {
+          if (!cancelled && myReqId === statusReqId.current) setAccountStatus("error");
+        }
         return;
       }
 
-      // 2. Try DB restore (cross-tab, cross-session, requires login)
+      // 2. No local copy — try DB restore (cross-tab, cross-session)
       try {
         const res = await fetch(`/api/consult/result?session_id=${encodeURIComponent(sessionId || "")}`);
+        if (cancelled || myReqId !== statusReqId.current) return;
         if (res.ok) {
           const data = await res.json();
-          if (data.result && !cancelled) {
+          if (data.result) {
             setResult(data.result);
             setNextStepInput(data.result.nextStep || "");
             setRestoredFromCloud(true);
-            // Cache locally for subsequent refreshes
+            setAccountStatus("saved");
             saveConsultNextStep(data.result.sessionId, data.result.nextStep || "", data.result);
             return;
           }
+          setResult(null); // logged in, not found
+          return;
+        }
+        if (res.status === 401) {
+          setResult(null); // not logged in, no local copy
+          return;
         }
       } catch {
-        // Not logged in or network error — fall through
+        // Network error — fall through
       }
 
       if (!cancelled) setResult(null);
@@ -117,18 +166,33 @@ export default function ResultView() {
   const sections = parseConsultResponse(result.aiResponse);
 
   const handleSaveNextStep = async () => {
+    if (!result || nextStepStatus === "saving") return;
     const trimmed = nextStepInput.trim();
+    const myReqId = ++nextStepReqId.current;
+
+    // Save locally immediately (instant, works offline)
     saveConsultNextStep(result.sessionId, trimmed, { ...result, nextStep: trimmed });
-    setSavedFlash(true);
-    window.setTimeout(() => setSavedFlash(false), 2000);
-    if (trimmed) {
-      logEvent("consult_next_step_saved");
-      // Also persist to DB if logged in (fire-and-forget)
-      fetch("/api/consult/result", {
+    setNextStepStatus("saving");
+
+    // Then try to persist to account
+    try {
+      const res = await fetch("/api/consult/result", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId: result.sessionId, nextStep: trimmed }),
-      }).catch(() => {});
+      });
+      if (myReqId !== nextStepReqId.current) return; // stale response — newer save in flight
+      if (res.ok) {
+        setNextStepStatus("saved");
+        setAccountStatus("saved"); // confirms the reading is in the account too
+        if (trimmed) logEvent("consult_next_step_saved");
+      } else if (res.status === 401) {
+        setNextStepStatus("saved"); // saved locally, just not to account
+      } else {
+        setNextStepStatus("error");
+      }
+    } catch {
+      if (myReqId === nextStepReqId.current) setNextStepStatus("error");
     }
   };
 
@@ -276,13 +340,24 @@ export default function ResultView() {
       <Section title="My Next Step">
         <p className="text-xs text-warm/80 mb-2">
           Optional — write the one small thing you&apos;ll do, in your own words.
-          {restoredFromCloud || result.persistedToAccount ? " Saved to your account." : " Saved in this tab."}
+          {accountStatus === "checking" && " Confirming save status…"}
+          {accountStatus === "saved" && " Saved to your account."}
+          {accountStatus === "local" && " Saved in this tab."}
+          {accountStatus === "error" && " Save status unknown — your reading is available in this tab."}
         </p>
+        {nextStepStatus === "error" && (
+          <p className="text-xs text-china-red mb-2" role="alert">
+            Couldn&apos;t sync to your account. Your input is saved in this tab — try again.
+          </p>
+        )}
         <div className="flex flex-col sm:flex-row gap-2">
           <input
             type="text"
             value={nextStepInput}
-            onChange={(e) => setNextStepInput(e.target.value)}
+            onChange={(e) => {
+              setNextStepInput(e.target.value);
+              setNextStepStatus("idle"); // new edit invalidates "saved" status
+            }}
             maxLength={300}
             placeholder="e.g. Write for 15 minutes tomorrow morning before checking messages"
             className="flex-1 p-3 bg-white/70 border border-sand rounded-lg text-ink focus:outline-none focus:border-warm"
@@ -290,9 +365,10 @@ export default function ResultView() {
           <button
             type="button"
             onClick={handleSaveNextStep}
-            className="px-5 py-3 bg-ink text-white rounded-full font-medium hover:bg-ink/90 transition-colors text-sm whitespace-nowrap"
+            disabled={nextStepStatus === "saving"}
+            className="px-5 py-3 bg-ink text-white rounded-full font-medium hover:bg-ink/90 transition-colors text-sm whitespace-nowrap disabled:opacity-50"
           >
-            {savedFlash ? "Saved ✓" : "Save"}
+            {nextStepStatus === "saving" ? "Saving…" : nextStepStatus === "saved" ? "Saved ✓" : nextStepStatus === "error" ? "Retry Save" : "Save"}
           </button>
         </div>
       </Section>
