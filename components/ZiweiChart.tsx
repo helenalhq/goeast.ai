@@ -45,7 +45,7 @@ const ZIWEI_DRAFT_KEY = "ziwei-birth";
 
 export default function ZiweiChart() {
   const [birthDate, setBirthDate] = useState("");
-  const [birthHour, setBirthHour] = useState(0);
+  const [birthHour, setBirthHour] = useState<number | null>(null);
   const [gender, setGender] = useState<"male" | "female">("male");
   const [palaces, setPalaces] = useState<Palace[]>([]);
   const [showChart, setShowChart] = useState(false);
@@ -59,19 +59,23 @@ export default function ZiweiChart() {
   // login round-trip. astro.bySolar is pure — same inputs, same chart.
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
-    const draft = loadDraft<{ birthDate: string; birthHour: number; gender: "male" | "female" }>(ZIWEI_DRAFT_KEY);
+    const draft = loadDraft<{ birthDate: string; birthHour: number | null; gender: "male" | "female" }>(ZIWEI_DRAFT_KEY);
     if (draft?.birthDate) {
       setBirthDate(draft.birthDate);
-      setBirthHour(draft.birthHour);
+      if (draft.birthHour !== null && draft.birthHour !== undefined) {
+        setBirthHour(draft.birthHour);
+      }
       setGender(draft.gender);
-      try {
-        const genderZh = draft.gender === "male" ? "男" : "女";
-        const result = astro.bySolar(draft.birthDate, draft.birthHour, genderZh, true, "zh-CN");
-        setPalaces(extractPalaces(result));
-        setAstrolabeData(result);
-        setShowChart(true);
-      } catch {
-        // form restored; user re-clicks Generate
+      if (draft.birthHour !== null && draft.birthHour !== undefined) {
+        try {
+          const genderZh = draft.gender === "male" ? "男" : "女";
+          const result = astro.bySolar(draft.birthDate, draft.birthHour, genderZh, true, "zh-CN");
+          setPalaces(extractPalaces(result));
+          setAstrolabeData(result);
+          setShowChart(true);
+        } catch {
+          // form restored; user re-clicks Generate
+        }
       }
     }
     setDraftLoaded(true);
@@ -88,6 +92,11 @@ export default function ZiweiChart() {
 
     if (!birthDate) {
       setError("Please select your birth date.");
+      return;
+    }
+
+    if (birthHour === null) {
+      setError("Please select your birth hour (时辰). Zi Wei Dou Shu places stars based on the two-hour Chinese time period — without it, the Life Palace and all star placements may be wrong, so we cannot generate a precise chart.");
       return;
     }
 
@@ -155,19 +164,25 @@ export default function ZiweiChart() {
             {/* Birth Hour */}
             <div>
               <label className="block text-sm font-medium text-ink mb-1">
-                Birth Hour (时辰)
+                Birth Hour (时辰) <span className="text-china-red">*</span>
               </label>
               <select
-                value={birthHour}
-                onChange={(e) => setBirthHour(Number(e.target.value))}
+                value={birthHour === null ? "" : birthHour}
+                onChange={(e) => setBirthHour(e.target.value === "" ? null : Number(e.target.value))}
                 className="w-full px-3 py-2 border border-sand rounded-lg bg-white text-ink focus:outline-none focus:ring-2 focus:ring-china-red/30"
               >
+                <option value="" disabled>
+                  Select hour · 请选择时辰
+                </option>
                 {BIRTH_HOURS.map((h) => (
                   <option key={h.value} value={h.value}>
                     {h.label_zh} — {h.label_en}
                   </option>
                 ))}
               </select>
+              <p className="text-xs text-warm/70 mt-1">
+                Use the local time at the birth place. Birth hour is required — without it, star placements may shift. · 请使用出生地当地时间。时辰必填，否则星曜位置可能错误。
+              </p>
             </div>
 
             {/* Gender */}
@@ -229,7 +244,7 @@ export default function ZiweiChart() {
           </div>
 
           <p className="text-sm text-warm">
-            {birthDate} · {getHourLabel(birthHour, "zh")} · {gender === "male" ? "男命" : "女命"}
+            {birthDate} · {getHourLabel(birthHour ?? 0, "zh")} · {gender === "male" ? "男命" : "女命"}
           </p>
 
           {/* 12-Palace Grid */}
@@ -247,7 +262,7 @@ export default function ZiweiChart() {
                         <p className="text-2xl font-bold text-ink mb-1">紫微命盘</p>
                         <p className="text-xs text-warm">Zi Wei Dou Shu Chart</p>
                         <p className="text-xs text-warm mt-2">{birthDate}</p>
-                        <p className="text-xs text-warm">{getHourLabel(birthHour, "zh")}</p>
+                        <p className="text-xs text-warm">{getHourLabel(birthHour ?? 0, "zh")}</p>
                         <p className="text-xs text-warm">{gender === "male" ? "男命 Male" : "女命 Female"}</p>
                       </div>
                     </div>
@@ -347,7 +362,7 @@ export default function ZiweiChart() {
           {/* AI Interpretation */}
           <ZiweiInterpretation
             birthDate={birthDate}
-            birthHour={birthHour}
+            birthHour={birthHour ?? 0}
             gender={gender}
             astrolabeData={astrolabeData}
           />

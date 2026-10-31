@@ -50,7 +50,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "How is my privacy handled?",
-    a: "Your question and reading are saved privately to your account only you can access. Your question text is never placed in URLs, analytics events, or public pages. Consultation results are stored in your account (visible only to you) and in this browser tab's session storage. We do not share readings with third parties.",
+    a: "Your question and reading are saved privately to your account — only you can access them. Your question text is never placed in URLs, analytics events, or public pages. To generate the AI interpretation, your question is sent to our AI service for processing; it is not stored there beyond the processing session. See our Privacy Policy for details.",
   },
   {
     q: "Can I see an example before starting?",

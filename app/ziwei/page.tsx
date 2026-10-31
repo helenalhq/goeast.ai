@@ -111,8 +111,16 @@ export default function ZiweiPage() {
           </h1>
           <p className="text-lg text-warm max-w-2xl mx-auto leading-relaxed">
             Enter your birth date, time, and gender below to generate a free 12-palace natal chart.
-            Chart casting is instant and requires no account — AI interpretation requires a free login
-            (3 readings/day, Pro 10/day).
+            Chart casting is instant and requires no account.
+          </p>
+          <p className="text-sm text-warm/70 max-w-xl mx-auto mt-2">
+            AI interpretation requires a free account — 3 readings per day, shared across all GoEast tools
+            (I Ching, Zi Wei, synastry). Pro: 10/day + deeper readings.
+          </p>
+          <p className="text-xs text-warm/60 max-w-xl mx-auto mt-2">
+            Your birth data is used only to compute and display your chart. It is saved privately to
+            your account (only you can access it) and is never placed in URLs, analytics, or shared
+            with other users.
           </p>
           <p className="text-sm text-warm/60 mt-3">
             输入出生日期、时辰和性别，免费生成紫微斗数十二宫命盘。排盘无需注册；AI 解读需免费账号（每日 3 次，Pro 每日 10 次）。

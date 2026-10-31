@@ -301,5 +301,5 @@ Traditional Chinese Medicine (TCM) uses Yin Yang theory extensively:
 ## Sources
 
 - Dao De Jing (道德经), Chapter 42 — classical text. English rendering cited from the public-domain-style translation by James Legge (1891, *The Texts of Taoism*, Oxford: Clarendon Press), available at [ctext.org/dao-de-jing](https://ctext.org/dao-de-jing). Verified 2026-10-31.
-- TCM framework — based on Giovanni Maciocia, *The Foundations of Chinese Medicine*, 3rd ed., Churchill Livingstone, 2015, Chapters 2 and 22 (Yin-Yang and clinical application).
+- TCM framework — based on Giovanni Maciocia, *The Foundations of Chinese Medicine*, 3rd ed., Churchill Livingstone, 2015, Chapter 1 (Yin-Yang).
 - [GoEast glossary: Yin Yang (阴阳)](/glossary/yin-yang) — site-internal reference for the concept's core definition.

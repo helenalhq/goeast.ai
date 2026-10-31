@@ -100,8 +100,17 @@ export default function ZiweiSynastryPage() {
         <p className="text-warm max-w-2xl mx-auto">
           Compare two natal charts to explore relationship dynamics through the lens of
           traditional Zi Wei Dou Shu astrology — not simple zodiac matching, but a structured
-          analysis of how two 12-palace charts interact. Chart casting is free; AI reading
-          requires a free account (3/day, Pro 10/day).
+          analysis of how two 12-palace charts interact. Chart casting is free and requires
+          no account.
+        </p>
+        <p className="text-sm text-warm/70 max-w-xl mx-auto mt-2">
+          AI reading requires a free account — 3 readings per day, shared across all GoEast tools
+          (I Ching, Zi Wei, synastry). Pro: 10/day + deeper readings.
+        </p>
+        <p className="text-xs text-warm/60 max-w-xl mx-auto mt-2">
+          Both persons&apos; birth data is used only to compute and compare charts. Results are saved
+          privately to your account (only you can access them) and are never placed in URLs,
+          analytics, or shared with other users.
         </p>
       </section>
 
