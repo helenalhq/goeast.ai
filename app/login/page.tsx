@@ -9,6 +9,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 type AuthMode = "login" | "signup" | "email-otp";
 type OtpStep = "enter-email" | "enter-code";
 
+// OTP login is hidden until SMTP is configured in Supabase.
+// Set NEXT_PUBLIC_EMAIL_OTP_ENABLED=true (in Vercel env vars) once SMTP + email template are configured.
+const EMAIL_OTP_ENABLED = process.env.NEXT_PUBLIC_EMAIL_OTP_ENABLED === "true";
+
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -180,7 +184,7 @@ function LoginForm() {
             ? "Sign in to access your oracle consultations"
             : mode === "signup"
               ? "Join GoEast.ai — 3 free Oracle consultations every day"
-              : "We&apos;ll send you a one-time verification code"}
+              : "We\u2019ll send you a one-time verification code"}
         </p>
 
         {authError && (
@@ -366,7 +370,7 @@ function LoginForm() {
 
         {/* Mode switch links */}
         <div className="text-center space-y-2 mt-6">
-          {mode !== "email-otp" && (
+          {EMAIL_OTP_ENABLED && mode !== "email-otp" && (
             <p className="text-sm text-warm">
               <button
                 onClick={() => switchMode("email-otp")}
