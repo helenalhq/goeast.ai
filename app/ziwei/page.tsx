@@ -10,9 +10,9 @@ import { getAllCombinations } from "@/lib/ziwei-combinations";
 import { getAllPatterns } from "@/lib/ziwei-patterns";
 
 export const metadata: Metadata = {
-  title: "Zi Wei Dou Shu (Purple Star Astrology): Free Natal Chart & Reading | GoEast.ai",
+  title: "Zi Wei Dou Shu Chart & Calculator | GoEast",
   description:
-    "Free Zi Wei Dou Shu (紫微斗数) natal chart calculator with AI-powered bilingual reading. Explore 14 major stars, 12 palaces, dual-star combinations, and classical patterns.",
+    "Create your free Zi Wei Dou Shu (紫微斗数) natal chart online. Enter birth date, time, and gender to generate your 12-palace chart with AI interpretation. No sign-up for casting.",
   keywords: [
     "Zi Wei Dou Shu",
     "紫微斗数",
@@ -107,15 +107,15 @@ export default function ZiweiPage() {
             Purple Star Astrology · 紫微斗数
           </p>
           <h1 className="text-3xl md:text-5xl font-bold text-ink mb-4">
-            Zi Wei Dou Shu
+            Create Your Zi Wei Dou Shu Chart
           </h1>
           <p className="text-lg text-warm max-w-2xl mx-auto leading-relaxed">
-            The most sophisticated system of Chinese astrology — mapping your destiny through 14 major stars
-            across 12 life palaces. Enter your birth data to generate your natal chart and receive
-            an AI-powered interpretation.
+            Enter your birth date, time, and gender below to generate a free 12-palace natal chart.
+            Chart casting is instant and requires no account — AI interpretation requires a free login
+            (3 readings/day, Pro 10/day).
           </p>
           <p className="text-sm text-warm/60 mt-3">
-            紫微斗数——中国最精密的命理学体系，通过十四主星在十二宫位的分布揭示人生蓝图。
+            输入出生日期、时辰和性别，免费生成紫微斗数十二宫命盘。排盘无需注册；AI 解读需免费账号（每日 3 次，Pro 每日 10 次）。
           </p>
         </div>
       </section>

@@ -368,7 +368,8 @@ export default function GuidedFlow({ hexagrams }: { hexagrams: HexagramData[] })
           ))}
           <span className="text-xs text-warm ml-2">Step 1 of 3</span>
         </div>
-          <h1 className="font-serif text-2xl text-ink mb-5">What would you like to discuss?</h1>
+          <h2 className="font-serif text-2xl text-ink mb-1">What would you like to discuss?</h2>
+          <p className="text-sm text-warm/70 mb-5">Step 1 of 3</p>
           <div className="grid gap-3 sm:grid-cols-2 mb-5">
             {EXAMPLE_TOPICS.map((t) => (
               <button

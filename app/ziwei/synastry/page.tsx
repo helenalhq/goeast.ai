@@ -4,9 +4,9 @@ import SynastryHistoryList from "@/components/SynastryHistoryList";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Zi Wei Synastry · Relationship Chart Comparison | GoEast",
+  title: "Zi Wei Dou Shu Compatibility — Compare Two Charts | GoEast",
   description:
-    "Compare two Zi Wei Dou Shu natal charts for relationship compatibility. AI-powered synastry analysis for romantic, business, parent-child, and friendship connections.",
+    "Compare two Zi Wei Dou Shu natal charts for relationship compatibility. Free chart casting, AI-powered synastry reading with structured evidence. Romantic, business, family, friendship.",
   keywords: [
     "zi wei dou shu synastry",
     "purple star astrology compatibility",
@@ -95,11 +95,13 @@ export default function ZiweiSynastryPage() {
           <span>Synastry</span>
         </nav>
         <h1 className="text-3xl md:text-4xl font-bold text-ink mb-3">
-          Synastry · 合盘分析
+          Zi Wei Dou Shu Compatibility Reading
         </h1>
         <p className="text-warm max-w-2xl mx-auto">
-          Compare two natal charts to explore relationship compatibility through the lens of
-          traditional Zi Wei Dou Shu astrology, enhanced by AI interpretation.
+          Compare two natal charts to explore relationship dynamics through the lens of
+          traditional Zi Wei Dou Shu astrology — not simple zodiac matching, but a structured
+          analysis of how two 12-palace charts interact. Chart casting is free; AI reading
+          requires a free account (3/day, Pro 10/day).
         </p>
       </section>
 

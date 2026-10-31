@@ -1,10 +1,11 @@
 ---
 slug: yin-yang-explained
-title: "What Is Yin Yang? Meaning, Symbol & Real-Life Examples"
+title: "Yin and Yang Explained: Meaning, Theory & Examples"
 title_zh: "阴阳详解：真正的含义（简单指南）"
 philosopher_slug: laozi
 concept_slugs: [yin-yang, qi, dao]
-published_at: 2026-06-25
+published_at: "2026-06-25"
+updated_at: "2026-10-31"
 content_zh: |
   阴阳是中国哲学中最基本的概念之一。它描述了看似对立的力量实际上是如何相互关联、相互补充的。
 
@@ -136,6 +137,8 @@ faqs:
     question_zh: 阴阳符号（太极图）是什么意思？
     answer_zh: 太极图表明阴阳相互关联、互含对方之种籽，并动态地相互转化。它象征平衡、和谐与对立面的相互依存。
 ---
+
+**Quick answer:** Yin and Yang (阴阳) describes how seemingly opposite forces are interconnected, interdependent, and complementary. Yin represents the receptive, cool, inward quality; Yang the active, warm, outward quality. Neither is "good" or "bad" — health and harmony come from their dynamic balance. The theory originates from Daoist philosophy and has been applied in Chinese medicine, martial arts, and daily life for over 2,000 years.
 
 Yin Yang is one of the most fundamental concepts in Chinese philosophy. It describes how seemingly opposite forces are actually interconnected, interdependent, and complementary.
 
@@ -296,3 +299,9 @@ Traditional Chinese Medicine (TCM) uses Yin Yang theory extensively:
 - [The Concept of Qi](/glossary/qi)
 - [The Meaning of Dao](/glossary/dao)
 - [Wu Wei: Effortless Action](/insights/wu-wei-philosophy)
+
+## Sources
+
+- Dao De Jing, Chapter 42 — classical text; English rendering follows common academic translations. Checked 2026-10-31.
+- [GoEast glossary: Yin Yang (阴阳)](/glossary/yin-yang) — site-internal reference for the concept's core definition.
+- Traditional Chinese Medicine framework — based on standard TCM pedagogical references. Checked 2026-10-31.
