@@ -17,7 +17,17 @@ export async function middleware(request: NextRequest) {
     `default-src 'self'; ${scriptSrc}; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https:; frame-ancestors 'self'; base-uri 'self'; form-action 'self'`
   );
 
-  if (request.nextUrl.pathname.startsWith("/login") || request.nextUrl.pathname.startsWith("/account")) {
+  // Preview deployments (preview.goeast.ai, *.vercel.app) must never be indexed.
+  // Production (www.goeast.ai) stays fully indexable.
+  // VERCEL_ENV is set by Vercel: "production" | "preview" | "development".
+  const isPreview =
+    process.env.VERCEL_ENV === "preview" ||
+    process.env.NEXT_PUBLIC_VERCEL_ENV === "preview" ||
+    (request.headers.get("host") || "").endsWith("vercel.app");
+
+  if (isPreview) {
+    response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+  } else if (request.nextUrl.pathname.startsWith("/login") || request.nextUrl.pathname.startsWith("/account")) {
     response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
   }
 

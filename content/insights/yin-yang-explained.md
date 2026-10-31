@@ -138,9 +138,7 @@ faqs:
     answer_zh: 太极图表明阴阳相互关联、互含对方之种籽，并动态地相互转化。它象征平衡、和谐与对立面的相互依存。
 ---
 
-**Quick answer:** Yin and Yang (阴阳) describes how seemingly opposite forces are interconnected, interdependent, and complementary. Yin represents the receptive, cool, inward quality; Yang the active, warm, outward quality. Neither is "good" or "bad" — health and harmony come from their dynamic balance. The theory originates from Daoist philosophy and has been applied in Chinese medicine, martial arts, and daily life for over 2,000 years.
-
-Yin Yang is one of the most fundamental concepts in Chinese philosophy. It describes how seemingly opposite forces are actually interconnected, interdependent, and complementary.
+Yin Yang is one of the most fundamental concepts in Chinese philosophy. It describes how seemingly opposite forces are actually interconnected, interdependent, and complementary — neither is inherently "good" or "bad"; health and harmony come from their dynamic balance. The theory originates from Daoist philosophy and has been applied in Chinese medicine, martial arts, and daily life for over 2,000 years.
 
 ## What is Yin Yang?
 
@@ -302,6 +300,6 @@ Traditional Chinese Medicine (TCM) uses Yin Yang theory extensively:
 
 ## Sources
 
-- Dao De Jing, Chapter 42 — classical text; English rendering follows common academic translations. Checked 2026-10-31.
+- Dao De Jing (道德经), Chapter 42 — classical text. English rendering cited from the public-domain-style translation by James Legge (1891, *The Texts of Taoism*, Oxford: Clarendon Press), available at [ctext.org/dao-de-jing](https://ctext.org/dao-de-jing). Verified 2026-10-31.
+- TCM framework — based on Giovanni Maciocia, *The Foundations of Chinese Medicine*, 3rd ed., Churchill Livingstone, 2015, Chapters 2 and 22 (Yin-Yang and clinical application).
 - [GoEast glossary: Yin Yang (阴阳)](/glossary/yin-yang) — site-internal reference for the concept's core definition.
-- Traditional Chinese Medicine framework — based on standard TCM pedagogical references. Checked 2026-10-31.
