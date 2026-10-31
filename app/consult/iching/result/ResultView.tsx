@@ -21,27 +21,87 @@ type AccountSaveStatus = "checking" | "saved" | "local" | "error";
 /** Next-step save status for the inline editor. */
 type NextStepStatus = "idle" | "saving" | "saved" | "error";
 
-/** Render one hexagram's six lines top-down (data is bottom-up). */
-function HexagramLines({ binary, changingLines }: { binary: string; changingLines: number[] }) {
+/** Render one hexagram's six lines top-down (data is bottom-up).
+ *  Lines are clickable — selecting a line highlights related interpretation.
+ */
+function HexagramLines({
+  binary,
+  changingLines,
+  selectedLine,
+  onLineSelect,
+}: {
+  binary: string;
+  changingLines: number[];
+  selectedLine: number | null;
+  onLineSelect: (line: number | null) => void;
+}) {
   const rows = [...binary].map((b, i) => ({
+    lineNumber: i + 1,
     yang: b === "1",
     changing: changingLines.includes(i + 1),
-  }));
+  })).reverse();
+
   return (
-    <div className="inline-flex flex-col gap-1.5 py-2">
-      {rows.reverse().map((r, i) => (
-        <div key={i} className="flex items-center gap-1">
+    <div className="inline-flex flex-col gap-1.5 py-2" role="group" aria-label="Hexagram lines — select to see related interpretation">
+      {rows.map((r) => (
+        <button
+          key={r.lineNumber}
+          type="button"
+          onClick={() => onLineSelect(selectedLine === r.lineNumber ? null : r.lineNumber)}
+          aria-pressed={selectedLine === r.lineNumber}
+          aria-label={`Line ${r.lineNumber}: ${r.yang ? "yang (solid)" : "yin (broken)"}${r.changing ? ", changing" : ""}`}
+          className={`flex items-center gap-1 p-1 rounded transition-colors cursor-pointer ${
+            selectedLine === r.lineNumber
+              ? "bg-cinnabar/10 outline outline-1 outline-cinnabar"
+              : "hover:bg-sand/30"
+          }`}
+        >
+          <span className="text-[10px] text-warm/60 w-4 text-right">{r.lineNumber}</span>
           {r.yang ? (
-            <span className="block h-1.5 w-16 bg-paper-ink rounded-sm" />
+            <span className={`block h-1.5 w-16 rounded-sm ${selectedLine === r.lineNumber ? "bg-cinnabar" : "bg-paper-ink"}`} />
           ) : (
             <>
-              <span className="block h-1.5 w-7 bg-paper-ink rounded-sm" />
-              <span className="block h-1.5 w-7 bg-ink rounded-sm ml-2" />
+              <span className={`block h-1.5 w-6 rounded-sm ${selectedLine === r.lineNumber ? "bg-cinnabar" : "bg-paper-ink"}`} />
+              <span className={`block h-1.5 w-6 rounded-sm ml-2 ${selectedLine === r.lineNumber ? "bg-cinnabar" : "bg-ink"}`} />
             </>
           )}
           {r.changing && <span className="text-cinnabar text-xs font-bold ml-1">◦</span>}
-        </div>
+        </button>
       ))}
+    </div>
+  );
+}
+
+/** Line interpretation info — shown when a line is selected. */
+function LineInfo({
+  lineNumber,
+  changingLines,
+  hexagramName,
+}: {
+  lineNumber: number;
+  changingLines: number[];
+  hexagramName?: string;
+}) {
+  const isChanging = changingLines.includes(lineNumber);
+  return (
+    <div className="mt-3 p-3 bg-cream rounded-lg border border-sand text-sm" role="status">
+      <p className="font-medium text-ink mb-1">
+        Line {lineNumber} {isChanging ? "· Changing line 变爻" : ""}
+      </p>
+      {isChanging ? (
+        <p className="text-warm text-xs leading-relaxed">
+          This is a changing line (变爻) — it transforms {hexagramName || "this hexagram"} into the
+          transformed hexagram shown above. The AI interpretation references this transformation.
+          Individual line texts (爻辞) are not yet in our database — the reading draws on the
+          hexagram&apos;s overall judgment (卦辞) and image (象辞) instead.
+        </p>
+      ) : (
+        <p className="text-warm text-xs leading-relaxed">
+          Line {lineNumber} is a static line in this cast — it does not transform.
+          Individual line texts (爻辞) for static lines are not yet in our database.
+          The reading draws on the hexagram&apos;s overall judgment (卦辞) and image (象辞).
+        </p>
+      )}
     </div>
   );
 }
@@ -60,6 +120,7 @@ export default function ResultView() {
   const sessionId = searchParams.get("session");
   const [result, setResult] = useState<ConsultResult | null | undefined>(undefined); // undefined = loading
   const [nextStepInput, setNextStepInput] = useState("");
+  const [selectedLine, setSelectedLine] = useState<number | null>(null);
   const [accountStatus, setAccountStatus] = useState<AccountSaveStatus>("checking");
   const [nextStepStatus, setNextStepStatus] = useState<NextStepStatus>("idle");
   const [restoredFromCloud, setRestoredFromCloud] = useState(false);
@@ -229,7 +290,14 @@ export default function ResultView() {
               ) : (
                 <p className="text-sm text-warm/60 mt-1">No changing lines — a static cast</p>
               )}
-              <HexagramLines binary={hexagram.binary} changingLines={result.cast.changingLines} />
+              <HexagramLines binary={hexagram.binary} changingLines={result.cast.changingLines} selectedLine={selectedLine} onLineSelect={setSelectedLine} />
+              {selectedLine !== null && (
+                <LineInfo
+                  lineNumber={selectedLine}
+                  changingLines={result.cast.changingLines}
+                  hexagramName={hexagram.name}
+                />
+              )}
             </div>
             {transformed && (
               <div className="text-center sm:text-left sm:border-l sm:border-sand sm:pl-8">
@@ -237,7 +305,7 @@ export default function ResultView() {
                 <p className="text-ink font-medium">
                   Hexagram {transformed.number} · {transformed.name} ({transformed.name_zh})
                 </p>
-                <HexagramLines binary={transformed.binary} changingLines={[]} />
+                <HexagramLines binary={transformed.binary} changingLines={[]} selectedLine={null} onLineSelect={() => {}} />
               </div>
             )}
           </div>

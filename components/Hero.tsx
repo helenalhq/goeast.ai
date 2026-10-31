@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { HexagramLines } from "./HexagramDisplay";
 
 export default function Hero() {
   return (
@@ -90,7 +91,7 @@ export default function Hero() {
             东方观象台 · Observatory
           </p>
 
-          {/* H1 — SEO preserved */}
+          {/* H1 — consultation-first narrative, SEO keywords preserved */}
           <h1
             className="font-serif"
             style={{
@@ -102,7 +103,7 @@ export default function Hero() {
               letterSpacing: "0.01em",
             }}
           >
-            AI Chinese Philosophy &amp; Practical China Guides
+            I Ching, Zi Wei Astrology &amp; Relationship Readings
           </h1>
 
           {/* Chinese subtitle */}
@@ -187,7 +188,7 @@ export default function Hero() {
           </p>
         </div>
 
-        {/* Right: example hexagram card (hidden on mobile — stacked layout puts it below CTA) */}
+        {/* Right: example hexagram card — data-driven from lib/iching-data.ts */}
         <div
           className="hidden md:block"
           style={{
@@ -205,29 +206,15 @@ export default function Hero() {
           >
             恒 Heng · Duration
           </p>
-          <p style={{ fontSize: 12, color: "#A8B3BE", marginBottom: 16 }}>
-            Hexagram 32 · Example
+          <p style={{ fontSize: 12, color: "#C8D0DA", marginBottom: 16 }}>
+            Hexagram 32 · Changing line 3
           </p>
-          <div
-            style={{
-              fontFamily: '"JetBrains Mono", monospace',
-              fontSize: 22,
-              lineHeight: 1.8,
-              color: "#F2EDE4",
-            }}
-          >
-            ━━━━━
-            <br />
-            ━ ━ ━
-            <br />
-            <span style={{ color: "#B84938", fontWeight: "bold" }}>━━━━━ ◦</span>
-            <br />
-            ━━━━━
-            <br />
-            ━ ━ ━
-            <br />
-            ━ ━ ━
-          </div>
+          <HexagramLines
+            hexagramNumber={32}
+            changingLines={[3]}
+            size="lg"
+            color="#F2EDE4"
+          />
           <span
             style={{
               display: "inline-block",
@@ -235,9 +222,10 @@ export default function Hero() {
               fontSize: 11,
               padding: "2px 8px",
               borderRadius: 4,
-              background: "rgba(142,109,69,0.2)",
-              color: "#8e6d45",
+              background: "rgba(200,208,218,0.15)",
+              color: "#C8D0DA",
               fontWeight: 500,
+              border: "1px solid rgba(200,208,218,0.3)",
             }}
           >
             示例 Example
