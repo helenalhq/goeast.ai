@@ -116,7 +116,7 @@ export default function Hero() {
               marginBottom: 28,
             }}
           >
-            人工智能驱动的中国哲学与中国实用指南
+            人工智能驱动的易经占卜、紫微命盘与关系合盘解读
           </p>
 
           {/* Description */}
