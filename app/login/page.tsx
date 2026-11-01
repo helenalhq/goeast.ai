@@ -244,19 +244,19 @@ function LoginForm() {
                     value={otpCode}
                     onChange={(e) => setOtpCode(e.target.value)}
                     required
-                    maxLength={6}
+                    maxLength={8}
                     inputMode="numeric"
                     autoComplete="one-time-code"
                     className="w-full border border-sand rounded-lg px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-china-red/40 transition-colors text-center tracking-[0.3em] font-mono"
-                    placeholder="000000"
+                    placeholder="00000000"
                   />
                   <p className="text-xs text-warm/60 mt-1">
-                    Enter the 6-digit code sent to {email}
+                    Enter the 8-digit code sent to {email}
                   </p>
                 </div>
                 <button
                   type="submit"
-                  disabled={loading || otpCode.trim().length < 6}
+                  disabled={loading || otpCode.trim().length < 8}
                   className="w-full py-2.5 rounded-lg text-white text-sm font-medium disabled:opacity-50 transition-opacity cursor-pointer"
                   style={{ backgroundColor: "#c0392b" }}
                 >
