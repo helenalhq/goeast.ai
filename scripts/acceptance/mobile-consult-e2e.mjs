@@ -550,14 +550,34 @@ if (GROUPS.includes("c")) { RUN.groups.push("C"); console.log("\n=== GROUP C: du
 
 await browser.close();
 
-const failed = results.filter((r) => !r.ok);
-console.log(`\n===== TASK 3B E2E: ${results.length - failed.length}/${results.length} passed =====`);
+// Merge into results.json when running a subset of groups (e.g. B locally,
+// A+C on preview) so one file accumulates all evidence.
+const RESULTS_PATH = "/tmp/goeast-3b/results.json";
+let mergedResults = results;
+let mergedRun = RUN;
+try {
+  if (fs.existsSync(RESULTS_PATH)) {
+    const prev = JSON.parse(fs.readFileSync(RESULTS_PATH, "utf8"));
+    const prevGroupRuns = prev.run?.groups || [];
+    mergedRun = {
+      ...prev.run,
+      groups: [...new Set([...prevGroupRuns, ...RUN.groups])],
+      events: [...(prev.run?.events || []), ...RUN.events],
+      beacons: [...(prev.run?.beacons || []), ...RUN.beacons],
+      warnings: [...(prev.run?.warnings || []), ...RUN.warnings],
+      subRuns: [...(prev.run?.subRuns || []), { base: BASE, startedAt: RUN.startedAt }],
+    };
+    const prevNames = new Set((prev.results || []).map((r) => `${r.group}/${r.name}`));
+    mergedResults = [...(prev.results || []), ...results.filter((r) => !prevNames.has(`${r.group}/${r.name}`))];
+  }
+} catch {
+  // corrupt previous file — overwrite
+}
+fs.writeFileSync(RESULTS_PATH, JSON.stringify({ run: mergedRun, results: mergedResults }, null, 2));
+
+const failed = mergedResults.filter((r) => !r.ok);
+console.log(`\n===== TASK 3B E2E: ${mergedResults.length - failed.length}/${mergedResults.length} passed =====`);
 if (RUN.warnings.length) console.log(`Warnings (${RUN.warnings.length}):`);
 for (const w of RUN.warnings) console.log(`  ⚠️  [${w.group}] ${w.name}: ${w.detail}`);
-
-fs.writeFileSync(
-  "/tmp/goeast-3b/results.json",
-  JSON.stringify({ run: RUN, results }, null, 2),
-);
 console.log("Evidence: /tmp/goeast-3b/results.json, shots in /tmp/goeast-3b/shots/, QA user in /tmp/goeast-3b/qa-user.json");
 process.exit(failed.length === 0 ? 0 : 1);
