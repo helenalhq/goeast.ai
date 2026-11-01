@@ -139,11 +139,9 @@ function LoginForm() {
 
     if (error) {
       setError(
-        error.message.includes("Invalid")
-          ? "Invalid verification code. Please check and try again."
-          : error.message.includes("expired")
-            ? "Verification code has expired. Please request a new one."
-            : error.message
+        error.message.includes("Invalid") || error.message.includes("expired")
+          ? "Invalid or expired verification code. Please request a new one."
+          : error.message
       );
     } else {
       logEvent("login_succeeded", { return_target: next !== "/account" });
