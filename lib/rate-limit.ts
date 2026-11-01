@@ -12,7 +12,7 @@
  * On concurrent requests: serialized by SELECT FOR UPDATE, only one succeeds per limit.
  */
 
-import type { SupabaseClient } from "@supabase/supabase-js";
+import { createClient as createServiceClient, type SupabaseClient } from "@supabase/supabase-js";
 
 export const FREE_TIER_LIMIT = 3;
 export const PRO_TIER_LIMIT = 10;
@@ -61,6 +61,65 @@ export async function checkAndIncrementUsage(
     remaining: data?.remaining ?? 0,
     currentCount: data?.currentCount ?? 0,
   };
+}
+
+/**
+ * Check current usage without incrementing (for pre-flight checks).
+ * Not atomic — use checkAndIncrementUsage for actual limit enforcement.
+ */
+/**
+ * Refund one usage increment in the current UTC window — called when a
+ * request was charged (checkAndIncrementUsage succeeded) but the generation
+ * it paid for failed, so a retry must not double-charge.
+ *
+ * Uses the service-role key against usage_log (same pattern as the checkout
+ * and webhook routes) with optimistic concurrency: the update only lands if
+ * the count is still what we read, so concurrent refunds can't over-refund.
+ * A refund that lands in the NEXT UTC window (charge at 23:59, refund at
+ * 00:01) is a no-op by design — logged, never thrown.
+ */
+export async function refundUsage(userId: string): Promise<{ refunded: boolean; reason?: string }> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !serviceKey) return { refunded: false, reason: "no_service_key" };
+
+  try {
+    const supabase = createServiceClient(url, serviceKey);
+    const windowStart = getUtcWindowStart();
+
+    const { data, error } = await supabase
+      .from("usage_log")
+      .select("count")
+      .eq("user_id", userId)
+      .eq("window_start", windowStart)
+      .maybeSingle();
+
+    if (error) {
+      console.error("[rate-limit] refund read error:", error.message);
+      return { refunded: false, reason: "read_error" };
+    }
+    if (!data) return { refunded: false, reason: "nothing_to_refund" };
+
+    const current = data.count ?? 0;
+    if (current <= 0) return { refunded: false, reason: "already_zero" };
+
+    // Optimistic concurrency: only decrement if nobody changed the row since.
+    const { error: updateError } = await supabase
+      .from("usage_log")
+      .update({ count: current - 1, updated_at: new Date().toISOString() })
+      .eq("user_id", userId)
+      .eq("window_start", windowStart)
+      .eq("count", current);
+
+    if (updateError) {
+      console.error("[rate-limit] refund write error:", updateError.message);
+      return { refunded: false, reason: "write_error" };
+    }
+    return { refunded: true };
+  } catch (err) {
+    console.error("[rate-limit] refund exception:", String(err));
+    return { refunded: false, reason: "exception" };
+  }
 }
 
 /**

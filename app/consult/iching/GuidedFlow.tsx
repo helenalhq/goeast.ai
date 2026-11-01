@@ -229,6 +229,7 @@ export default function GuidedFlow({ hexagrams }: { hexagrams: HexagramData[] })
           new Promise<never>((_, reject) => setTimeout(() => reject(new Error("save-timeout")), 3000)),
         ]);
         persistedToAccount = saveRes.ok;
+        if (saveRes.ok) logEvent("consult_result_saved");
       } catch {
         // Not logged in, DB unavailable, or timeout — sessionStorage still works
       }

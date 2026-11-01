@@ -212,6 +212,8 @@ export default function ResultView() {
             setNextStepInput(data.result.nextStep || "");
             setRestoredFromCloud(true);
             setAccountStatus("saved");
+            // History recovery: no local copy existed — this came from the account.
+            logEvent("consult_result_restored");
             saveConsultNextStep(data.result.sessionId, data.result.nextStep || "", data.result);
             return;
           }

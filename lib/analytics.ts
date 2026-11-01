@@ -26,9 +26,25 @@ export type AnalyticsEvent =
   | "consult_generation_started"
   | "consult_generation_completed"
   | "consult_generation_failed"
-  | "consult_next_step_saved";
+  | "consult_next_step_saved"
+  | "consult_result_saved"
+  | "consult_result_restored";
 
 type AnalyticsData = Record<string, string | number | boolean>;
+
+/** localStorage key holding a QA run label (e.g. "3b"). When set, every event
+ *  gets a `qa: <label>` property so automated test traffic can be filtered out
+ *  of real conversion stats. Set/cleared by acceptance scripts only. */
+export const QA_MARKER_KEY = "goeast:qa";
+
+function readQaMarker(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return window.localStorage.getItem(QA_MARKER_KEY);
+  } catch {
+    return null;
+  }
+}
 
 /** Fire a conversion event. Scalars only — emails, questions, birth data and
  *  chart payloads must NEVER be passed here. Failures are swallowed: analytics
@@ -45,6 +61,8 @@ export function logEvent(name: AnalyticsEvent, data: AnalyticsData = {}): void {
     const data: AnalyticsData = { ...clean };
     const env = process.env.NEXT_PUBLIC_VERCEL_ENV || process.env.VERCEL_ENV;
     if (env && !("env" in data)) data.env = env; // production | preview | development
+    const qa = readQaMarker();
+    if (qa && !("qa" in data)) data.qa = qa; // QA test traffic marker
     track(name, data);
     if (process.env.NODE_ENV !== "production") {
       console.debug("[analytics]", name, data);

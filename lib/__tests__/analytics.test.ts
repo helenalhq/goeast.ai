@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { describe, expect, it, vi, beforeEach } from "vitest";
 
 const { track } = vi.hoisted(() => ({ track: vi.fn() }));
@@ -62,5 +63,25 @@ describe("logEvent", () => {
     logEvent("x" as AnalyticsEvent, { env: "production" });
     expect(track).toHaveBeenCalledWith("x", { env: "production" });
     vi.unstubAllEnvs();
+  });
+
+  it("attaches the QA marker when localStorage has one (QA traffic filterable)", () => {
+    window.localStorage.setItem("goeast:qa", "3b");
+    logEvent("consult_generation_completed");
+    expect(track).toHaveBeenCalledWith("consult_generation_completed", { qa: "3b" });
+    window.localStorage.removeItem("goeast:qa");
+  });
+
+  it("omits the QA marker when none is set", () => {
+    logEvent("consult_generation_completed");
+    const call = track.mock.calls[track.mock.calls.length - 1];
+    expect(call[1]).not.toHaveProperty("qa");
+  });
+
+  it("does NOT override an explicit qa in data", () => {
+    window.localStorage.setItem("goeast:qa", "3b");
+    logEvent("x" as AnalyticsEvent, { qa: "manual" });
+    expect(track).toHaveBeenCalledWith("x", { qa: "manual" });
+    window.localStorage.removeItem("goeast:qa");
   });
 });

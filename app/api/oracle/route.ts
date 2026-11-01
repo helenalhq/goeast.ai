@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import OpenAI from "openai";
 import { getOraclePrompt, ORACLE_DEEP_ADDENDUM } from "@/lib/oracle-prompts";
-import { checkAndIncrementUsage, FREE_TIER_LIMIT, PRO_TIER_LIMIT } from "@/lib/rate-limit";
+import { checkAndIncrementUsage, refundUsage, FREE_TIER_LIMIT, PRO_TIER_LIMIT } from "@/lib/rate-limit";
 import { hasActiveProEntitlement } from "@/lib/creem";
 import { createClient } from "@/lib/supabase/server";
 import { validateIchingContext, buildIchingContextBlock, type IchingConsultationContext } from "@/lib/iching-context";
@@ -86,6 +86,9 @@ export async function POST(request: NextRequest) {
   }
 
   let isPaid = false;
+  // Set once a quota increment succeeds — a generation failure after this
+  // point must refund, so retrying never double-charges.
+  let chargedUserId: string | null = null;
 
   if (user) {
     if (await hasActiveProEntitlement(supabase, user.id)) {
@@ -109,6 +112,7 @@ export async function POST(request: NextRequest) {
           headers: { "Content-Type": "application/json" },
         });
       }
+      chargedUserId = user.id;
       isPaid = true;
     }
   }
@@ -138,6 +142,7 @@ export async function POST(request: NextRequest) {
         headers: { "Content-Type": "application/json" },
       });
     }
+    chargedUserId = user!.id;
   }
 
   const MODEL = process.env.AZURE_OPENAI_MODEL || "gpt-5.4-mini";
@@ -173,18 +178,46 @@ export async function POST(request: NextRequest) {
     const encoder = new TextEncoder();
     const readable = new ReadableStream({
       async start(controller) {
+        let sawContent = false;
         try {
           for await (const chunk of stream) {
             const content = chunk.choices[0]?.delta?.content;
             if (content) {
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content })}\n\n`));
+              sawContent = true;
+              // Enqueue failing here means the client is gone — the model
+              // stream itself is fine, so stop quietly WITHOUT a refund.
+              try {
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content })}\n\n`));
+              } catch {
+                controller.close();
+                return;
+              }
             }
+          }
+          // Charged but the model produced nothing — refund so retry is free.
+          if (!sawContent && chargedUserId) {
+            void refundUsage(chargedUserId).then((r) => {
+              if (r.refunded) console.log("[oracle] charge refunded (empty stream)");
+              else console.warn("[oracle] empty-stream refund not applied:", r.reason);
+            });
           }
           controller.enqueue(encoder.encode("data: [DONE]\n\n"));
           controller.close();
         } catch (err) {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: String(err) })}\n\n`));
-          controller.close();
+          // Upstream (model) failure mid-stream — the user got no reading.
+          // Refund so a retry doesn't double-charge, then surface the error.
+          if (chargedUserId) {
+            void refundUsage(chargedUserId).then((r) => {
+              if (r.refunded) console.log("[oracle] charge refunded (mid-stream failure)");
+              else console.warn("[oracle] mid-stream refund not applied:", r.reason);
+            });
+          }
+          try {
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: String(err) })}\n\n`));
+            controller.close();
+          } catch {
+            // client gone
+          }
         }
       },
     });
@@ -197,6 +230,12 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
+    // Generation never started (e.g. model unreachable) — refund the charge.
+    if (chargedUserId) {
+      const refund = await refundUsage(chargedUserId);
+      if (refund.refunded) console.log("[oracle] charge refunded (create failure)");
+      else console.warn("[oracle] create-failure refund not applied:", refund.reason);
+    }
     console.error("Oracle API error:", error);
     return new Response(JSON.stringify({ error: "The oracle could not be reached. Please try again." }), {
       status: 500,

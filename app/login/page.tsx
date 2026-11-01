@@ -37,6 +37,11 @@ function LoginForm() {
     };
   }, []);
 
+  // Funnel: was this login visit a gate on the consult/tools path?
+  useEffect(() => {
+    logEvent("login_page_viewed_with_target", { has_target: next !== "/account" });
+  }, [next]);
+
   // Start cooldown countdown when set
   const startCooldown = useCallback((seconds: number) => {
     setResendCooldown(seconds);
