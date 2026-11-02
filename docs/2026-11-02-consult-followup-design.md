@@ -20,6 +20,13 @@ reopen, and never trigger a new cast or modify the original report.
    returns a clear error instead of crashing.
 3. **Per-report cap** — 20 follow-up turns per report; prompt grounds on the
    most recent 8 turns (older turns dropped, bounded context).
+4. **Cap is not tiered** (2026-11-02) — free and Pro both get 20 turns/report.
+   The cap is a structural guardrail, never an entitlement; tier difference
+   stays expressed solely by the daily quota (3 vs 10). The daily quota counts
+   ALL AI calls — an initial reading plus follow-ups share the same pool, so
+   Pro's 10/day means 10 total calls, not 10 follow-ups on top of a reading.
+   UI copy next to the input states "follow-ups use your daily consultation
+   quota"; no remaining-counter is built (none exists today).
 
 ## Inventory summary (what is reused — no second chat/history system)
 
@@ -152,6 +159,12 @@ Other login flows, synastry follow-ups, PDF export, public sharing, reminder
 emails, calendar, complex review systems. The existing next-step save stays
 as-is. OracleOverlay is not touched (its Pro upsell copy already advertises
 follow-ups; unifying that entry point is future work).
+
+**Known copy issue (deferred, owner decision 2026-11-02):** the OracleOverlay
+Pro-unlock bullet "Deep conversation mode — follow-up questions" reads as if
+follow-ups were Pro-exclusive, while report follow-ups work for free users
+within their daily pool. Deferred to a future copy pass along with overlay
+entry-point unification.
 
 ## Acceptance criteria mapping
 
