@@ -25,6 +25,15 @@ function getContentDate(slug: string, dir: string, frontmatterDate?: string): Da
   return new Date();
 }
 
+/** Content dates for app-code pages (not content files): set explicitly when
+ *  the page's visible content actually changes — never `new Date()`, which
+ *  would mark every build as a content update. */
+const CONTENT_DATES = {
+  home: new Date("2026-11-02"),
+  consultIching: new Date("2026-11-02"),
+  exampleWritingHabit: new Date("2026-11-02"),
+};
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://www.goeast.ai";
 
@@ -114,7 +123,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
       url: baseUrl,
-      lastModified: new Date(),
+      lastModified: CONTENT_DATES.home,
       changeFrequency: "daily",
       priority: 1,
     },
@@ -233,9 +242,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${baseUrl}/consult/iching`,
-      lastModified: new Date(),
+      lastModified: CONTENT_DATES.consultIching,
       changeFrequency: "weekly",
       priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/examples/iching-writing-habit`,
+      lastModified: CONTENT_DATES.exampleWritingHabit,
+      changeFrequency: "monthly",
+      priority: 0.7,
     },
     {
       url: `${baseUrl}/pricing`,

@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "GoEast.ai — AI Skills for China";
+export const alt = "GoEast.ai — I Ching Readings & Zi Wei Dou Shu";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -45,7 +45,7 @@ export default function ImageOG() {
             marginBottom: 12,
           }}
         >
-          AI Skills for China
+          I Ching Readings &amp; Zi Wei Dou Shu
         </div>
         <div
           style={{
@@ -53,7 +53,7 @@ export default function ImageOG() {
             color: "#8b7355",
           }}
         >
-          Travel · Medical · Shopping · Accommodation
+          Classical text · AI interpretation · Private action record
         </div>
         <div
           style={{
@@ -63,7 +63,7 @@ export default function ImageOG() {
             opacity: 0.6,
           }}
         >
-          中国旅行 · 医疗 · 购物 · 住宿
+          易经解读 · 紫微斗数 · 中国旅行指南
         </div>
       </div>
     ),

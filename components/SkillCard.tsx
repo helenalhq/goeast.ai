@@ -15,7 +15,7 @@ export default function SkillCard({ skill }: { skill: SkillMeta }) {
           </span>
         </div>
         <p className="text-sm text-warm/80 mb-1">{skill.title_zh}</p>
-        <div className="flex items-center gap-2 mt-3">
+        <div className="flex flex-wrap items-center gap-2 mt-3">
           <CategoryBadge category={skill.category} />
           {skill.tags.slice(0, 3).map((tag) => (
             <span

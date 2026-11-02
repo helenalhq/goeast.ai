@@ -16,6 +16,14 @@ import { getAllStars, getAllPalaces } from "@/lib/ziwei-data";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
+  title: "GoEast — I Ching Readings & Zi Wei Dou Shu",
+  description:
+    "Cast the I Ching with classical text and AI interpretation, follow up on the same cast, and keep a private action record — plus Zi Wei Dou Shu natal charts and synastry. Free to start: 3 AI readings a day.",
+  openGraph: {
+    title: "GoEast — I Ching Readings & Zi Wei Dou Shu",
+    description:
+      "I Ching readings with classical text and AI interpretation, Zi Wei Dou Shu charts, and Chinese philosophy — free to start.",
+  },
   alternates: {
     canonical: "/",
     languages: {
@@ -250,8 +258,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Daily I Ching banner */}
-      <section className="max-w-5xl mx-auto px-4 pt-6">
+      {/* Daily I Ching banner + consultation entry */}
+      <section className="max-w-5xl mx-auto px-4 pt-6 grid sm:grid-cols-2 gap-4">
         <Link
           href="/daily-iching"
           className="block rounded-lg border border-sand bg-gradient-to-r from-cream/60 to-white p-5 hover:border-warm/40 transition-colors group"
@@ -267,6 +275,23 @@ export default function HomePage() {
               </p>
             </div>
             <span className="text-2xl text-warm/40 group-hover:text-china-red transition-colors flex-shrink-0">☰</span>
+          </div>
+        </Link>
+        <Link
+          href="/consult/iching"
+          className="block rounded-lg border border-sand bg-gradient-to-r from-cream/60 to-white p-5 hover:border-warm/40 transition-colors group"
+        >
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-xs text-warm/60 mb-1 tracking-wide uppercase">Consult · 易经咨询</p>
+              <h2 className="font-serif text-lg font-bold text-ink group-hover:text-china-red transition-colors mb-1">
+                I Ching Reading Online
+              </h2>
+              <p className="text-sm text-warm/80">
+                Bring a real question, cast the coins, and keep a private record of your next step.
+              </p>
+            </div>
+            <span className="text-2xl text-warm/40 group-hover:text-china-red transition-colors flex-shrink-0">☵</span>
           </div>
         </Link>
       </section>
