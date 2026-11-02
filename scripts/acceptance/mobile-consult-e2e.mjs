@@ -124,7 +124,7 @@ async function followupRows(sessionId) {
 }
 
 async function reportSnapshot(sessionId) {
-  const { body } = await sb(`/rest/v1/consult_results?session_id=eq.${sessionId}&select=question,ai_response,updated_at,next_step`);
+  const { body } = await sb(`/rest/v1/consult_results?session_id=eq.${sessionId}&select=question,ai_response,cast_data,updated_at,next_step,action_status,review_note`);
   return body && body[0] ? body[0] : null;
 }
 
@@ -596,7 +596,9 @@ async function groupD() {
     // 2. Follow-up #1 (charge 2)
     await page.waitForSelector("text=继续讨论这次解读", { timeout: 30000 });
     await page.locator("button", { hasText: "继续讨论这次解读" }).first().tap();
-    const ta = page.locator("textarea").last();
+    // The action-review note textarea also lives on this page — target the
+    // follow-up input by its aria-label, not by DOM position.
+    const ta = page.locator("textarea[aria-label='Follow-up question']");
     await typeWithKeyboardChecks(page, ta, `First follow-up ${PII.question} — what does the changing line mean?`, "followup input", g);
     let posts = 0;
     const countReq = (r) => { if (r.url().includes("/api/consult/followup") && r.method() === "POST") posts++; };
@@ -675,11 +677,138 @@ async function groupD() {
   }
 }
 
+// ============================================================================
+// GROUP E — 行动记录与复盘 V1: status + note save/restore, permissions,
+// duplicate submits, zero AI / zero quota. Report seeded via admin REST —
+// this group never calls the model.
+// ============================================================================
+async function groupE() {
+  const g = "E";
+  const { context, page } = await mobilePage();
+  try {
+    await loginViaUi(page, g);
+
+    // Seed an owned report directly (no AI cost); snapshot includes the new columns
+    const sessionId = `act-${Date.now()}`;
+    await sb("/rest/v1/consult_results", {
+      method: "POST",
+      body: JSON.stringify({
+        session_id: sessionId, user_id: QA.id,
+        question: "E2E action-review seed: a work decision",
+        context: { topic: "A work decision", stuck: "seed", constraint: "" },
+        cast_data: { mode: "cast", hexagramNumber: 1, changingLines: [], transformedNumber: undefined },
+        ai_response: "Seed reading for action review testing.",
+      }),
+    });
+    const before = await reportSnapshot(sessionId);
+    const usageStart = await usageCount();
+    check(g, "seeded report present, status/note null", before && before.action_status === null && before.review_note === null, JSON.stringify(before?.action_status));
+
+    // Open the report (no local copy → DB restore path)
+    let aiPosts = 0;
+    const noAi = (r) => { if ((r.url().includes("/api/oracle") || r.url().includes("/api/consult/followup")) && r.method() === "POST") aiPosts++; };
+    page.on("request", noAi);
+    await page.goto(`${BASE}/consult/iching/result?session=${encodeURIComponent(sessionId)}`, { waitUntil: "domcontentloaded" });
+    await page.waitForSelector("text=Your Hexagram", { timeout: 60000 });
+    await page.waitForSelector("text=复盘心得", { timeout: 30000 });
+    check(g, "result page shows action-review panel", true);
+    await noOverflow(page, "result+panel", g);
+
+    // 1. Click 进行中 → optimistic + persisted
+    await page.locator("button", { hasText: "进行中" }).first().tap();
+    await page.waitForFunction(() => document.querySelector('[aria-pressed="true"]')?.textContent?.includes("进行中"), null, { timeout: 5000 }).catch(() => {});
+    await page.waitForTimeout(1500);
+    let row = await reportSnapshot(sessionId);
+    check(g, "status 进行中 persisted", row.action_status === "in_progress", row.action_status);
+
+    // 2. Type note + Save (mobile keyboard check on the textarea)
+    const note = `E2E reflection ${PII.question} — tried it for two mornings.`;
+    await typeWithKeyboardChecks(page, page.locator("textarea").last(), note, "review note", g);
+    let patchCount = 0;
+    const countPatch = (r) => { if (r.url().includes("/api/consult/result") && r.method() === "PATCH") patchCount++; };
+    page.on("request", countPatch);
+    await page.locator("button", { hasText: "Save" }).last().tap();
+    await page.waitForSelector("text=Saved ✓", { timeout: 15000 });
+    row = await reportSnapshot(sessionId);
+    check(g, "note persisted verbatim", row.review_note === note, (row.review_note || "").slice(0, 40));
+
+    // 3. Duplicate submits: same-status click (no-op) + rapid note re-save
+    await page.locator("button", { hasText: "进行中" }).first().tap(); // already selected → no PATCH
+    await page.locator("button", { hasText: "Save" }).last().tap().catch(() => {}); // Saved state → allowed once
+    await page.waitForTimeout(1500);
+    page.off("request", countPatch);
+    check(g, "duplicate status click + re-save → minimal PATCHes (≤2)", patchCount <= 2, `${patchCount} PATCHes`);
+    row = await reportSnapshot(sessionId);
+    check(g, "no duplicate/corrupt records", (row.review_note === note) && row.action_status === "in_progress", `${row.action_status}/${(row.review_note || "").slice(0, 20)}`);
+
+    // 4. Refresh → status + note restored from server
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await page.waitForSelector("text=复盘心得", { timeout: 60000 });
+    await page.waitForTimeout(2000); // server confirm re-seeds the panel
+    const pressed = await page.locator("button[aria-pressed='true']").first().textContent().catch(() => "");
+    const noteAfter = await page.locator("textarea").last().inputValue();
+    check(g, "refresh restores selected status", (pressed || "").includes("进行中"), pressed || "(none)");
+    check(g, "refresh restores note text", noteAfter === note, noteAfter.slice(0, 30));
+    await shot(page, "e1-action-review");
+
+    // 5. MyReadings shows the status marker and reopens the report
+    await page.goto(`${BASE}/consult`, { waitUntil: "domcontentloaded" });
+    await page.waitForSelector("text=My Readings", { timeout: 30000 });
+    const marker = await page.locator("text=⟳ 进行中").count();
+    check(g, "My Readings shows 进行中 marker", marker > 0, `${marker} markers`);
+    await page.locator("a", { hasText: "action-review seed" }).first().tap();
+    await page.waitForSelector("text=复盘心得", { timeout: 60000 });
+    await page.waitForTimeout(2000);
+    const reopenedNote = await page.locator("textarea").last().inputValue();
+    check(g, "reopening from history restores note", reopenedNote === note, reopenedNote.slice(0, 30));
+
+    // 6. Zero AI / zero quota the whole group
+    page.off("request", noAi);
+    check(g, "zero AI calls (oracle/followup POSTs)", aiPosts === 0, `${aiPosts} POSTs`);
+    check(g, "zero quota consumed", (await usageCount()) === usageStart, `${usageStart}→${await usageCount()}`);
+
+    // 7. Cross-account: read + write both denied
+    const user2 = await createQaUser("3e2");
+    const ctx2 = await browser.newContext({
+      viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true,
+      ...(process.env.VERCEL_BYPASS_TOKEN ? { extraHTTPHeaders: { "x-vercel-protection-bypass": process.env.VERCEL_BYPASS_TOKEN } } : {}),
+    });
+    const p3 = await ctx2.newPage();
+    await p3.goto(`${BASE}/login`, { waitUntil: "domcontentloaded" });
+    await p3.fill("#email", user2.email);
+    await p3.fill("#password", user2.password);
+    await p3.locator("button", { hasText: "Sign In" }).first().tap();
+    await p3.waitForURL((u) => !u.pathname.includes("/login"), { timeout: 30000 });
+    const reads = await p3.evaluate(async (sid) => {
+      const r = await (await fetch(`/api/consult/result?session_id=${encodeURIComponent(sid)}`)).json();
+      return r.result === null ? "null" : "LEAKED";
+    }, sessionId);
+    check(g, "other account GET → no data", reads === "null", reads);
+    const writes = await p3.evaluate(async (sid) => {
+      const r = await fetch("/api/consult/result", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId: sid, actionStatus: "done", reviewNote: "hijack" }),
+      });
+      return r.status;
+    }, sessionId);
+    check(g, "other account PATCH → 404 (no false success)", writes === 404, `${writes}`);
+    row = await reportSnapshot(sessionId);
+    check(g, "other account changed nothing", row.action_status === "in_progress" && row.review_note === note, row.action_status);
+    await ctx2.close();
+  } catch (e) {
+    check(g, "group E flow error", false, String(e).slice(0, 300));
+  } finally {
+    await context.close();
+  }
+}
+
 // --- run ---------------------------------------------------------------------
 if (GROUPS.includes("a")) { RUN.groups.push("A"); console.log("\n=== GROUP A: success flow ==="); await groupA(); }
 if (GROUPS.includes("b")) { RUN.groups.push("B"); console.log("\n=== GROUP B: failure recovery ==="); await groupB(); }
 if (GROUPS.includes("c")) { RUN.groups.push("C"); console.log("\n=== GROUP C: duplicate submission ==="); await groupC(); }
 if (GROUPS.includes("d")) { RUN.groups.push("D"); console.log("\n=== GROUP D: follow-up Q&A ==="); await groupD(); }
+if (GROUPS.includes("e")) { RUN.groups.push("E"); console.log("\n=== GROUP E: action review V1 ==="); await groupE(); }
 
 await browser.close();
 
