@@ -8,6 +8,7 @@ import { loadConsultResult, parseConsultResponse, saveConsultNextStep } from "@/
 import type { ConsultResult } from "@/lib/consult-session";
 import { getHexagramByNumber } from "@/lib/iching-data";
 import { logEvent } from "@/lib/analytics";
+import FollowupSection from "./FollowupSection";
 
 /**
  * Account-save status lifecycle:
@@ -441,6 +442,9 @@ export default function ResultView() {
           </ul>
         </Section>
       )}
+
+      {/* 6.5 Follow-up Q&A — same cast, turns saved with the reading */}
+      <FollowupSection sessionId={result.sessionId} accountStatus={accountStatus} />
 
       {/* 7. My Next Step */}
       <Section title="My Next Step">

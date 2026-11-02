@@ -29,20 +29,29 @@ function json(body: Record<string, unknown>, status: number) {
   return NextResponse.json(body, { status });
 }
 
+/** Row shape loadOwnedReport returns (dynamic select() defeats supabase's inference). */
+type FollowupReportRow = {
+  session_id: string;
+  user_id: string;
+  question: string;
+  cast_data: unknown;
+  ai_response: string;
+};
+
 /** Load the report only when it belongs to the caller (RLS + explicit check). */
 async function loadOwnedReport(
   supabase: Awaited<ReturnType<typeof createClient>>,
   sessionId: string,
   userId: string,
   select = "session_id, user_id, question, cast_data, ai_response",
-) {
+): Promise<{ report: FollowupReportRow | null; error: string | null }> {
   const { data, error } = await supabase
     .from("consult_results")
     .select(select)
     .eq("session_id", sessionId)
     .eq("user_id", userId)
     .maybeSingle();
-  return { report: data ?? null, error: error ? error.message : null };
+  return { report: (data as FollowupReportRow | null) ?? null, error: error ? error.message : null };
 }
 
 async function listTurns(supabase: Awaited<ReturnType<typeof createClient>>, sessionId: string, userId: string) {
@@ -135,7 +144,7 @@ export async function POST(request: NextRequest) {
       turns,
     });
 
-  let stream: AsyncIterable<{ choices?: Array<{ delta?: { content?: string } }> }>;
+  let stream: AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>;
   try {
     stream = await openai.chat.completions.create({
       model: process.env.AZURE_OPENAI_MODEL || "gpt-5.4-mini",
