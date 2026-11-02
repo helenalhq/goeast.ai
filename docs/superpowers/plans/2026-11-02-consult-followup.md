@@ -38,7 +38,7 @@ CREATE TABLE consult_followups (
   turn_index INTEGER NOT NULL,
   question TEXT NOT NULL,
   answer TEXT NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX idx_consult_followups_session ON consult_followups(session_id, turn_index);
@@ -50,10 +50,17 @@ CREATE POLICY "Users can read own followups"
   ON consult_followups FOR SELECT
   USING (auth.uid() = user_id);
 
--- 仅本人可插入；无 UPDATE、无 DELETE 策略 → append-only
+-- 仅本人可插入；且 session 必须属于本人（纵深防御，API 层已校验归属）
+-- 无 UPDATE、无 DELETE 策略 → append-only
 CREATE POLICY "Users can insert own followups"
   ON consult_followups FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
+  WITH CHECK (
+    auth.uid() = user_id
+    AND EXISTS (
+      SELECT 1 FROM consult_results cr
+      WHERE cr.session_id = session_id AND cr.user_id = auth.uid()
+    )
+  );
 
 -- ============================================================
 -- 回滚 SQL（如需撤销本迁移，整段执行）
