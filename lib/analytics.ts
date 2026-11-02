@@ -28,7 +28,10 @@ export type AnalyticsEvent =
   | "consult_generation_failed"
   | "consult_next_step_saved"
   | "consult_result_saved"
-  | "consult_result_restored";
+  | "consult_result_restored"
+  | "consult_followup_started"
+  | "consult_followup_completed"
+  | "consult_followup_failed";
 
 type AnalyticsData = Record<string, string | number | boolean>;
 
