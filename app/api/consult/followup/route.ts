@@ -16,8 +16,9 @@ import {
 /**
  * Follow-up Q&A on a saved consultation (POST: ask, SSE; GET: list turns).
  * Everything the model sees is loaded here from the DB by session_id +
- * authenticated user — the client sends only sessionId and question text.
- * The original report row is never written.
+ * authenticated user — the client sends only sessionId, question text, and
+ * an optional turnKey (client UUID) for retry idempotency. The original
+ * report row is never written.
  */
 
 const openai = new OpenAI({
@@ -28,6 +29,9 @@ const openai = new OpenAI({
 function json(body: Record<string, unknown>, status: number) {
   return NextResponse.json(body, { status });
 }
+
+/** Client-supplied turn keys must be UUIDs — they become row PKs. */
+const TURN_KEY_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /** Row shape loadOwnedReport returns (dynamic select() defeats supabase's inference). */
 type FollowupReportRow = {
@@ -87,6 +91,15 @@ export async function POST(request: NextRequest) {
   const question = validateFollowupQuestion(body?.question);
   if (!question) return json({ error: "Question is required (max 500 characters)" }, 400);
 
+  // Optional idempotency key: retries of the SAME logical turn reuse it, so a
+  // duplicate/concurrent/network-retried submission replays the saved answer
+  // instead of generating (and charging) again. Absent → legacy behavior.
+  const rawTurnKey = typeof body?.turnKey === "string" ? body.turnKey.trim().toLowerCase() : "";
+  if (rawTurnKey && !TURN_KEY_RE.test(rawTurnKey)) {
+    return json({ error: "turnKey must be a UUID" }, 400);
+  }
+  const turnKey = rawTurnKey || null;
+
   const { report, error: reportError } = await loadOwnedReport(supabase, sessionId, user.id);
   if (reportError) return json({ error: "Reading service unavailable", code: "SERVICE_ERROR" }, 503);
   if (!report) return json({ error: "Reading not found.", code: "NOT_FOUND" }, 404);
@@ -100,7 +113,38 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // 4. Turn cap (before charging)
+  // 4. Idempotent replay — a saved turn with this key is streamed back as-is:
+  // no charge, no model call, no new row. Retries at the 20-turn cap still
+  // recover their answer (hence checked before the cap).
+  if (turnKey) {
+    const { data: existing } = await supabase
+      .from("consult_followups")
+      .select("id, session_id, question, answer")
+      .eq("id", turnKey)
+      .eq("user_id", user.id)
+      .maybeSingle();
+    const row = existing as { session_id: string; answer: string } | null;
+    if (row) {
+      if (row.session_id !== sessionId) {
+        // Key reuse across reports is a client bug — reject, never leak.
+        return json({ error: "turnKey already used for another reading.", code: "TURN_KEY_REUSED" }, 400);
+      }
+      const encoder = new TextEncoder();
+      const replay = new ReadableStream({
+        start(controller) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ replay: true })}\n\n`));
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content: row.answer })}\n\n`));
+          controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+          controller.close();
+        },
+      });
+      return new Response(replay, {
+        headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache", Connection: "keep-alive" },
+      });
+    }
+  }
+
+  // 5. Turn cap (before charging)
   const { error: listError, turns } = await listTurns(supabase, sessionId, user.id);
   if (listError) return json({ error: "Follow-up history unavailable", code: "SERVICE_ERROR" }, 503);
   if (turns.length >= FOLLOWUP_TURN_LIMIT) {
@@ -113,7 +157,7 @@ export async function POST(request: NextRequest) {
   // design — no unique constraint; created_at disambiguates ordering).
   const turnIndex = turns.length + 1;
 
-  // 5. Quota — same shared daily pool as the initial reading
+  // 6. Quota — same shared daily pool as the initial reading
   let chargedUserId: string | null = null;
   const isPaid = await hasActiveProEntitlement(supabase, user.id);
   const isDev = process.env.NODE_ENV === "development";
@@ -133,7 +177,7 @@ export async function POST(request: NextRequest) {
     chargedUserId = user.id;
   }
 
-  // 6. Generate, grounded in the DB record (conversational — no deep addendum)
+  // 7. Generate, grounded in the DB record (conversational — no deep addendum)
   const promptConfig = getOraclePrompt("prologue-zhougong")!;
   const system =
     promptConfig.system +
@@ -171,18 +215,25 @@ export async function POST(request: NextRequest) {
       let full = "";
       let sawContent = false;
       let delivered = false;
+      let clientGone = false;
+      const safeEnqueue = (data: string) => {
+        if (clientGone) return;
+        try {
+          controller.enqueue(encoder.encode(data));
+        } catch {
+          // Client disconnected mid-stream — keep consuming the model so the
+          // turn is still saved; a retry with the same turnKey replays it
+          // for free instead of regenerating and recharging.
+          clientGone = true;
+        }
+      };
       try {
         for await (const chunk of stream) {
           const content = chunk.choices?.[0]?.delta?.content;
           if (content) {
             sawContent = true;
             full += content;
-            try {
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content })}\n\n`));
-            } catch {
-              controller.close(); // client gone — model stream is fine, no refund
-              return;
-            }
+            safeEnqueue(`data: ${JSON.stringify({ content })}\n\n`);
           }
         }
         if (!sawContent) {
@@ -191,26 +242,52 @@ export async function POST(request: NextRequest) {
               if (!r.refunded) console.warn("[followup] empty-stream refund not applied:", r.reason);
             });
           }
-          controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+          safeEnqueue("data: [DONE]\n\n");
           controller.close();
           return;
         }
         delivered = true;
-        // Persist the turn in this same request — append-only, server-generated id.
-        // Runs even in dev (where the charge is skipped): the answer was delivered.
-        const { error: insertError } = await supabase.from("consult_followups").insert({
-          session_id: sessionId,
-          user_id: user.id,
-          turn_index: turnIndex,
-          question,
-          answer: full,
-        });
-        if (insertError) {
-          console.error("[followup] insert error:", insertError.message);
-          // Content already delivered — keep the charge, tell the client
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ saveFailed: true })}\n\n`));
+        // Persist the turn in this same request — append-only. With a turnKey
+        // the client's UUID is the row id and ON CONFLICT DO NOTHING makes a
+        // concurrent twin a detectable no-op instead of an error.
+        if (turnKey) {
+          const { data: inserted, error: upsertError } = await supabase
+            .from("consult_followups")
+            .upsert(
+              { id: turnKey, session_id: sessionId, user_id: user.id, turn_index: turnIndex, question, answer: full },
+              { onConflict: "id", ignoreDuplicates: true },
+            )
+            .select("id")
+            .maybeSingle();
+          if (upsertError) {
+            console.error("[followup] upsert error:", upsertError.message);
+            safeEnqueue(`data: ${JSON.stringify({ saveFailed: true })}\n\n`);
+          } else if (!inserted) {
+            // A concurrent twin with the same key won the insert: the turn IS
+            // saved, so refund this attempt's charge — one logical turn, one
+            // charge. The client's thread refetch shows the saved answer.
+            if (chargedUserId) {
+              void refundUsage(chargedUserId).then((r) => {
+                if (!r.refunded) console.warn("[followup] conflict refund not applied:", r.reason);
+              });
+            }
+            console.log("[followup] concurrent turnKey dedup: refunded duplicate attempt");
+          }
+        } else {
+          const { error: insertError } = await supabase.from("consult_followups").insert({
+            session_id: sessionId,
+            user_id: user.id,
+            turn_index: turnIndex,
+            question,
+            answer: full,
+          });
+          if (insertError) {
+            console.error("[followup] insert error:", insertError.message);
+            // Content already delivered — keep the charge, tell the client
+            safeEnqueue(`data: ${JSON.stringify({ saveFailed: true })}\n\n`);
+          }
         }
-        controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+        safeEnqueue("data: [DONE]\n\n");
         controller.close();
       } catch (err) {
         if (chargedUserId && !delivered) {
@@ -218,8 +295,8 @@ export async function POST(request: NextRequest) {
             if (!r.refunded) console.warn("[followup] mid-stream refund not applied:", r.reason);
           });
         }
+        safeEnqueue(`data: ${JSON.stringify({ error: String(err) })}\n\n`);
         try {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: String(err) })}\n\n`));
           controller.close();
         } catch {
           // client gone

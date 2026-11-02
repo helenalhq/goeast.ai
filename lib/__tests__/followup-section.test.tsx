@@ -170,3 +170,63 @@ describe("ask + failure handling", () => {
     expect(logEvent).toHaveBeenCalledWith("consult_followup_completed");
   });
 });
+
+describe("turnKey idempotency behavior", () => {
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const lastPostBody = () => {
+    const posts = fetchMock.mock.calls.filter((c: unknown[]) => (c[1] as RequestInit)?.method === "POST");
+    return JSON.parse((posts[posts.length - 1][1] as RequestInit).body as string);
+  };
+
+  it("POST carries a UUID turnKey", async () => {
+    fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ followups: [], count: 0, limitReached: false }), { status: 200 }));
+    render(<FollowupSection sessionId="s1" accountStatus="saved" />);
+    fireEvent.click(screen.getByText("继续讨论这次解读"));
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: "q" } });
+    fetchMock.mockResolvedValueOnce(sseResponse(["answer"]));
+    fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ followups: [{ id: "t1", question: "q", answer: "answer", turnIndex: 1, createdAt: "2026-01-01" }], count: 1, limitReached: false }), { status: 200 }));
+    fireEvent.click(screen.getByRole("button", { name: /send/i }));
+    await waitFor(() => expect(logEvent).toHaveBeenCalledWith("consult_followup_completed"));
+    expect(UUID_RE.test(lastPostBody().turnKey)).toBe(true);
+  });
+
+  it("network failure keeps the turnKey — retry reuses it (server can replay)", async () => {
+    fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ followups: [], count: 0, limitReached: false }), { status: 200 }));
+    render(<FollowupSection sessionId="s1" accountStatus="saved" />);
+    fireEvent.click(screen.getByText("继续讨论这次解读"));
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: "flaky" } });
+    fetchMock.mockRejectedValueOnce(new Error("network down"));
+    fireEvent.click(screen.getByRole("button", { name: /send/i }));
+    await waitFor(() => expect(screen.getByRole("alert")).toBeTruthy());
+    const key1 = lastPostBody().turnKey;
+
+    // user retries the same question — same key, so the server replays if saved
+    fetchMock.mockResolvedValueOnce(sseResponse(["recovered answer"]));
+    fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ followups: [{ id: "t1", question: "flaky", answer: "recovered answer", turnIndex: 1, createdAt: "2026-01-01" }], count: 1, limitReached: false }), { status: 200 }));
+    fireEvent.click(screen.getByRole("button", { name: /send/i }));
+    await waitFor(() => expect(logEvent).toHaveBeenCalledWith("consult_followup_completed"));
+    expect(lastPostBody().turnKey).toBe(key1);
+  });
+
+  it("after a completed turn the next ask gets a fresh key", async () => {
+    const thread = (q: string, a: string) => new Response(JSON.stringify({ followups: [{ id: "t", question: q, answer: a, turnIndex: 1, createdAt: "2026-01-01" }], count: 1, limitReached: false }), { status: 200 });
+    fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ followups: [], count: 0, limitReached: false }), { status: 200 }));
+    render(<FollowupSection sessionId="s1" accountStatus="saved" />);
+    // ask #1
+    fireEvent.click(screen.getByText("继续讨论这次解读"));
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: "first" } });
+    fetchMock.mockResolvedValueOnce(sseResponse(["a1"]));
+    fetchMock.mockResolvedValueOnce(thread("first", "a1"));
+    fireEvent.click(screen.getByRole("button", { name: /send/i }));
+    await waitFor(() => expect(logEvent).toHaveBeenCalledWith("consult_followup_completed"));
+    const key1 = lastPostBody().turnKey;
+    // ask #2
+    await waitFor(() => expect(screen.getByRole("textbox")).toBeTruthy());
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: "second" } });
+    fetchMock.mockResolvedValueOnce(sseResponse(["a2"]));
+    fetchMock.mockResolvedValueOnce(thread("second", "a2"));
+    fireEvent.click(screen.getByRole("button", { name: /send/i }));
+    await waitFor(() => expect(fetchMock.mock.calls.filter((c: unknown[]) => (c[1] as RequestInit)?.method === "POST").length).toBe(2));
+    expect(lastPostBody().turnKey).not.toBe(key1);
+  });
+});

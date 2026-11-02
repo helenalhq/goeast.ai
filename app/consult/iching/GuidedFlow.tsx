@@ -460,7 +460,13 @@ export default function GuidedFlow({ hexagrams }: { hexagrams: HexagramData[] })
         {step === 3 && (
           <button
             type="button"
-            onClick={() => update({ constraint: "" })}
+            onClick={() => {
+              // Skip = proceed without constraints, same as confirming empty —
+              // clearing alone left users stuck on step 3 (looked unresponsive).
+              update({ constraint: "", step: 4 });
+              logEvent("consult_question_confirmed", { step: 3 });
+              setPhase("confirm");
+            }}
             className="px-6 py-3 border border-sand rounded-full text-warm hover:text-ink hover:border-warm transition-colors"
           >
             Skip this step

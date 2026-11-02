@@ -6,6 +6,7 @@ import ReactMarkdown from "react-markdown";
 import { logEvent } from "@/lib/analytics";
 import { loadDraft, saveDraft, clearDraft } from "@/lib/draft";
 import { readSseData } from "@/lib/sse";
+import { newSessionId } from "@/lib/consult-session";
 
 type Turn = { id: string; question: string; answer: string; turnIndex: number; createdAt: string };
 type Phase = "idle" | "streaming";
@@ -26,6 +27,11 @@ export default function FollowupSection({ sessionId, accountStatus }: { sessionI
   const [saveWarning, setSaveWarning] = useState(false);
   const [liveAnswer, setLiveAnswer] = useState(""); // streamed preview while generating
   const startedRef = useRef(false);
+  // Idempotency key for the in-flight logical turn: generated once, reused
+  // across retries of the SAME question so the server replays the saved
+  // answer instead of regenerating (and recharging). Cleared only after the
+  // turn is confirmed saved.
+  const turnKeyRef = useRef("");
   const draftKey = `consult:followup:${sessionId}`;
 
   // Read-only thread load (never generates, never charges)
@@ -80,11 +86,13 @@ export default function FollowupSection({ sessionId, accountStatus }: { sessionI
     setLiveAnswer("");
 
     try {
+      if (!turnKeyRef.current) turnKeyRef.current = newSessionId();
+      const turnKey = turnKeyRef.current;
       logEvent("consult_followup_started");
       const res = await fetch("/api/consult/followup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId, question }),
+        body: JSON.stringify({ sessionId, question, turnKey }),
       });
 
       if (!res.ok) {
@@ -122,12 +130,14 @@ export default function FollowupSection({ sessionId, accountStatus }: { sessionI
       let streamed = "";
       let streamError = false;
       let saveFailed = false;
+      let replayed = false;
       // Carry-buffered SSE reader — frames split across network chunks are
       // delivered whole; live preview mirrors the initial reading's stream.
       await readSseData(reader, (payload) => {
         if (payload === "[DONE]") return;
         try {
           const parsed = JSON.parse(payload);
+          if (parsed.replay) replayed = true;
           if (parsed.content) {
             streamed += parsed.content;
             setLiveAnswer(streamed);
@@ -171,10 +181,13 @@ export default function FollowupSection({ sessionId, accountStatus }: { sessionI
 
       clearDraft(draftKey);
       setInput("");
+      turnKeyRef.current = ""; // turn is saved — the next ask is a new logical turn
 
       if (saveFailed) {
         setSaveWarning(true);
         logEvent("consult_followup_failed", { reason: "save_failed" });
+      } else if (replayed) {
+        logEvent("consult_followup_completed", { replayed: true });
       } else {
         logEvent("consult_followup_completed");
       }

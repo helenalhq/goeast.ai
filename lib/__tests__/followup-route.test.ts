@@ -32,8 +32,14 @@ import { POST, GET } from "../../app/api/consult/followup/route";
 
 const GOOD_CAST = { mode: "cast", hexagramNumber: 1, changingLines: [1], transformedNumber: 44 };
 
-function tableMock(state: { report?: unknown; reportError?: unknown; turns?: unknown[]; turnError?: unknown; insertError?: unknown; insertCalls?: unknown[] }) {
+function tableMock(state: {
+  report?: unknown; reportError?: unknown;
+  turns?: unknown[]; turnError?: unknown;
+  insertError?: unknown; insertCalls?: unknown[];
+  replayRow?: unknown; upsertResult?: unknown; upsertError?: unknown; upsertCalls?: Array<{ row: Record<string, unknown>; opts?: Record<string, unknown> }>;
+}) {
   state.insertCalls = state.insertCalls || [];
+  state.upsertCalls = state.upsertCalls || [];
   return (name: string) => {
     if (name === "consult_results") {
       const chain: Record<string, unknown> = {};
@@ -47,9 +53,20 @@ function tableMock(state: { report?: unknown; reportError?: unknown; turns?: unk
       chain.select = () => chain;
       chain.eq = () => chain;
       chain.order = async () => ({ data: state.turns ?? [], error: state.turnError ?? null });
+      // replay pre-check: select by id + user → maybeSingle
+      chain.maybeSingle = async () => ({ data: state.replayRow ?? null });
       chain.insert = async (payload: unknown) => {
         state.insertCalls!.push(payload);
         return { error: state.insertError ?? null };
+      };
+      const up: Record<string, unknown> = {};
+      up.select = () => up;
+      up.maybeSingle = async () => ({ data: state.upsertResult ?? null, error: state.upsertError ?? null });
+      // NON-async like supabase-js builders: the route chains .select().maybeSingle()
+      // synchronously on the upsert() result before awaiting.
+      chain.upsert = (row: Record<string, unknown>, opts?: Record<string, unknown>) => {
+        state.upsertCalls!.push({ row, opts });
+        return up;
       };
       return chain;
     }
@@ -88,21 +105,23 @@ beforeEach(() => {
   fromDb.mockImplementation(tableMock(state));
 });
 
-async function readSse(res: Response): Promise<{ full: string; saveFailed: boolean }> {
+async function readSse(res: Response): Promise<{ full: string; saveFailed: boolean; replay: boolean }> {
   const text = await res.text();
   let full = "";
   let saveFailed = false;
+  let replay = false;
   for (const line of text.split("\n")) {
     if (!line.startsWith("data: ")) continue;
     const payload = line.slice(6).trim();
     if (payload === "[DONE]") continue;
     try {
       const parsed = JSON.parse(payload);
+      if (parsed.replay) replay = true;
       if (parsed.content) full += parsed.content;
       if (parsed.saveFailed) saveFailed = true;
     } catch { /* skip */ }
   }
-  return { full, saveFailed };
+  return { full, saveFailed, replay };
 }
 
 describe("POST validation matrix (model never called)", () => {
@@ -254,6 +273,106 @@ describe("POST failure handling", () => {
     const res = await POST(req({ sessionId: "s1", question: "why?" }));
     expect(res.status).toBe(503);
     expect(createCompletion).not.toHaveBeenCalled();
+  });
+});
+
+describe("POST turnKey idempotency", () => {
+  const KEY = "11111111-2222-4333-8444-555555555555";
+
+  it("non-UUID turnKey → 400", async () => {
+    const res = await POST(req({ sessionId: "s1", question: "why?", turnKey: "not-a-uuid" }));
+    expect(res.status).toBe(400);
+    expect(createCompletion).not.toHaveBeenCalled();
+  });
+
+  it("saved key, same session → replay: stored answer streamed, no charge, no model", async () => {
+    fromDb.mockImplementation(tableMock({
+      report: { session_id: "s1", user_id: "u1", question: "q", cast_data: GOOD_CAST, ai_response: "r" },
+      replayRow: { id: KEY, session_id: "s1", question: "why?", answer: "the stored answer" },
+    }));
+    const res = await POST(req({ sessionId: "s1", question: "why?", turnKey: KEY }));
+    expect(res.status).toBe(200);
+    const { full, replay } = await readSse(res);
+    expect(replay).toBe(true);
+    expect(full).toBe("the stored answer");
+    expect(checkUsage).not.toHaveBeenCalled();
+    expect(createCompletion).not.toHaveBeenCalled();
+    expect(lastState.upsertCalls).toHaveLength(0);
+    expect(lastState.insertCalls).toHaveLength(0);
+  });
+
+  it("saved key, different session → 400 TURN_KEY_REUSED (no leak)", async () => {
+    fromDb.mockImplementation(tableMock({
+      report: { session_id: "s1", user_id: "u1", question: "q", cast_data: GOOD_CAST, ai_response: "r" },
+      replayRow: { id: KEY, session_id: "someone-elses-report", question: "why?", answer: "secret" },
+    }));
+    const res = await POST(req({ sessionId: "s1", question: "why?", turnKey: KEY }));
+    expect(res.status).toBe(400);
+    expect(await res.json()).toMatchObject({ code: "TURN_KEY_REUSED" });
+    expect(createCompletion).not.toHaveBeenCalled();
+  });
+
+  it("fresh key happy path → upsert carries the client id, no refund, no saveFailed", async () => {
+    const state = {
+      report: { session_id: "s1", user_id: "u1", question: "q", cast_data: GOOD_CAST, ai_response: "r" },
+      upsertResult: { id: KEY }, // insert won — row returned
+    };
+    lastState = state as typeof lastState;
+    fromDb.mockImplementation(tableMock(state));
+    const res = await POST(req({ sessionId: "s1", question: "why?", turnKey: KEY }));
+    expect(res.status).toBe(200);
+    const { full, saveFailed } = await readSse(res);
+    expect(full).toBe("a thoughtful answer");
+    expect(saveFailed).toBe(false);
+    expect(lastState.upsertCalls).toHaveLength(1);
+    expect(lastState.upsertCalls[0].row).toMatchObject({ id: KEY, session_id: "s1", turn_index: 1, question: "why?" });
+    expect(lastState.upsertCalls[0].opts).toMatchObject({ onConflict: "id", ignoreDuplicates: true });
+    expect(refund).not.toHaveBeenCalled();
+    // legacy insert must not run when a key is present
+    expect(lastState.insertCalls).toHaveLength(0);
+  });
+
+  it("concurrent twin wins the insert (conflict no-op) → refund this attempt, no saveFailed", async () => {
+    const state = {
+      report: { session_id: "s1", user_id: "u1", question: "q", cast_data: GOOD_CAST, ai_response: "r" },
+      upsertResult: null, // ON CONFLICT DO NOTHING → no row returned
+    };
+    lastState = state as typeof lastState;
+    fromDb.mockImplementation(tableMock(state));
+    const res = await POST(req({ sessionId: "s1", question: "why?", turnKey: KEY }));
+    expect(res.status).toBe(200);
+    const { full, saveFailed } = await readSse(res);
+    expect(full).toBe("a thoughtful answer"); // own generation was streamed
+    expect(saveFailed).toBe(false);           // the turn IS saved (by the twin)
+    expect(refund).toHaveBeenCalledWith("u1"); // only one charge for one logical turn
+  });
+
+  it("upsert error → saveFailed marker, no refund (content delivered)", async () => {
+    const state = {
+      report: { session_id: "s1", user_id: "u1", question: "q", cast_data: GOOD_CAST, ai_response: "r" },
+      upsertError: { message: "rls denied" },
+    };
+    lastState = state as typeof lastState;
+    fromDb.mockImplementation(tableMock(state));
+    const res = await POST(req({ sessionId: "s1", question: "why?", turnKey: KEY }));
+    expect(res.status).toBe(200);
+    const { saveFailed } = await readSse(res);
+    expect(saveFailed).toBe(true);
+    expect(refund).not.toHaveBeenCalled();
+  });
+
+  it("replay works even at the 20-turn cap (retry recovers before cap check)", async () => {
+    fromDb.mockImplementation(tableMock({
+      report: { session_id: "s1", user_id: "u1", question: "q", cast_data: GOOD_CAST, ai_response: "r" },
+      replayRow: { id: KEY, session_id: "s1", question: "why?", answer: "stored at cap" },
+      turns: Array.from({ length: 20 }, (_, i) => ({ id: String(i), question: "q", answer: "a", turn_index: i + 1, created_at: "2026-01-01" })),
+    }));
+    const res = await POST(req({ sessionId: "s1", question: "why?", turnKey: KEY }));
+    expect(res.status).toBe(200);
+    const { full, replay } = await readSse(res);
+    expect(replay).toBe(true);
+    expect(full).toBe("stored at cap");
+    expect(checkUsage).not.toHaveBeenCalled();
   });
 });
 
