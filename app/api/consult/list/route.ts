@@ -15,7 +15,7 @@ export async function GET() {
 
   const { data, error } = await supabase
     .from("consult_results")
-    .select("session_id, question, cast_data, created_at, next_step")
+    .select("session_id, question, cast_data, created_at, next_step, action_status")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(10);
@@ -32,6 +32,7 @@ export async function GET() {
       changingLines: r.cast_data?.changingLines || [],
       createdAt: r.created_at,
       hasNextStep: !!r.next_step,
+      actionStatus: r.action_status || null,
     })),
   });
 }

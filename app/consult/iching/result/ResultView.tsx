@@ -9,6 +9,7 @@ import type { ConsultResult } from "@/lib/consult-session";
 import { getHexagramByNumber } from "@/lib/iching-data";
 import { logEvent } from "@/lib/analytics";
 import FollowupSection from "./FollowupSection";
+import ActionReview, { type ActionStatus } from "./ActionReview";
 
 /**
  * Account-save status lifecycle:
@@ -160,6 +161,8 @@ export default function ResultView() {
   const [accountStatus, setAccountStatus] = useState<AccountSaveStatus>("checking");
   const [nextStepStatus, setNextStepStatus] = useState<NextStepStatus>("idle");
   const [restoredFromCloud, setRestoredFromCloud] = useState(false);
+  // Server-confirmed action status + review note (bump rev to re-seed the panel)
+  const [actionReview, setActionReview] = useState<{ status: ActionStatus | null; note: string; rev: number } | null>(null);
   // Guard against stale async responses overwriting newer state
   const statusReqId = useRef(0);
   const nextStepReqId = useRef(0);
@@ -188,6 +191,11 @@ export default function ResultView() {
                 setNextStepInput(data.result.nextStep);
                 saveConsultNextStep(local.sessionId, data.result.nextStep, { ...local, nextStep: data.result.nextStep });
               }
+              setActionReview((prev) => ({
+                status: data.result.actionStatus ?? null,
+                note: data.result.reviewNote ?? "",
+                rev: (prev?.rev ?? 0) + 1,
+              }));
             } else {
               setAccountStatus("local"); // logged in but not found in account
             }
@@ -213,6 +221,11 @@ export default function ResultView() {
             setNextStepInput(data.result.nextStep || "");
             setRestoredFromCloud(true);
             setAccountStatus("saved");
+            setActionReview({
+              status: data.result.actionStatus ?? null,
+              note: data.result.reviewNote ?? "",
+              rev: 1,
+            });
             // History recovery: no local copy existed — this came from the account.
             logEvent("consult_result_restored");
             saveConsultNextStep(data.result.sessionId, data.result.nextStep || "", data.result);
@@ -481,6 +494,14 @@ export default function ResultView() {
             {nextStepStatus === "saving" ? "Saving…" : nextStepStatus === "saved" ? "Saved ✓" : nextStepStatus === "error" ? "Retry Save" : "Save"}
           </button>
         </div>
+
+        {/* 7.5 Action status + reflection note — user-set only, private, no AI */}
+        <ActionReview
+          key={actionReview?.rev ?? 0}
+          sessionId={result.sessionId}
+          initialStatus={actionReview?.status ?? undefined}
+          initialNote={actionReview?.note ?? undefined}
+        />
       </Section>
 
       {/* Actions */}

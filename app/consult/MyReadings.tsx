@@ -11,6 +11,7 @@ interface ReadingSummary {
   changingLines: number[];
   createdAt: string;
   hasNextStep: boolean;
+  actionStatus?: "not_started" | "in_progress" | "done" | null;
 }
 
 /**
@@ -64,6 +65,8 @@ export default function MyReadings() {
               {" · "}
               {new Date(r.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
               {r.hasNextStep && " · ✓ has next step"}
+              {r.actionStatus === "in_progress" && " · ⟳ 进行中"}
+              {r.actionStatus === "done" && " · ✓ 已完成"}
             </p>
           </Link>
         ))}
