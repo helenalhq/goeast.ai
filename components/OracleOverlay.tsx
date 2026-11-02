@@ -13,6 +13,7 @@ import {
   unsealTextDraft,
   takeSource,
 } from "@/lib/draft";
+import { readSseData } from "@/lib/sse";
 import { logEvent } from "@/lib/analytics";
 import {
   ICHING_CONTEXT_DRAFT_KEY,
@@ -669,37 +670,29 @@ export default function OracleOverlay({
         return;
       }
 
-      const decoder = new TextDecoder();
       let accumulated = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value, { stream: true });
-        for (const line of chunk.split("\n")) {
-          if (!line.startsWith("data: ")) continue;
-          const payload = line.slice(6).trim();
-          if (payload === "[DONE]") {
-            // Reading finished successfully — drop the draft so it doesn't
-            // restore as a stale question on the next open.
-            clearDraft(draftKey);
-            clearDraft(ICHING_CONTEXT_DRAFT_KEY);
-            setIchingCtx(null);
-            logEvent("oracle_reading_delivered", { philosopher: slug });
-            break;
-          }
-          try {
-            const parsed = JSON.parse(payload);
-            if (parsed.content) {
-              accumulated += parsed.content;
-              setReading(accumulated);
-            }
-          } catch {
-            // Skip malformed lines
-          }
+      // Carry-buffered SSE reader — frames split across network chunks are
+      // delivered whole (the naive per-chunk split drops them silently).
+      await readSseData(reader, (payload) => {
+        if (payload === "[DONE]") {
+          // Reading finished successfully — drop the draft so it doesn't
+          // restore as a stale question on the next open.
+          clearDraft(draftKey);
+          clearDraft(ICHING_CONTEXT_DRAFT_KEY);
+          setIchingCtx(null);
+          logEvent("oracle_reading_delivered", { philosopher: slug });
+          return;
         }
-      }
+        try {
+          const parsed = JSON.parse(payload);
+          if (parsed.content) {
+            accumulated += parsed.content;
+            setReading(accumulated);
+          }
+        } catch {
+          // Skip malformed lines
+        }
+      });
       setStreaming(false);
     } catch {
       setErrorMsg("The oracle could not be reached. Please try again.");
@@ -1079,8 +1072,8 @@ export default function OracleOverlay({
                         style={{ fontFamily: SERIF }}
                       >
                         <li className="flex items-center gap-2">
-                          <span style={{ color: `rgba(${accent},0.5)` }}>追问</span>
-                          Deep conversation mode — follow-up questions
+                          <span style={{ color: `rgba(${accent},0.5)` }}>额度</span>
+                          10 readings/day — including follow-up questions on saved readings
                         </li>
                         <li className="flex items-center gap-2">
                           <span style={{ color: `rgba(${accent},0.5)` }}>多哲</span>

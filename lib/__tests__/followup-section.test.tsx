@@ -79,6 +79,38 @@ describe("ask + failure handling", () => {
     expect(logEvent).toHaveBeenCalledWith("consult_followup_failed", { reason: "limit_reached" });
   });
 
+  it("streams a live preview while generating, then the final thread replaces it", async () => {
+    // Multi-read stream with delays: the partial "part1" must be visible
+    // BEFORE the stream completes — that's the live preview under test.
+    const enc = new TextEncoder();
+    const stream = new ReadableStream({
+      async start(c) {
+        c.enqueue(enc.encode(`data: ${JSON.stringify({ content: "part1" })}\n\n`));
+        await new Promise((r) => setTimeout(r, 120));
+        c.enqueue(enc.encode(`data: ${JSON.stringify({ content: " part2" })}\n\n`));
+        await new Promise((r) => setTimeout(r, 120));
+        c.enqueue(enc.encode("data: [DONE]\n\n"));
+        c.close();
+      },
+    });
+    fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ followups: [], count: 0, limitReached: false }), { status: 200 }));
+    render(<FollowupSection sessionId="s1" accountStatus="saved" />);
+    fireEvent.click(screen.getByText("继续讨论这次解读"));
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: "live question" } });
+    fetchMock.mockResolvedValueOnce(new Response(stream, { status: 200, headers: { "Content-Type": "text/event-stream" } }));
+    fetchMock.mockResolvedValueOnce(
+      new Response(JSON.stringify({ followups: [{ id: "t1", question: "live question", answer: "part1 part2", turnIndex: 1, createdAt: "2026-01-01" }], count: 1, limitReached: false }), { status: 200 }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: /send/i }));
+
+    // Mid-stream: partial answer + generating indicator both visible
+    await waitFor(() => expect(screen.getByText("part1")).toBeTruthy());
+    await waitFor(() => expect(screen.getByText(/Consulting Zhou Gong/)).toBeTruthy());
+    // Final: canonical thread shows the complete answer
+    await waitFor(() => expect(screen.getByText("part1 part2")).toBeTruthy());
+    await waitFor(() => expect(logEvent).toHaveBeenCalledWith("consult_followup_completed"));
+  });
+
   it("saveFailed marker → warning shown, completed NOT fired, failed save_failed fired", async () => {
     fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ followups: [], count: 0, limitReached: false }), { status: 200 }));
     render(<FollowupSection sessionId="s1" accountStatus="saved" />);

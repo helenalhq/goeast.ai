@@ -5,6 +5,7 @@ import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import { logEvent } from "@/lib/analytics";
 import { loadDraft, saveDraft, clearDraft } from "@/lib/draft";
+import { readSseData } from "@/lib/sse";
 
 type Turn = { id: string; question: string; answer: string; turnIndex: number; createdAt: string };
 type Phase = "idle" | "streaming";
@@ -23,6 +24,7 @@ export default function FollowupSection({ sessionId, accountStatus }: { sessionI
   const [phase, setPhase] = useState<Phase>("idle");
   const [error, setError] = useState("");
   const [saveWarning, setSaveWarning] = useState(false);
+  const [liveAnswer, setLiveAnswer] = useState(""); // streamed preview while generating
   const startedRef = useRef(false);
   const draftKey = `consult:followup:${sessionId}`;
 
@@ -75,6 +77,7 @@ export default function FollowupSection({ sessionId, accountStatus }: { sessionI
     setPhase("streaming");
     setError("");
     setSaveWarning(false);
+    setLiveAnswer("");
 
     try {
       logEvent("consult_followup_started");
@@ -101,6 +104,7 @@ export default function FollowupSection({ sessionId, accountStatus }: { sessionI
         );
         logEvent("consult_followup_failed", { reason });
         setPhase("idle");
+        setLiveAnswer("");
         startedRef.current = false;
         return; // input stays — quota was not consumed for pre-flight failures
       }
@@ -111,33 +115,33 @@ export default function FollowupSection({ sessionId, accountStatus }: { sessionI
         setError("The oracle could not be reached. Please try again.");
         logEvent("consult_followup_failed", { reason: "no_stream" });
         setPhase("idle");
+        setLiveAnswer("");
         startedRef.current = false;
         return;
       }
-      const decoder = new TextDecoder();
       let streamed = "";
       let streamError = false;
       let saveFailed = false;
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        for (const line of decoder.decode(value, { stream: true }).split("\n")) {
-          if (!line.startsWith("data: ")) continue;
-          const payload = line.slice(6).trim();
-          if (payload === "[DONE]") continue;
-          try {
-            const parsed = JSON.parse(payload);
-            if (parsed.content) streamed += parsed.content;
-            if (parsed.saveFailed) saveFailed = true;
-            if (parsed.error) streamError = true;
-          } catch { /* skip */ }
-        }
-      }
+      // Carry-buffered SSE reader — frames split across network chunks are
+      // delivered whole; live preview mirrors the initial reading's stream.
+      await readSseData(reader, (payload) => {
+        if (payload === "[DONE]") return;
+        try {
+          const parsed = JSON.parse(payload);
+          if (parsed.content) {
+            streamed += parsed.content;
+            setLiveAnswer(streamed);
+          }
+          if (parsed.saveFailed) saveFailed = true;
+          if (parsed.error) streamError = true;
+        } catch { /* skip */ }
+      });
 
       if (!streamed || streamError) {
         setError("The oracle could not be reached. Please try again.");
         logEvent("consult_followup_failed", { reason: "empty_response" });
         setPhase("idle");
+        setLiveAnswer("");
         startedRef.current = false;
         return; // charge was refunded server-side
       }
@@ -175,11 +179,13 @@ export default function FollowupSection({ sessionId, accountStatus }: { sessionI
         logEvent("consult_followup_completed");
       }
       setPhase("idle");
+      setLiveAnswer("");
       startedRef.current = false;
     } catch {
       setError("The oracle could not be reached. Please try again.");
       logEvent("consult_followup_failed", { reason: "network" });
       setPhase("idle");
+      setLiveAnswer("");
       startedRef.current = false;
     }
   };
@@ -225,7 +231,15 @@ export default function FollowupSection({ sessionId, accountStatus }: { sessionI
         </p>
       ) : expanded ? (
         phase === "streaming" ? (
-          <p className="text-sm text-warm animate-pulse">Consulting Zhou Gong…</p>
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-ink whitespace-pre-wrap">🧑 {input.trim()}</p>
+            <div className="pl-3 border-l-2 border-sand">
+              <p className="text-xs text-warm animate-pulse mb-1">Consulting Zhou Gong…</p>
+              {liveAnswer && (
+                <p className="font-mono text-xs text-ink/60 whitespace-pre-wrap">{liveAnswer}</p>
+              )}
+            </div>
+          </div>
         ) : (
           <div className="flex flex-col gap-2">
             <textarea

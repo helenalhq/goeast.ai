@@ -222,7 +222,7 @@ function LoginForm() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full border border-sand rounded-lg px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-china-red/40 transition-colors"
+                  className="w-full border border-sand rounded-lg px-4 py-2.5 text-base text-ink focus:outline-none focus:border-china-red/40 transition-colors"
                   placeholder="you@example.com"
                 />
                 <button
@@ -250,7 +250,7 @@ function LoginForm() {
                     maxLength={8}
                     inputMode="numeric"
                     autoComplete="one-time-code"
-                    className="w-full border border-sand rounded-lg px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-china-red/40 transition-colors text-center tracking-[0.3em] font-mono"
+                    className="w-full border border-sand rounded-lg px-4 py-2.5 text-base text-ink focus:outline-none focus:border-china-red/40 transition-colors text-center tracking-[0.3em] font-mono"
                     placeholder="00000000"
                   />
                   <p className="text-xs text-warm/60 mt-1">
@@ -303,7 +303,7 @@ function LoginForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full border border-sand rounded-lg px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-china-red/40 transition-colors"
+                className="w-full border border-sand rounded-lg px-4 py-2.5 text-base text-ink focus:outline-none focus:border-china-red/40 transition-colors"
                 placeholder="you@example.com"
               />
             </div>
@@ -318,7 +318,7 @@ function LoginForm() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full border border-sand rounded-lg px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-china-red/40 transition-colors"
+                className="w-full border border-sand rounded-lg px-4 py-2.5 text-base text-ink focus:outline-none focus:border-china-red/40 transition-colors"
                 placeholder="Min 6 characters"
               />
             </div>

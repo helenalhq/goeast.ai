@@ -160,11 +160,12 @@ emails, calendar, complex review systems. The existing next-step save stays
 as-is. OracleOverlay is not touched (its Pro upsell copy already advertises
 follow-ups; unifying that entry point is future work).
 
-**Known copy issue (deferred, owner decision 2026-11-02):** the OracleOverlay
-Pro-unlock bullet "Deep conversation mode — follow-up questions" reads as if
-follow-ups were Pro-exclusive, while report follow-ups work for free users
-within their daily pool. Deferred to a future copy pass along with overlay
-entry-point unification.
+**Known copy issue (RESOLVED 2026-11-02):** the OracleOverlay Pro-unlock bullet
+previously read "Deep conversation mode — follow-up questions", implying
+follow-ups were Pro-exclusive while report follow-ups work for free users
+within their daily pool. Replaced with an accurate quota bullet
+("10 readings/day — including follow-up questions on saved readings"); overlay
+entry-point unification remains future work.
 
 ## Acceptance criteria mapping
 

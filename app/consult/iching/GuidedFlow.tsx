@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { saveDraft, loadDraft, clearDraft } from "@/lib/draft";
+import { readSseData } from "@/lib/sse";
 import { loginUrlWithNext } from "@/lib/auth-redirect";
 import { logEvent } from "@/lib/analytics";
 import { buildIchingContext } from "@/lib/iching-context";
@@ -169,30 +170,25 @@ export default function GuidedFlow({ hexagrams }: { hexagrams: HexagramData[] })
         startedRef.current = false;
         return;
       }
-      const decoder = new TextDecoder();
       let accumulated = "";
       let streamError = false;
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        for (const line of decoder.decode(value, { stream: true }).split("\n")) {
-          if (!line.startsWith("data: ")) continue;
-          const payload = line.slice(6).trim();
-          if (payload === "[DONE]") continue;
-          try {
-            const parsed = JSON.parse(payload);
-            if (parsed.content) {
-              accumulated += parsed.content;
-              setStreamedText(accumulated);
-            }
-            if (parsed.error) {
-              streamError = true;
-            }
-          } catch {
-            // skip malformed line
+      // Carry-buffered SSE reader — frames split across network chunks are
+      // delivered whole (the naive per-chunk split drops them silently).
+      await readSseData(reader, (payload) => {
+        if (payload === "[DONE]") return;
+        try {
+          const parsed = JSON.parse(payload);
+          if (parsed.content) {
+            accumulated += parsed.content;
+            setStreamedText(accumulated);
           }
+          if (parsed.error) {
+            streamError = true;
+          }
+        } catch {
+          // skip malformed line
         }
-      }
+      });
 
       if (!accumulated || streamError) {
         setError("The oracle could not be reached. Please try again.");
