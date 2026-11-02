@@ -118,6 +118,27 @@ async function reportRows() {
   return body || [];
 }
 
+async function followupRows(sessionId) {
+  const { body } = await sb(`/rest/v1/consult_followups?session_id=eq.${sessionId}&select=id,turn_index,question,answer,created_at&order=turn_index.asc`);
+  return body || [];
+}
+
+async function reportSnapshot(sessionId) {
+  const { body } = await sb(`/rest/v1/consult_results?session_id=eq.${sessionId}&select=question,ai_response,updated_at,next_step`);
+  return body && body[0] ? body[0] : null;
+}
+
+async function createQaUser(label) {
+  const email = `qa-${label}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}@qa.goeast.test`;
+  const password = `Qa-${label}-${Math.random().toString(36).slice(2, 10)}!x`;
+  const { status, body } = await sb("/auth/v1/admin/users", {
+    method: "POST",
+    body: JSON.stringify({ email, password, email_confirm: true }),
+  });
+  if ((status !== 200 && status !== 201) || !body?.id) throw new Error(`qa user create failed ${status}`);
+  return { email, password, id: body.id };
+}
+
 // --- browser + capture -------------------------------------------------------
 function findChromium() {
   const base = `${process.env.HOME}/Library/Caches/ms-playwright`;
@@ -552,10 +573,113 @@ async function groupC() {
   }
 }
 
+// ============================================================================
+// GROUP D — follow-up Q&A: same-cast grounding, persistence, permissions
+// Quota budget for a fresh free user: report(1) + followup#1(1) + followup#2(1) = 3
+// ============================================================================
+async function groupD() {
+  const g = "D";
+  const { context, page } = await mobilePage();
+  try {
+    await loginViaUi(page, g);
+
+    // 1. Create a report (charge 1) and snapshot the original row
+    await wizardToConfirm(page, g, `Followup base ${PII.question} — one reading to discuss.`);
+    await page.locator("button", { hasText: "Start Reading" }).first().tap();
+    await page.waitForURL(/\/consult\/iching\/result\?session=/, { timeout: 180000 });
+    await page.waitForSelector("text=Your Hexagram", { timeout: 60000 });
+    const sessionId = decodeURIComponent(page.url().match(/session=([^&]+)/)[1]);
+    const before = await reportSnapshot(sessionId);
+    const hexBefore = await page.locator("text=/Hexagram \\d+/").first().textContent();
+    check(g, "base report created", !!before, sessionId.slice(0, 8));
+
+    // 2. Follow-up #1 (charge 2)
+    await page.waitForSelector("text=继续讨论这次解读", { timeout: 30000 });
+    await page.locator("button", { hasText: "继续讨论这次解读" }).first().tap();
+    const ta = page.locator("textarea").last();
+    await typeWithKeyboardChecks(page, ta, `First follow-up ${PII.question} — what does the changing line mean?`, "followup input", g);
+    let posts = 0;
+    const countReq = (r) => { if (r.url().includes("/api/consult/followup") && r.method() === "POST") posts++; };
+    page.on("request", countReq);
+    await page.locator("button", { hasText: "Send" }).first().tap();
+    await page.waitForSelector(`text=First follow-up`, { timeout: 180000 });
+    check(g, "follow-up #1 turns appear in thread", true);
+
+    // 3. Follow-up #2 (charge 3) — rapid double-click on Send (still 1 POST)
+    await ta.fill(`Second follow-up — how should I act on this?`);
+    await page.locator("button", { hasText: "Send" }).first().tap();
+    await page.locator("button", { hasText: "Send" }).first().tap().catch(() => {});
+    await page.waitForSelector("text=Second follow-up", { timeout: 180000 });
+    await page.waitForTimeout(1500);
+    page.off("request", countReq);
+    check(g, "two follow-ups, exactly 2 POSTs (double-click safe)", posts === 2, `${posts} POSTs`);
+
+    // 4. Original report unchanged + follow-up rows saved
+    const after = await reportSnapshot(sessionId);
+    check(g, "original report row unchanged", JSON.stringify(after) === JSON.stringify(before), "");
+    const rows = await followupRows(sessionId);
+    check(g, "exactly 2 follow-up rows", rows.length === 2, `${rows.length} rows`);
+    const hexAfter = await page.locator("text=/Hexagram \\d+/").first().textContent();
+    check(g, "hexagram unchanged on page", hexBefore === hexAfter, `${hexBefore} → ${hexAfter}`);
+    const usage = await usageCount();
+    check(g, "usage = 3 (report + 2 follow-ups)", usage === 3, `usage=${usage}`);
+
+    // 5. Refresh — thread restored read-only, no new POSTs/charges
+    let refreshPosts = 0;
+    const countReq2 = (r) => { if (r.url().includes("/api/consult/followup") && r.method() === "POST") refreshPosts++; };
+    page.on("request", countReq2);
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await page.waitForSelector("text=Second follow-up", { timeout: 60000 });
+    await page.waitForTimeout(1500);
+    page.off("request", countReq2);
+    check(g, "refresh restores full thread, 0 POSTs", refreshPosts === 0, `${refreshPosts} POSTs`);
+    check(g, "refresh does not re-charge", (await usageCount()) === 3, "");
+    const after2 = await reportSnapshot(sessionId);
+    check(g, "report row still unchanged", JSON.stringify(after2) === JSON.stringify(before), "");
+    await shot(page, "d1-followup-thread");
+
+    // 6. Cross-account permission: fresh user cannot read or follow up
+    const user2 = await createQaUser("3d2");
+    const ctx2 = await browser.newContext({
+      viewport: { width: 375, height: 812 },
+      isMobile: true,
+      hasTouch: true,
+      ...(process.env.VERCEL_BYPASS_TOKEN
+        ? { extraHTTPHeaders: { "x-vercel-protection-bypass": process.env.VERCEL_BYPASS_TOKEN } }
+        : {}),
+    });
+    const p3 = await ctx2.newPage();
+    await p3.goto(`${BASE}/login`, { waitUntil: "domcontentloaded" });
+    await p3.fill("#email", user2.email);
+    await p3.fill("#password", user2.password);
+    await p3.locator("button", { hasText: "Sign In" }).first().tap();
+    await p3.waitForURL((u) => !u.pathname.includes("/login"), { timeout: 30000 });
+    const readRes = await p3.evaluate(async (sid) =>
+      (await fetch(`/api/consult/followup?session_id=${encodeURIComponent(sid)}`, { method: "GET" })).status
+    , sessionId);
+    check(g, "other account GET → 404", readRes === 404, `status ${readRes}`);
+    const askRes = await p3.evaluate(async (sid) =>
+      (await fetch("/api/consult/followup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId: sid, question: "let me in?" }),
+      })).status
+    , sessionId);
+    check(g, "other account POST → 404", askRes === 404, `status ${askRes}`);
+    check(g, "other account created no rows", (await followupRows(sessionId)).length === 2, "");
+    await ctx2.close();
+  } catch (e) {
+    check(g, "group D flow error", false, String(e).slice(0, 300));
+  } finally {
+    await context.close();
+  }
+}
+
 // --- run ---------------------------------------------------------------------
 if (GROUPS.includes("a")) { RUN.groups.push("A"); console.log("\n=== GROUP A: success flow ==="); await groupA(); }
 if (GROUPS.includes("b")) { RUN.groups.push("B"); console.log("\n=== GROUP B: failure recovery ==="); await groupB(); }
 if (GROUPS.includes("c")) { RUN.groups.push("C"); console.log("\n=== GROUP C: duplicate submission ==="); await groupC(); }
+if (GROUPS.includes("d")) { RUN.groups.push("D"); console.log("\n=== GROUP D: follow-up Q&A ==="); await groupD(); }
 
 await browser.close();
 
