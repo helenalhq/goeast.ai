@@ -51,21 +51,21 @@ This is the exact cast used in [GoEast's public example reading](/examples/ichin
 - **Changing line: line 3** — the third throw summed to 9 (old yang), a solid line about to turn.
 - **Flip line 3** from solid (yang) to broken (yin): the sequence becomes **yin–yang–yin–yang–yin–yin**, which is **hexagram 40, Jie (解 / Deliverance)**.
 
-So the cast is written: **Hexagram 32, changing line 3, transforming to hexagram 40** — one changing line, counted from the bottom, producing one transformed hexagram. You can see both hexagrams rendered side by side, with line 3 highlighted, in [the example reading](/examples/iching-writing-habit), and read the hexagrams themselves on their own pages: [Hexagram 32 · Heng](/iching/heng) and [Hexagram 40 · Jie](/iching/jie).
+So the cast is written: **Hexagram 32, changing line 3, transforming to hexagram 40** — one changing line, counted from the bottom, producing one transformed hexagram. You can read the full interpretation for this exact pair of hexagrams in [the example reading](/examples/iching-writing-habit), and read the hexagrams themselves on their own pages: [Hexagram 32 · Heng](/iching/heng) and [Hexagram 40 · Jie](/iching/jie).
 
 ## No Changing Lines, One, or Several
 
 **No changing lines.** The cast is static. The situation is read through the primary hexagram alone — its judgment (卦辞) and image (象辭), and what they suggest about your question. There is no transformed hexagram.
 
-**One changing line.** The changing line is the focal point of the reading: where the tension lives, and the thread connecting the primary hexagram to the transformed one. Most traditions give a single changing line special weight.
+**One changing line.** The changing line is the focal point of the reading: where the tension lives, and the thread connecting the primary hexagram to the transformed one. In Zhu Xi's scheme, a single changing line is read through that line's own text.
 
 **Multiple changing lines.** Here the traditions genuinely diverge, and it is worth knowing that no single rule is "the" rule:
 
-- One classical school (systematized by Zhu Xi in the *Yixue Qimeng* 易學啟蒙, 1186) assigns different protocols depending on how many lines change — for example, with two changing lines, read the two changing lines' texts, preferring the lower; with none of the special cases, read the primary hexagram's judgment.
+- One classical school (systematized by Zhu Xi in the *Yixue Qimeng* 易學啟蒙, 1186) assigns a different protocol to each count of changing lines. In that scheme, with **two** changing lines you read the two changing lines' texts of the primary hexagram (本卦)， with the **upper** of the two as the primary one (以上爻为主).
 - Other readers take only the **uppermost** changing line as the operative one.
 - Still others read the situation primarily through the **pair of hexagrams** — the primary's judgment for the present, the transformed's for the direction — without leaning on individual line texts at all.
 
-These are schools of reading, not facts. What they share: changing lines mark movement, and more changing lines mark a more turbulent, faster-moving situation.
+These are schools of reading, not facts; which one you follow is a choice of tradition, not a matter of correctness.
 
 ## How GoEast Handles Changing Lines
 
