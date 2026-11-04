@@ -870,7 +870,11 @@ async function groupF() {
     page.on("request", noAi);
     await page.goto(`${BASE}/ziwei/synastry`, { waitUntil: "domcontentloaded" });
     await page.waitForSelector("text=My Relationship Reports", { timeout: 30000 });
-    await page.locator("a", { hasText: "1995-01-01" }).first().tap();
+    // Target the ROMANTIC seed by its sessionId (a business seed shares the
+    // same birth dates and sorts first) — list fetch resolves after the heading.
+    const romanticLink = page.locator(`a[href*="${sessionId}"]`);
+    await romanticLink.waitFor({ timeout: 30000 });
+    await romanticLink.tap();
     await page.waitForSelector("text=AI Interpretation", { timeout: 60000 });
     await page.waitForSelector("text=继续讨论这份关系解读", { timeout: 30000 });
     check(g, "history entry opens report with follow-up section", true);
@@ -931,9 +935,11 @@ async function groupF() {
     // 7. Reopen from My Relationship Reports — note + status restored, list marker
     await page.goto(`${BASE}/ziwei/synastry`, { waitUntil: "domcontentloaded" });
     await page.waitForSelector("text=My Relationship Reports", { timeout: 30000 });
+    const romanticLink2 = page.locator(`a[href*="${sessionId}"]`);
+    await romanticLink2.waitFor({ timeout: 30000 });
     const marker = await page.locator("text=⟳ 进行中").count();
     check(g, "history list shows 进行中 marker", marker > 0, `${marker} markers`);
-    await page.locator("a", { hasText: "1995-01-01" }).first().tap();
+    await romanticLink2.tap();
     await page.waitForSelector("text=继续讨论这份关系解读", { timeout: 60000 });
     await page.waitForTimeout(2000);
     const reopenedNote = await page.locator("textarea").last().inputValue();

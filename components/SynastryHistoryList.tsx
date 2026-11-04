@@ -36,7 +36,9 @@ export default function SynastryHistoryList() {
         const res = await fetch("/api/synastry/list");
         if (res.ok) {
           const json = await res.json();
-          setReports(json.reports || []);
+          // The API returns { readings } — reading `reports` here always
+          // yielded an empty list (previously masked by the silent-null).
+          setReports(json.readings || []);
         } else {
           setLoadError(true);
         }

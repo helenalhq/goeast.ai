@@ -395,9 +395,12 @@ try {
     }
     setScenario("ok");
 
-    // disconnect mid-stream → server still saves; retry same key replays
+    // disconnect mid-stream → server still saves; retry same key replays.
+    // slowok: content starts at ~800ms, so aborting at 300ms lands DURING the
+    // model stream (post-charge) — synastry pre-flight alone exceeds 300ms.
     const K = crypto.randomUUID();
     const callsBefore = mockRequests().length;
+    setScenario("slowok");
     await A.ask(synId, "synastry disconnect me", K, { abortAfterMs: 300, endpoint: "/api/synastry/followup" }).catch(() => {});
     await sleep(2500);
     let rows = await synRows();
@@ -410,6 +413,7 @@ try {
     check("S retry same key → replay, no regeneration", dRetry.replay === true && mockRequests().length === callsBefore + 1, `replay/${callsBefore + 1} calls`, `${dRetry.replay}/${mockRequests().length}`);
     check("S retry same key → no new row/charge", rows.length === 1 && u === usageMark + 1, `1 row/usage ${usageMark + 1}`, `${rows.length} rows/usage ${u}`);
     usageMark = u;
+    setScenario("ok");
   }
 
   console.log("\n== E0 PII spot-check (request log has no question text) ==");
