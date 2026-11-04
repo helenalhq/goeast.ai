@@ -139,6 +139,41 @@ async function createQaUser(label) {
   return { email, password, id: body.id };
 }
 
+const SYN_CHART = {
+  fiveElementsClass: "木三局", soul: "贪狼", body: "天同", zodiac: "寅",
+  palaces: [
+    { name: "命宫", heavenlyStem: "戊", earthlyBranch: "寅", majorStars: [{ name: "太阳", brightness: "得" }] },
+    { name: "夫妻宫", heavenlyStem: "壬", earthlyBranch: "申", majorStars: [] },
+    { name: "财帛宫", heavenlyStem: "庚", earthlyBranch: "午", majorStars: [{ name: "武曲", brightness: "庙" }] },
+  ],
+};
+
+async function seedSynastryReport(user, sessionId, relationshipType = "romantic") {
+  const { status } = await sb("/rest/v1/synastry_results", {
+    method: "POST",
+    body: JSON.stringify({
+      session_id: sessionId, user_id: user.id,
+      relationship_type: relationshipType,
+      person_a: { name: "A", birthDate: "1995-01-01", birthHour: 2, gender: "female" },
+      person_b: { name: "B", birthDate: "1993-07-20", birthHour: 8, gender: "male" },
+      language: "both",
+      chart_a: SYN_CHART, chart_b: SYN_CHART,
+      ai_response: "E2E seed synastry report: structured dual-chart reading text.",
+    }),
+  });
+  if (status !== 201) throw new Error(`synastry seed failed ${status}`);
+}
+
+async function synastrySnapshot(sessionId) {
+  const { body } = await sb(`/rest/v1/synastry_results?session_id=eq.${sessionId}&select=relationship_type,person_a,person_b,chart_a,chart_b,ai_response,updated_at,action_status,review_note`);
+  return body && body[0] ? body[0] : null;
+}
+
+async function synastryFollowupRows(sessionId) {
+  const { body } = await sb(`/rest/v1/synastry_followups?session_id=eq.${sessionId}&select=id,turn_index,question,answer&order=turn_index.asc`);
+  return body || [];
+}
+
 // --- browser + capture -------------------------------------------------------
 function findChromium() {
   const base = `${process.env.HOME}/Library/Caches/ms-playwright`;
@@ -809,6 +844,170 @@ if (GROUPS.includes("b")) { RUN.groups.push("B"); console.log("\n=== GROUP B: fa
 if (GROUPS.includes("c")) { RUN.groups.push("C"); console.log("\n=== GROUP C: duplicate submission ==="); await groupC(); }
 if (GROUPS.includes("d")) { RUN.groups.push("D"); console.log("\n=== GROUP D: follow-up Q&A ==="); await groupD(); }
 if (GROUPS.includes("e")) { RUN.groups.push("E"); console.log("\n=== GROUP E: action review V1 ==="); await groupE(); }
+if (GROUPS.includes("f")) { RUN.groups.push("F"); console.log("\n=== GROUP F: synastry follow-up V1 ==="); await groupF(); }
+
+// ============================================================================
+// GROUP F — synastry follow-up + relationship action V1 (romantic only).
+// Report seeded via admin REST (deterministic; the generation path itself is
+// unchanged). Follow-ups charge the shared pool: report(seeded, 0) + 2
+// follow-ups = 2 charges.
+// ============================================================================
+async function groupF() {
+  const g = "F";
+  const { context, page } = await mobilePage();
+  try {
+    await loginViaUi(page, g);
+    const sessionId = `syn-${Date.now()}`;
+    await seedSynastryReport(QA, sessionId);
+    await seedSynastryReport(QA, `syn-biz-${Date.now()}`, "business"); // non-romantic
+    const before = await synastrySnapshot(sessionId);
+    const usageStart = await usageCount();
+    check(g, "seeded romantic report present", !!before, sessionId.slice(0, 10));
+
+    // 1. Open the report from history entry point: My Relationship Reports on /ziwei/synastry
+    let aiPosts = 0;
+    const noAi = (r) => { if (r.url().includes("/api/ziwei/synastry") && r.method() === "POST") aiPosts++; };
+    page.on("request", noAi);
+    await page.goto(`${BASE}/ziwei/synastry`, { waitUntil: "domcontentloaded" });
+    await page.waitForSelector("text=My Relationship Reports", { timeout: 30000 });
+    await page.locator("a", { hasText: "1995-01-01" }).first().tap();
+    await page.waitForSelector("text=AI Interpretation", { timeout: 60000 });
+    await page.waitForSelector("text=继续讨论这份关系解读", { timeout: 30000 });
+    check(g, "history entry opens report with follow-up section", true);
+    await noOverflow(page, "synastry result", g);
+
+    // 2. Follow-up #1 (charge 1)
+    await page.locator("button", { hasText: "继续讨论这份关系解读" }).first().tap();
+    const ta = page.locator("textarea[aria-label='Follow-up question']");
+    await typeWithKeyboardChecks(page, ta, `First synastry follow-up ${PII.question} — what does his Life Palace borrowing mean?`, "synastry followup input", g);
+    let posts = 0;
+    const countReq = (r) => { if (r.url().includes("/api/synastry/followup") && r.method() === "POST") posts++; };
+    page.on("request", countReq);
+    await page.locator("button", { hasText: "Send" }).first().tap();
+    await page.waitForSelector("text=First synastry follow-up", { timeout: 180000 });
+    check(g, "follow-up #1 appears in thread", true);
+
+    // 3. Follow-up #2 (charge 2) with rapid double-click — still 2 POSTs total
+    await ta.fill("Second follow-up — how should I bring up money topics?");
+    await page.locator("button", { hasText: "Send" }).first().tap();
+    await page.locator("button", { hasText: "Send" }).first().tap().catch(() => {});
+    await page.waitForSelector("text=Second follow-up", { timeout: 180000 });
+    await page.waitForTimeout(1500);
+    page.off("request", countReq);
+    check(g, "two follow-ups, exactly 2 POSTs (double-click safe)", posts === 2, `${posts} POSTs`);
+
+    // 4. Original report unchanged + rows + quota
+    const after = await synastrySnapshot(sessionId);
+    check(g, "original synastry report row unchanged", JSON.stringify(after) === JSON.stringify(before), "");
+    const rows = await synastryFollowupRows(sessionId);
+    check(g, "exactly 2 follow-up rows", rows.length === 2, `${rows.length} rows`);
+    const usage = await usageCount();
+    check(g, "usage = 2 charges (seeded report costs 0)", usage === usageStart + 2, `${usageStart}→${usage}`);
+    await shot(page, "f1-synastry-followup");
+
+    // 5. Refresh — thread restored read-only, no new POSTs/charges
+    let refreshPosts = 0;
+    const countReq2 = (r) => { if (r.url().includes("/api/synastry/followup") && r.method() === "POST") refreshPosts++; };
+    page.on("request", countReq2);
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await page.waitForSelector("text=Second follow-up", { timeout: 60000 });
+    await page.waitForTimeout(1500);
+    page.off("request", countReq2);
+    check(g, "refresh restores thread, 0 POSTs", refreshPosts === 0, `${refreshPosts} POSTs`);
+    check(g, "refresh does not re-charge", (await usageCount()) === usageStart + 2, "");
+    check(g, "report row still unchanged after refresh", JSON.stringify(await synastrySnapshot(sessionId)) === JSON.stringify(before), "");
+
+    // 6. Action status + reflection note (no AI, no charge)
+    const note = `Synastry reflection ${PII.question} — tried the afternoon-walk conversation.`;
+    await page.locator("button", { hasText: "进行中" }).first().tap();
+    await page.waitForTimeout(1200);
+    await typeWithKeyboardChecks(page, page.locator("textarea").last(), note, "synastry review note", g);
+    await page.locator("button", { hasText: "Save" }).last().tap();
+    await page.waitForSelector("text=Saved ✓", { timeout: 15000 });
+    const rowAfterAction = await synastrySnapshot(sessionId);
+    check(g, "action status + note persisted", rowAfterAction.action_status === "in_progress" && rowAfterAction.review_note === note, rowAfterAction.action_status);
+    check(g, "action/note cost no quota", (await usageCount()) === usageStart + 2, "");
+
+    // 7. Reopen from My Relationship Reports — note + status restored, list marker
+    await page.goto(`${BASE}/ziwei/synastry`, { waitUntil: "domcontentloaded" });
+    await page.waitForSelector("text=My Relationship Reports", { timeout: 30000 });
+    const marker = await page.locator("text=⟳ 进行中").count();
+    check(g, "history list shows 进行中 marker", marker > 0, `${marker} markers`);
+    await page.locator("a", { hasText: "1995-01-01" }).first().tap();
+    await page.waitForSelector("text=继续讨论这份关系解读", { timeout: 60000 });
+    await page.waitForTimeout(2000);
+    const reopenedNote = await page.locator("textarea").last().inputValue();
+    check(g, "reopening restores note", reopenedNote === note, reopenedNote.slice(0, 25));
+
+    // 8. Non-romantic report: section absent client-side + server 422
+    const biz = `syn-biz-${Date.now()}`;
+    // (already seeded with the same timestamp family — find it via API instead)
+    const bizRows = await sb(`/rest/v1/synastry_results?user_id=eq.${QA.id}&relationship_type=eq.business&select=session_id&order=created_at.desc&limit=1`);
+    const bizId = bizRows.body?.[0]?.session_id;
+    const bizRes = await page.evaluate(async (sid) => {
+      const r = await fetch("/api/synastry/followup", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId: sid, question: "business question?" }),
+      });
+      return { status: r.status, code: (await r.json().catch(() => ({}))).code };
+    }, bizId);
+    check(g, "non-romantic follow-up → 422 RELATIONSHIP_TYPE_UNSUPPORTED", bizRes.status === 422 && bizRes.code === "RELATIONSHIP_TYPE_UNSUPPORTED", `${bizRes.status}/${bizRes.code}`);
+
+    // 9. Quota exhausted → 429 LIMIT_REACHED, no model call
+    await sb("/rest/v1/usage_log", {
+      method: "POST",
+      body: JSON.stringify([{ user_id: QA.id, window_start: `${new Date().toISOString().slice(0, 10)}T00:00:00+00`, count: 3 }]),
+      headers: { Prefer: "resolution=merge-duplicates" },
+    });
+    const limited = await page.evaluate(async (sid) => {
+      const r = await fetch("/api/synastry/followup", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId: sid, question: "one more?" }),
+      });
+      return r.status;
+    }, sessionId);
+    check(g, "quota exhausted → 429", limited === 429, `${limited}`);
+    check(g, "no extra rows after limit", (await synastryFollowupRows(sessionId)).length === 2, "");
+
+    // 10. Cross-account: read and write both denied, data unchanged
+    const user2 = await createQaUser("3f2");
+    const ctx2 = await browser.newContext({
+      viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true,
+      ...(process.env.VERCEL_BYPASS_TOKEN ? { extraHTTPHeaders: { "x-vercel-protection-bypass": process.env.VERCEL_BYPASS_TOKEN } } : {}),
+    });
+    const p3 = await ctx2.newPage();
+    await p3.goto(`${BASE}/login`, { waitUntil: "domcontentloaded" });
+    await p3.fill("#email", user2.email);
+    await p3.fill("#password", user2.password);
+    await p3.locator("button", { hasText: "Sign In" }).first().tap();
+    await p3.waitForURL((u) => !u.pathname.includes("/login"), { timeout: 30000 });
+    const perms = await p3.evaluate(async (sid) => {
+      const read = await (await fetch(`/api/synastry/result?session_id=${encodeURIComponent(sid)}`)).json();
+      const list = await (await fetch(`/api/synastry/followup?session_id=${encodeURIComponent(sid)}`)).status;
+      const write = await fetch("/api/synastry/followup", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId: sid, question: "hijack?" }),
+      }).then((r) => r.status);
+      const patch = await fetch("/api/synastry/result", {
+        method: "PATCH", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId: sid, actionStatus: "done", reviewNote: "hijack" }),
+      }).then((r) => r.status);
+      return { read: read.result === null ? "null" : "LEAKED", list, write, patch };
+    }, sessionId);
+    check(g, "other account GET report → no data", perms.read === "null", perms.read);
+    check(g, "other account list follow-ups → 404", perms.list === 404, `${perms.list}`);
+    check(g, "other account POST follow-up → 404", perms.write === 404, `${perms.write}`);
+    check(g, "other account PATCH → 404 (no false success)", perms.patch === 404, `${perms.patch}`);
+    const finalSnap = await synastrySnapshot(sessionId);
+    check(g, "other account changed nothing", finalSnap.action_status === "in_progress" && finalSnap.review_note === note, finalSnap.action_status);
+    check(g, "no zero-AI-violation: zero synastry generations", aiPosts === 0, `${aiPosts} gen POSTs`);
+    await ctx2.close();
+  } catch (e) {
+    check(g, "group F flow error", false, String(e).slice(0, 300));
+  } finally {
+    await context.close();
+  }
+}
 
 await browser.close();
 

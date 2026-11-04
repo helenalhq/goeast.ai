@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
-import { logEvent } from "@/lib/analytics";
+import { logEvent, type AnalyticsEvent } from "@/lib/analytics";
 import { loadDraft, saveDraft, clearDraft } from "@/lib/draft";
 import { readSseData } from "@/lib/sse";
 import { newSessionId } from "@/lib/consult-session";
@@ -11,13 +11,35 @@ import { newSessionId } from "@/lib/consult-session";
 type Turn = { id: string; question: string; answer: string; turnIndex: number; createdAt: string };
 type Phase = "idle" | "streaming";
 
+/** Props default to the I Ching reading behavior; the synastry result page
+ *  reuses this component with its own endpoint, event names, and labels. */
+export type FollowupSectionProps = {
+  sessionId: string;
+  accountStatus: "checking" | "saved" | "local" | "error";
+  endpoint?: string;
+  draftPrefix?: string;
+  heading?: string;
+  expandLabel?: string;
+  quotaNote?: string;
+  events?: { started: AnalyticsEvent; completed: AnalyticsEvent; failed: AnalyticsEvent };
+};
+
 /**
- * 继续讨论这次解读 — follow-up Q&A on one saved reading. Server grounds
- * every answer in the DB record (original cast + reading + prior turns);
+ * 继续讨论 — follow-up Q&A on one saved reading. Server grounds
+ * every answer in the DB record (original reading + prior turns);
  * this component only sends sessionId + question text. Turns load read-only
  * on mount — refresh/history reopen never trigger generation.
  */
-export default function FollowupSection({ sessionId, accountStatus }: { sessionId: string; accountStatus: "checking" | "saved" | "local" | "error" }) {
+export default function FollowupSection({
+  sessionId,
+  accountStatus,
+  endpoint = "/api/consult/followup",
+  draftPrefix = "consult",
+  heading = "继续讨论这次解读 · Follow-up",
+  expandLabel = "继续讨论这次解读",
+  quotaNote = "Same cast, same reading — ask anything about them. Follow-ups use your daily consultation quota (3/day free, Pro 10/day).",
+  events = { started: "consult_followup_started", completed: "consult_followup_completed", failed: "consult_followup_failed" },
+}: FollowupSectionProps) {
   const [expanded, setExpanded] = useState(false);
   const [turns, setTurns] = useState<Turn[] | null>(null);
   const [limitReached, setLimitReached] = useState(false);
@@ -32,7 +54,7 @@ export default function FollowupSection({ sessionId, accountStatus }: { sessionI
   // answer instead of regenerating (and recharging). Cleared only after the
   // turn is confirmed saved.
   const turnKeyRef = useRef("");
-  const draftKey = `consult:followup:${sessionId}`;
+  const draftKey = `${draftPrefix}:followup:${sessionId}`;
 
   // Read-only thread load (never generates, never charges)
   /* eslint-disable react-hooks/set-state-in-effect -- one-time external-store hydration */
@@ -41,7 +63,7 @@ export default function FollowupSection({ sessionId, accountStatus }: { sessionI
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch(`/api/consult/followup?session_id=${encodeURIComponent(sessionId)}`);
+        const res = await fetch(`${endpoint}?session_id=${encodeURIComponent(sessionId)}`);
         if (!res.ok || cancelled) return;
         const json = await res.json();
         if (cancelled) return;
@@ -53,7 +75,7 @@ export default function FollowupSection({ sessionId, accountStatus }: { sessionI
       }
     })();
     return () => { cancelled = true; };
-  }, [sessionId, accountStatus]);
+  }, [sessionId, accountStatus, endpoint]);
 
   useEffect(() => {
     const draft = loadDraft<string>(draftKey);
@@ -64,7 +86,7 @@ export default function FollowupSection({ sessionId, accountStatus }: { sessionI
   if (accountStatus !== "saved") {
     return (
       <section className="px-5 sm:px-6 py-5 border-t border-sand">
-        <h2 className="font-serif text-lg text-warm mb-2">继续讨论这次解读</h2>
+        <h2 className="font-serif text-lg text-warm mb-2">{expandLabel}</h2>
         <p className="text-sm text-warm leading-relaxed">
           {accountStatus === "local"
             ? "This reading is only saved in this tab, so follow-up discussion needs it saved to your account. "
@@ -88,8 +110,8 @@ export default function FollowupSection({ sessionId, accountStatus }: { sessionI
     try {
       if (!turnKeyRef.current) turnKeyRef.current = newSessionId();
       const turnKey = turnKeyRef.current;
-      logEvent("consult_followup_started");
-      const res = await fetch("/api/consult/followup", {
+      logEvent(events.started);
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId, question, turnKey }),
@@ -110,7 +132,7 @@ export default function FollowupSection({ sessionId, accountStatus }: { sessionI
               ? "This reading has no usable cast data, so follow-ups are unavailable."
               : "The oracle could not be reached. Please try again."),
         );
-        logEvent("consult_followup_failed", { reason });
+        logEvent(events.failed, { reason });
         setPhase("idle");
         setLiveAnswer("");
         startedRef.current = false;
@@ -121,7 +143,7 @@ export default function FollowupSection({ sessionId, accountStatus }: { sessionI
       const reader = res.body?.getReader();
       if (!reader) {
         setError("The oracle could not be reached. Please try again.");
-        logEvent("consult_followup_failed", { reason: "no_stream" });
+        logEvent(events.failed, { reason: "no_stream" });
         setPhase("idle");
         setLiveAnswer("");
         startedRef.current = false;
@@ -149,7 +171,7 @@ export default function FollowupSection({ sessionId, accountStatus }: { sessionI
 
       if (!streamed || streamError) {
         setError("The oracle could not be reached. Please try again.");
-        logEvent("consult_followup_failed", { reason: "empty_response" });
+        logEvent(events.failed, { reason: "empty_response" });
         setPhase("idle");
         setLiveAnswer("");
         startedRef.current = false;
@@ -167,7 +189,7 @@ export default function FollowupSection({ sessionId, accountStatus }: { sessionI
 
       // Refresh the thread (canonical copy with ids/order), clear the draft
       try {
-        const listRes = await fetch(`/api/consult/followup?session_id=${encodeURIComponent(sessionId)}`);
+        const listRes = await fetch(`${endpoint}?session_id=${encodeURIComponent(sessionId)}`);
         if (listRes.ok) {
           const json = await listRes.json();
           setTurns(json.followups || []);
@@ -185,18 +207,18 @@ export default function FollowupSection({ sessionId, accountStatus }: { sessionI
 
       if (saveFailed) {
         setSaveWarning(true);
-        logEvent("consult_followup_failed", { reason: "save_failed" });
+        logEvent(events.failed, { reason: "save_failed" });
       } else if (replayed) {
-        logEvent("consult_followup_completed", { replayed: true });
+        logEvent(events.completed, { replayed: true });
       } else {
-        logEvent("consult_followup_completed");
+        logEvent(events.completed);
       }
       setPhase("idle");
       setLiveAnswer("");
       startedRef.current = false;
     } catch {
       setError("The oracle could not be reached. Please try again.");
-      logEvent("consult_followup_failed", { reason: "network" });
+      logEvent(events.failed, { reason: "network" });
       setPhase("idle");
       setLiveAnswer("");
       startedRef.current = false;
@@ -205,11 +227,8 @@ export default function FollowupSection({ sessionId, accountStatus }: { sessionI
 
   return (
     <section className="px-5 sm:px-6 py-5 border-t border-sand">
-      <h2 className="font-serif text-lg text-warm mb-1">继续讨论这次解读 · Follow-up</h2>
-      <p className="text-xs text-warm/80 mb-3">
-        Same cast, same reading — ask anything about them. Follow-ups use your daily
-        consultation quota (3/day free, Pro 10/day).
-      </p>
+      <h2 className="font-serif text-lg text-warm mb-1">{heading}</h2>
+      <p className="text-xs text-warm/80 mb-3">{quotaNote}</p>
 
       {turns === null ? (
         <p className="text-sm text-warm">Loading conversation…</p>
@@ -282,7 +301,7 @@ export default function FollowupSection({ sessionId, accountStatus }: { sessionI
           onClick={() => setExpanded(true)}
           className="px-5 py-3 bg-ink text-white rounded-full text-sm font-medium hover:bg-ink/90 transition-colors"
         >
-          继续讨论这次解读
+          {expandLabel}
         </button>
       )}
     </section>

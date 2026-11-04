@@ -173,6 +173,55 @@ export default function SynastryExamplePage() {
         </div>
       </section>
 
+      {/* Follow-up / action / reflection demonstration — same fictional charts, labeled */}
+      <section className="mb-8 p-5 bg-white rounded-lg border border-sand">
+        <h2 className="text-lg font-semibold text-ink mb-1">
+          After the report: follow-up, action, and reflection
+        </h2>
+        <p className="text-xs text-warm/70 mb-4">
+          Demonstration content — written for this page to show how the features work.
+          Not user feedback, not a real couple&apos;s record. Uses the same fictional
+          charts above: follow-ups never recalculate or change the recorded charts.
+        </p>
+
+        <div className="border-l-2 border-sand pl-4 space-y-4">
+          <div>
+            <p className="text-sm font-medium text-ink">🧑 Follow-up question on the same report</p>
+            <p className="text-sm text-warm italic mb-1">
+              “His 命宫 borrows from the opposite palace — what does that mean for how we argue?”
+            </p>
+            <p className="text-sm text-warm leading-relaxed">
+              From the charts: a Life Palace with no resident major star, drawing 太阳/巨门 from
+              the opposite Travel Palace, traditionally describes someone who finds himself in
+              outward engagement — debate included. What you described (arguments that ignite
+              when you raise things at night) is your own circumstance you supplied — the chart
+              doesn&apos;t establish it, but the two can be discussed together. A communication move
+              you could try yourself: raise difficult topics earlier in the day, in motion, rather
+              than late at night across a table. No compatibility score applies here — this is a
+              reflection tool, not a verdict on the relationship.
+            </p>
+          </div>
+
+          <div>
+            <p className="text-sm font-medium text-ink">Communication action (saved with the report)</p>
+            <p className="text-sm text-warm">
+              “Raise one difficult topic during our afternoon walk this week, not at bedtime.”
+            </p>
+            <p className="text-sm text-warm">
+              Status: <strong>进行中 (in progress)</strong> — set manually; never marked automatically.
+            </p>
+          </div>
+
+          <div>
+            <p className="text-sm font-medium text-ink">复盘心得 Reflection (private to the account)</p>
+            <p className="text-sm text-warm italic">
+              “Tried it Thursday. The walk made it feel less like a confrontation — he kept
+              walking, I kept talking, and it resolved. Bedtime habits die hard though.”
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="p-6 bg-gradient-to-br from-cream to-white rounded-xl border-2 border-china-red text-center">
         <p className="font-serif text-ink text-lg mb-2">Ready to explore your own relationship dynamic?</p>

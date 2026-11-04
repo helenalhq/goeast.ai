@@ -114,7 +114,7 @@ async function makeAuthedFetcher(browser) {
   /** POST a follow-up; resolves {status, frames} where frames = parsed SSE payloads. */
   const ask = async (sessionId, question, turnKey, opts = {}) =>
     page.evaluate(async ({ sessionId, question, turnKey, opts }) => {
-      const res = await fetch("/api/consult/followup", {
+      const res = await fetch(opts.endpoint || "/api/consult/followup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId, question, ...(turnKey ? { turnKey } : {}) }),
@@ -348,6 +348,70 @@ try {
   }
 
   // ===========================================================================
+  console.log("\n== S synastry follow-up fault injection (mock model) ==");
+  {
+    // Seed a romantic synastry report (charts stored; generation path untouched)
+    const synId = `it-syn-${Date.now()}`;
+    const SYN_CHART = {
+      fiveElementsClass: "木三局", soul: "贪狼", body: "天同", zodiac: "寅",
+      palaces: [
+        { name: "命宫", heavenlyStem: "戊", earthlyBranch: "寅", majorStars: [{ name: "太阳", brightness: "得" }] },
+        { name: "夫妻宫", heavenlyStem: "壬", earthlyBranch: "申", majorStars: [] },
+      ],
+    };
+    await sbRest("/rest/v1/synastry_results", {
+      method: "POST",
+      body: JSON.stringify({
+        session_id: synId, user_id: userA.id, relationship_type: "romantic",
+        person_a: { birthDate: "1995-01-01", birthHour: 2, gender: "female" },
+        person_b: { birthDate: "1993-07-20", birthHour: 8, gender: "male" },
+        language: "both", chart_a: SYN_CHART, chart_b: SYN_CHART,
+        ai_response: "seed synastry report",
+      }),
+    });
+    const synRows = async () => (await sbRest(`/rest/v1/synastry_followups?session_id=eq.${synId}&select=id`)).body || [];
+    await setUsage(userA, 0); usageMark = 0;
+
+    const synFaults = [
+      { scenario: "create500", name: "synastry model create fails", expect: 500 },
+      { scenario: "slowfail", name: "synastry model slow then fails", expect: 500 },
+      { scenario: "streambreak", name: "synastry stream cut mid-flight", expect: 0 },
+      { scenario: "emptydone", name: "synastry empty stream", expect: 0 },
+    ];
+    for (const tc of synFaults) {
+      const K = crypto.randomUUID();
+      setScenario(tc.scenario);
+      const res = await A.ask(synId, `synastry fault ${tc.name}`, K, { endpoint: "/api/synastry/followup" });
+      await sleep(2500);
+      const rows = await synRows();
+      const u = await usageOf(userA);
+      if (tc.expect === 500) {
+        check(`S ${tc.name} → 500 generic error`, res.status === 500 && !JSON.stringify(res).includes("apikey"), "500/clean", `${res.status}`);
+      } else {
+        const d = res.frames.length ? digest(res.frames) : { error: false, content: "" };
+        check(`S ${tc.name} → SSE error or empty, no record`, (d.error || d.content === "") && rows.length === 0, "error/empty + 0 rows", `${d.error ? "error" : "empty"}/${rows.length} rows`);
+      }
+      check(`S ${tc.name} → 0 rows, charge refunded`, rows.length === 0 && u === usageMark, `0 rows/usage ${usageMark}`, `${rows.length} rows/usage ${u}`);
+    }
+    setScenario("ok");
+
+    // disconnect mid-stream → server still saves; retry same key replays
+    const K = crypto.randomUUID();
+    const callsBefore = mockRequests().length;
+    await A.ask(synId, "synastry disconnect me", K, { abortAfterMs: 300, endpoint: "/api/synastry/followup" }).catch(() => {});
+    await sleep(2500);
+    let rows = await synRows();
+    let u = await usageOf(userA);
+    check("S disconnected ask still saved (1 row, 1 charge)", rows.length === 1 && u === usageMark + 1, `1 row/${usageMark + 1}`, `${rows.length} rows/usage ${u}`);
+    const retry = await A.ask(synId, "synastry disconnect me", K, { endpoint: "/api/synastry/followup" });
+    const dRetry = digest(retry.frames);
+    rows = await synRows();
+    u = await usageOf(userA);
+    check("S retry same key → replay, no regeneration", dRetry.replay === true && mockRequests().length === callsBefore + 1, `replay/${callsBefore + 1} calls`, `${dRetry.replay}/${mockRequests().length}`);
+    check("S retry same key → no new row/charge", rows.length === 1 && u === usageMark + 1, `1 row/usage ${usageMark + 1}`, `${rows.length} rows/usage ${u}`);
+    usageMark = u;
+  }
+
   console.log("\n== E0 PII spot-check (request log has no question text) ==");
   {
     const log = fs.readFileSync(REQUEST_LOG, "utf8");

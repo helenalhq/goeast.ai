@@ -15,7 +15,7 @@ export async function GET() {
 
   const { data, error } = await supabase
     .from("synastry_results")
-    .select("session_id, relationship_type, person_a, person_b, created_at")
+    .select("session_id, relationship_type, person_a, person_b, created_at, action_status")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(10);
@@ -32,6 +32,7 @@ export async function GET() {
       personA: r.person_a,
       personB: r.person_b,
       createdAt: r.created_at,
+      actionStatus: r.action_status || null,
     })),
   });
 }

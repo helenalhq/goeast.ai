@@ -12,6 +12,8 @@ import {
 import type { SynastryChart, SynastryResult } from "@/lib/synastry-session";
 import { RELATIONSHIP_LABELS, mapBrightness } from "@/lib/ziwei-synastry";
 import type { RelationshipType } from "@/lib/ziwei-synastry";
+import FollowupSection from "@/app/consult/iching/result/FollowupSection";
+import ActionReview, { type ActionStatus } from "@/app/consult/iching/result/ActionReview";
 
 /**
  * Account-save status lifecycle (same pattern as consult results):
@@ -83,6 +85,8 @@ export default function SynastryResultView() {
   const [result, setResult] = useState<SynastryResult | null | undefined>(undefined); // undefined = loading
   const [accountStatus, setAccountStatus] = useState<AccountSaveStatus>("checking");
   const [restoredFromCloud, setRestoredFromCloud] = useState(false);
+  // Server-confirmed action status + review note (bump rev to re-seed the panel)
+  const [actionReview, setActionReview] = useState<{ status: ActionStatus | null; note: string; rev: number } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -99,6 +103,13 @@ export default function SynastryResultView() {
           if (res.ok) {
             const data = await res.json();
             setAccountStatus(data.result ? "saved" : "local");
+            if (data.result) {
+              setActionReview((prev) => ({
+                status: (data.result.actionStatus as ActionStatus | undefined) ?? null,
+                note: data.result.reviewNote ?? "",
+                rev: (prev?.rev ?? 0) + 1,
+              }));
+            }
           } else if (res.status === 401) {
             setAccountStatus("local");
           } else {
@@ -121,6 +132,11 @@ export default function SynastryResultView() {
             setResult(restored);
             setRestoredFromCloud(true);
             setAccountStatus("saved");
+            setActionReview({
+              status: (data.result.actionStatus as ActionStatus | undefined) ?? null,
+              note: data.result.reviewNote ?? "",
+              rev: 1,
+            });
             saveSynastryResult(restored);
             return;
           }
@@ -227,6 +243,34 @@ export default function SynastryResultView() {
           <ReactMarkdown>{result.aiResponse}</ReactMarkdown>
         </div>
       </section>
+
+      {/* 4. Follow-up Q&A + action/reflection — romantic reports only (V1) */}
+      {result.relationshipType === "romantic" && (
+        <>
+          <FollowupSection
+            sessionId={result.sessionId}
+            accountStatus={accountStatus}
+            endpoint="/api/synastry/followup"
+            draftPrefix="synastry"
+            heading="继续讨论这份关系解读 · Follow-up"
+            expandLabel="继续讨论这份关系解读"
+            quotaNote="Same charts, same report — ask anything about them. Follow-ups use your daily consultation quota (3/day free, Pro 10/day); the recorded charts are never recalculated."
+            events={{
+              started: "synastry_followup_started",
+              completed: "synastry_followup_completed",
+              failed: "synastry_followup_failed",
+            }}
+          />
+          <ActionReview
+            key={actionReview?.rev ?? 0}
+            sessionId={result.sessionId}
+            initialStatus={actionReview?.status ?? undefined}
+            initialNote={actionReview?.note ?? undefined}
+            endpoint="/api/synastry/result"
+            draftPrefix="synastry"
+          />
+        </>
+      )}
 
       {/* Actions */}
       <div className="px-5 sm:px-6 py-5 border-t border-sand flex flex-col sm:flex-row gap-3 bg-sand/20">

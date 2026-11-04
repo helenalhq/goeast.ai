@@ -27,10 +27,15 @@ export default function ActionReview({
   sessionId,
   initialStatus,
   initialNote,
+  endpoint = "/api/consult/result",
+  draftPrefix = "consult",
 }: {
   sessionId: string;
   initialStatus?: ActionStatus | null;
   initialNote?: string | null;
+  /** Defaults to the I Ching result endpoint; synastry passes its own. */
+  endpoint?: string;
+  draftPrefix?: string;
 }) {
   const [status, setStatus] = useState<ActionStatus | null>(initialStatus ?? null);
   const [statusError, setStatusError] = useState(false);
@@ -38,7 +43,7 @@ export default function ActionReview({
   const [noteStatus, setNoteStatus] = useState<NoteStatus>("idle");
   const statusReqId = useRef(0);
   const noteReqId = useRef(0);
-  const draftKey = `consult:action-review:${sessionId}`;
+  const draftKey = `${draftPrefix}:action-review:${sessionId}`;
 
   // One-time hydration: local draft first (instant paint), server values
   // arrive via the parent's initialStatus/initialNote from the report load.
@@ -61,7 +66,7 @@ export default function ActionReview({
   };
 
   const patch = (payload: Record<string, unknown>) =>
-    fetch("/api/consult/result", {
+    fetch(endpoint, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ sessionId, ...payload }),
