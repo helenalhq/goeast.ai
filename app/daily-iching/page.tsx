@@ -212,18 +212,20 @@ export default function DailyIChingPage() {
             )).reverse()}
           </div>
 
-          {/* Judgment */}
+          {/* Judgment — classical Chinese primary, English clearly a paraphrase */}
           <div className="mb-6">
             <h2 className="text-sm font-semibold text-ink mb-2 uppercase tracking-wide">The Judgment · 卦辞</h2>
-            <p className="text-base text-ink/80 italic leading-relaxed">{hexagram.judgment_en}</p>
-            <p className="text-sm text-warm/60 mt-2">{hexagram.judgment_zh}</p>
+            <p className="text-base text-ink/80 leading-relaxed">{hexagram.judgment_zh}</p>
+            <p className="text-sm text-warm/70 mt-2 italic leading-relaxed">{hexagram.judgment_en}</p>
+            <p className="text-xs text-warm/50 mt-1">中文为《周易》原文；English is a modern paraphrase by GoEast — not a published translation.</p>
           </div>
 
           {/* Image */}
           <div className="mb-6">
             <h2 className="text-sm font-semibold text-ink mb-2 uppercase tracking-wide">The Image · 象辞</h2>
-            <p className="text-base text-ink/80 italic leading-relaxed">{hexagram.image_en}</p>
-            <p className="text-sm text-warm/60 mt-2">{hexagram.image_zh}</p>
+            <p className="text-base text-ink/80 leading-relaxed">{hexagram.image_zh}</p>
+            <p className="text-sm text-warm/70 mt-2 italic leading-relaxed">{hexagram.image_en}</p>
+            <p className="text-xs text-warm/50 mt-1">中文为《周易》原文；English paraphrase by GoEast.</p>
           </div>
 
           {/* Today's Wisdom */}

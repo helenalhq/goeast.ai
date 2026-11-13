@@ -33,9 +33,7 @@ function scenario() {
   }
 }
 
-function logRequest(s) {
-  fs.appendFileSync(REQUEST_LOG, JSON.stringify({ at: new Date().toISOString(), scenario: s, path: "/chat/completions" }) + "\n");
-}
+function logRequestLegacy(s) { /* folded into the per-request logger above */ }
 
 function sseChunk(res, content) {
   res.write(`data: ${JSON.stringify({
@@ -50,7 +48,20 @@ const server = http.createServer((req, res) => {
     return;
   }
   const s = scenario();
-  logRequest(s);
+  let body = "";
+  req.on("data", (c) => { body += c; });
+  req.on("end", () => {
+    // Privacy-safe evidence: record ONLY booleans about the prompt — whether
+    // the collated classical-text block reached the model. Never log content.
+    let classical = null;
+    try {
+      const parsed = JSON.parse(body);
+      const system = String(parsed?.messages?.[0]?.content || "");
+      classical = system.includes("CLASSICAL TEXT") && system.includes("卦辞");
+    } catch { /* malformed */ }
+    fs.appendFileSync(REQUEST_LOG, JSON.stringify({ at: new Date().toISOString(), scenario: s, path: "/chat/completions", classicalTextInPrompt: classical }) + "\n");
+  });
+  logRequestLegacy(s);
   req.resume();
 
   if (s === "create500") {

@@ -135,20 +135,26 @@ export default async function HexagramDetailPage({
           <ArticleStudyCTA hexagramNumber={h.number} hexagramSlug={h.slug} />
         )}
 
-        {/* Judgment */}
+        {/* Judgment — classical Chinese primary (blockquote), English clearly a paraphrase */}
         <section className="mb-10">
           <h2 className="text-2xl font-bold text-ink mb-4">Judgment (卦辞)</h2>
-          <blockquote className="pl-4 border-l-3 border-china-red text-ink/80 italic leading-relaxed">
-            {h.judgment_en}
+          <blockquote className="pl-4 border-l-3 border-china-red text-ink leading-relaxed">
+            {h.judgment_zh}
           </blockquote>
-          <p className="mt-3 text-warm/60 text-sm">{h.judgment_zh}</p>
+          <p className="mt-1 text-xs text-warm/60">Source: 《周易》 (Zhouyi core text, public domain)</p>
+          <p className="mt-3 text-ink/80 italic leading-relaxed">{h.judgment_en}</p>
+          <p className="mt-1 text-xs text-warm/50">Modern English paraphrase by GoEast — not a published translation.</p>
         </section>
 
         {/* Image */}
         <section className="mb-10">
           <h2 className="text-2xl font-bold text-ink mb-4">Image (象辞)</h2>
-          <p className="text-ink/80 leading-relaxed">{h.image_en}</p>
-          <p className="mt-2 text-warm/60 text-sm">{h.image_zh}</p>
+          <blockquote className="pl-4 border-l-3 border-china-red text-ink leading-relaxed">
+            {h.image_zh}
+          </blockquote>
+          <p className="mt-1 text-xs text-warm/60">Source: 《周易》</p>
+          <p className="mt-3 text-ink/80 italic leading-relaxed">{h.image_en}</p>
+          <p className="mt-1 text-xs text-warm/50">Modern English paraphrase by GoEast.</p>
         </section>
 
         {/* Trigram breakdown */}
