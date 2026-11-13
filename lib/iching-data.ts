@@ -176,7 +176,7 @@ export const HEXAGRAMS: HexagramData[] = [
     judgment_zh: "履：履虎尾，不咥人，亨。",
     image_en:
       "Heaven above, the lake below — the image of Treading. The superior man discriminates between high and low, and thus stabilizes the people's thinking. Heaven and the lake stand in proper relation; there is a natural order that must be respected.",
-    image_zh: "上天下泽，履；君子以辩上下，定民志。",
+    image_zh: "上天下泽，履；君子以辨上下，定民志。",
     modern_application:
       "Lü teaches navigating dangerous situations through careful conduct and respect for boundaries — vital for risk management, diplomatic engagement, and professional etiquette.",
     modern_application_zh: "履教导通过谨慎行事和尊重边界来驾驭危险局面——对风险管理、外交接触和职业礼仪至关重要。",
@@ -338,7 +338,7 @@ export const HEXAGRAMS: HexagramData[] = [
     judgment_zh: "临：元亨利贞，至于八月有凶。",
     image_en:
       "The earth above the lake — the image of Approach. Thus the superior man is inexhaustible in his will to teach, and without limits in his tolerance and protection of the people. Earth and lake draw close; generosity and openness attract those who approach.",
-    image_zh: "地上有泽，临；君子以教思无穷，容保民无疆。",
+    image_zh: "泽上有地，临；君子以教思无穷，容保民无疆。",
     modern_application:
       "Lin signals an approaching peak — opportunity is rising but will not last forever. Key for timing market entries, capitalizing on growth windows, and planning for inevitable cycles.",
     modern_application_zh: "临标志着接近高峰——机会正在上升但不会永远持续。对把握市场进入时机、利用增长窗口和为必然的周期做规划至关重要。",
@@ -803,7 +803,7 @@ export const HEXAGRAMS: HexagramData[] = [
     binary: "000110",
     judgment_en:
       "Gathering Together. Success. The king approaches his temple. It furthers one to see the great man. This brings success and perseverance. Great sacrifice brings furthering. Gathering means assembling people through shared purpose — unity born from genuine connection.",
-    judgment_zh: "萃：亨。王假有庙，利见大人，亨，利贞。用大牲吉，利有攸往。",
+    judgment_zh: "萃：王假有庙，利见大人，亨，利贞。用大牲吉，利有攸往。",
     image_en:
       "The lake rises over the earth — the image of Gathering Together. Thus the superior man renews his weapons in order to meet the unforeseen. Water gathering above the earth accumulates power; collective strength must be prepared for unexpected challenges.",
     image_zh: "泽上于地，萃；君子以除戎器，戒不虞。",

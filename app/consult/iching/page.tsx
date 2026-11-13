@@ -54,7 +54,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "What do I actually receive?",
-    a: "Your reading includes: (1) your question as you phrased it, (2) the hexagram with visual lines and any changing lines marked, (3) the classical Chinese text (卦辞/象辞, sourced to 《周易》) with a modern English paraphrase by GoEast, (4) an AI interpretation labeled as AI-generated — not a prediction, (5) a second perspective for contrast, (6) reflection questions, and (7) a place to note one concrete next step. You can save your reading to your account and return to it later.",
+    a: "Your reading includes: (1) your question as you phrased it, (2) the hexagram with visual lines and any changing lines marked, (3) the verified classical Chinese text (卦辞/象辞, sourced to 《周易》) — English translation is not yet source-verified and is not shown, (4) an AI interpretation labeled as AI-generated — not a prediction, (5) a second perspective for contrast, (6) reflection questions, and (7) a place to note one concrete next step. You can save your reading to your account and return to it later.",
   },
   {
     q: "What kinds of questions work best?",
@@ -138,7 +138,7 @@ export default function ConsultIchingPage() {
           <ul className="space-y-2 text-sm text-ink/80">
             <li className="flex gap-2"><span className="text-china-red">•</span> Your hexagram with all six lines and changing lines clearly marked</li>
             <li className="flex gap-2"><span className="text-china-red">•</span> Classical Chinese judgment (卦辞) and image (象辞) from our verified database</li>
-            <li className="flex gap-2"><span className="text-china-red">•</span> Modern English paraphrase by GoEast (clearly labeled — not a published translation)</li>
+            <li className="flex gap-2"><span className="text-china-red">•</span> English translation: pending source verification — temporarily unavailable (only the verified classical Chinese is shown)</li>
             <li className="flex gap-2"><span className="text-china-red">•</span> AI interpretation — labeled as AI, framed as reflection, not prediction</li>
             <li className="flex gap-2"><span className="text-china-red">•</span> A second perspective for contrast and deeper thinking</li>
             <li className="flex gap-2"><span className="text-china-red">•</span> Reflection questions to discuss or journal about</li>

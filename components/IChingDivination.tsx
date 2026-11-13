@@ -141,8 +141,8 @@ export default function IChingDivination({ hexagrams }: { hexagrams: HexagramDat
             ))}
           </div>
           <div className="mt-6 prose prose-warm max-w-none">
-            <p className="text-base text-ink italic">{result.judgment_en}</p>
-            <p className="text-sm text-warm/60 mt-2">{result.judgment_zh}</p>
+            <p className="text-base text-ink leading-relaxed">{result.judgment_zh}</p>
+            <p className="text-xs text-warm/50 mt-2">《周易》原文。English translation: not yet source-verified — temporarily unavailable.</p>
           </div>
           <div className="mt-6 flex flex-col gap-3">
             <Link
