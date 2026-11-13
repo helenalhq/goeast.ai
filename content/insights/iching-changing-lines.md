@@ -72,7 +72,7 @@ These are schools of reading, not facts; which one you follow is a choice of tra
 So you know exactly what our readings do and do not do:
 
 - **Casting:** the consultation simulates the three-coin method with the classical probabilities — each of the six lines has a 1/8 chance of old yin (6), 3/8 young yang (7), 3/8 young yin (8), and 1/8 old yang (9). A line is changing exactly when it sums to 6 or 9.
-- **What is quoted:** readings show the classical **judgment (卦辞) and image (象辞)** of your primary hexagram — and of the transformed hexagram when there is one — from our structured database, in Chinese with a modern English paraphrase by GoEast (not a published translation). Individual line texts (爻辞) are **not** in our database: when a reading discusses your changing line, it does so as clearly-labeled interpretation ("my reading of line 3 is…"), never as a quotation.
+- **What is quoted:** readings show the classical **judgment (卦辞) and image (象辞)** of your primary hexagram — and of the transformed hexagram when there is one — from our structured database, in Chinese (the English translation is pending source verification and is not currently shown). Individual line texts (爻辞) are **not** in our database: when a reading discusses your changing line, it does so as clearly-labeled interpretation ("my reading of line 3 is…"), never as a quotation.
 - **Follow-ups stay on the same cast:** when you ask follow-up questions about a reading, the same primary hexagram, changing lines, and transformed hexagram are used throughout — follow-ups never re-cast.
 - **The transformation is computed, not imagined:** the transformed hexagram is derived mechanically by flipping the changing lines; the AI never invents or alters lines.
 

@@ -90,7 +90,9 @@ function generateHexagramFAQs(h: HexagramData): FAQItem[] {
   return [
     {
       question: `What does Hexagram ${h.number} (${h.name}) mean?`,
-      answer: `Hexagram ${h.number}, ${h.name} (${h.name_zh}), represents the interaction of ${h.upper_trigram} (above) and ${h.lower_trigram} (below). ${clipText(h.judgment_en, 200)}`,
+      // English judgment text has unverified provenance — quote the collated
+      // Chinese classical text instead (see docs/iching-english-source-status.md).
+      answer: `Hexagram ${h.number}, ${h.name} (${h.name_zh}), represents the interaction of ${h.upper_trigram} (above) and ${h.lower_trigram} (below). Judgment (卦辞): ${clipText(h.judgment_zh, 120)}`,
       questionZh: `第 ${h.number} 卦 ${h.name_zh} 是什么意思？`,
     },
     {

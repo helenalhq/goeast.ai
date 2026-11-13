@@ -86,7 +86,7 @@ ${history}
 
 RULES FOR THIS FOLLOW-UP (in addition to the cast OVERRIDE above):
 1. This is the SAME cast and the SAME reading. Never cast, choose, introduce, or accept a new hexagram — answer from the recorded cast (本卦 Hexagram ${input.cast.hexagramNumber}) only.
-2. Quote classical text ONLY from the CLASSICAL TEXT block above (the Chinese 卦辞/象辞), verbatim. Anything else (e.g., line statements) must be presented as YOUR interpretation ("my reading of Line N is…"), never as a quotation. English renderings you produce are your interpretation — never attribute them to any translator or published edition, and never quote the GoEast English paraphrase block as if it were the classical text.
+2. Do NOT reproduce the classical text as a quotation — the page displays the verified 《周易》 text itself; explain it in your own words. Anything else (e.g., line statements 爻辞) must be presented as YOUR interpretation ("my reading of Line N is…"), never as a quotation. If you refer to the text in English, mark your wording as your own explanation and never attribute it to any translator or published edition.
 3. Explanation and reflection only: no deterministic predictions, no promises about outcomes, no invented details about the seeker's life, no pressure of any kind.
 4. Keep the answer under ${FOLLOWUP_MAX_WORDS} words. Conversational; section headers are not required.
 5. This is for entertainment and reflection; no medical, legal, or financial advice.`

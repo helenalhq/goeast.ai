@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { getAllHexagrams, getHexagramByNumber } from "../iching-data";
 import { buildIchingContext, buildIchingContextBlock, classicalTextBlock } from "../iching-context";
 import { buildFollowupGrounding } from "../consult-followup";
+import { parseConsultResponse } from "../consult-session";
 
 /**
  * INDEPENDENT collated fixture — transcribed from:
@@ -129,25 +130,31 @@ describe("classical-text citation policy", () => {
     expect(block).toContain("《周易》");
   });
 
-  it("English is explicitly labeled a GoEast paraphrase, never a quotation/translation", () => {
-    const block = classicalTextBlock(heng);
-    expect(block).toContain("MODERN ENGLISH PARAPHRASE");
-    expect(block).toContain("never present as a quotation");
+  it("unverified English NEVER enters the model context — no en fields, no provenance claims", () => {
+    const block = classicalTextBlock(heng as never);
+    expect(block).not.toContain(heng.judgment_en ?? "");
+    expect(block).not.toContain(heng.image_en ?? "");
+    expect(block).not.toMatch(/paraphrase by GoEast|written by GoEast|house[- ]authored/i);
     expect(block).not.toMatch(/Wilhelm|Baynes|Legge/i);
   });
 
-  it("missing text → explicit unavailability instruction, no paraphrase framing", () => {
-    const block = classicalTextBlock({ judgment_zh: "", image_zh: "", judgment_en: "", image_en: "" });
-    expect(block).toContain("No classical text is available");
-    expect(block).toContain("never reconstruct");
-    expect(block).not.toContain("PARAPHRASE");
+  it("model is instructed to EXPLAIN, never to reproduce quotations", () => {
+    const block = classicalTextBlock(heng);
+    expect(block).toContain("Do NOT reproduce the classical text as a quotation");
+    expect(block).toContain("CONTEXT for interpretation only");
   });
 
-  it("oracle context block carries the actual classical text (no more quote-what-isn't-provided)", () => {
+  it("missing text → explicit unavailability instruction, never reconstructed", () => {
+    const block = classicalTextBlock({ judgment_zh: "", image_zh: "" });
+    expect(block).toContain("No verified classical text is available");
+    expect(block).toContain("never reconstruct");
+  });
+
+  it("oracle context block carries the actual classical text and the explain-don't-quote rule", () => {
     const block = buildIchingContextBlock({ mode: "cast", hexagramNumber: 32, changingLines: [3], transformedNumber: 40 });
     expect(block).toContain(heng.judgment_zh);
-    expect(block).toContain("quote ONLY the Chinese classical text");
-    expect(block).toContain("never as a published translation");
+    expect(block).toContain("explain the classical teaching above in your own words");
+    expect(block).not.toContain(heng.judgment_en ?? "");
   });
 
   it("follow-up grounding carries the same classical text and attribution rules", () => {
@@ -158,7 +165,8 @@ describe("classical-text citation policy", () => {
       turns: [],
     });
     expect(g).toContain(heng.judgment_zh);
-    expect(g).toContain("never attribute them to any translator");
+    expect(g).toContain("never attribute it to any translator");
+    expect(g).not.toContain(heng.judgment_en ?? "");
   });
 
   it("every hexagram has classical text in the database (no silent gaps)", () => {
@@ -166,5 +174,43 @@ describe("classical-text citation policy", () => {
       expect(h.judgment_zh?.trim().length, `${h.number} ${h.name_zh} judgment_zh`).toBeGreaterThan(0);
       expect(h.image_zh?.trim().length, `${h.number} ${h.name_zh} image_zh`).toBeGreaterThan(0);
     }
+  });
+});
+
+describe("2026-11-14 zh collation (independent source: Wikisource 周易)", () => {
+  it("临 (19) image is the corrected 泽上有地 form (owner-reported, source-verified)", () => {
+    expect(getHexagramByNumber(19)!.image_zh).toBe("泽上有地，临；君子以教思无穷，容保民无疆。");
+  });
+
+  it("萃 (45) judgment no longer carries the spurious early 亨", () => {
+    expect(getHexagramByNumber(45)!.judgment_zh).toBe("萃：王假有庙，利见大人，亨，利贞。用大牲吉，利有攸往。");
+  });
+
+  it("履 (10) image uses 辨 (source reading; 辩 recorded as variant)", () => {
+    expect(getHexagramByNumber(10)!.image_zh).toBe("上天下泽，履；君子以辨上下，定民志。");
+  });
+
+  it("adjudicated variants stay on the received reading: 革 (49) 己日; 既济 (63) 预防", () => {
+    expect(getHexagramByNumber(49)!.judgment_zh).toContain("己日乃孚");
+    expect(getHexagramByNumber(63)!.image_zh).toContain("预防之");
+  });
+
+  it("spot-verified clean items from the source (post-fix state)", () => {
+    expect(getHexagramByNumber(1)!.judgment_zh).toBe("乾：元亨利贞。");
+    expect(getHexagramByNumber(2)!.image_zh).toBe("地势坤，君子以厚德载物。");
+    expect(getHexagramByNumber(32)!.judgment_zh).toBe("恒：亨，无咎，利贞。利有攸往。");
+    expect(getHexagramByNumber(32)!.image_zh).toBe("雷风，恒；君子以立不易方。");
+    expect(getHexagramByNumber(40)!.judgment_zh).toContain("解：利西南，无所往");
+  });
+
+  it("fake model quotations can never render as classical text (classical sections read only from DB fields)", () => {
+    // The display contract: ResultView/detail pages render classical text from
+    // hexagram.judgment_zh/image_zh only; parseConsultResponse classifies ALL model
+    // output (including lookalike quotes) into AI sections.
+    const fake = parseConsultResponse("## TRADITIONAL TEACHING\n象曰：泽上有地，fake line the model invented。");
+    // Whatever the model wrote stays in the AI-interpreted section...
+    expect(fake.traditional).toContain("fake line the model invented");
+    // ...and the classical fields the pages render are untouched DB strings:
+    expect(getHexagramByNumber(19)!.image_zh).not.toContain("fake");
   });
 });
