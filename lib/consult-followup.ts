@@ -5,7 +5,7 @@
  */
 
 import { getHexagramByNumber } from "./iching-data";
-import type { IchingConsultationContext } from "./iching-context";
+import { classicalTextBlock, type IchingConsultationContext } from "./iching-context";
 
 export const FOLLOWUP_TURN_LIMIT = 20; // per report, lifetime, not tiered
 export const FOLLOWUP_CONTEXT_TURNS = 8; // recent turns fed to the model
@@ -46,7 +46,8 @@ export function buildFollowupCastBlock(ctx: IchingConsultationContext): string {
 OVERRIDE: the recorded cast below is authoritative — never cast a new hexagram, never introduce a different one.
 RECORDED CAST (from the original consultation; do not recalculate):
 - Hexagram (本卦): Hexagram ${hexagram.number} ${hexagram.name} (${hexagram.name_zh})
-- Changing lines (变爻): ${lines}${transformedPart}`;
+- Changing lines (变爻): ${lines}${transformedPart}
+${classicalTextBlock(hexagram)}`;
 }
 
 /**
@@ -85,7 +86,7 @@ ${history}
 
 RULES FOR THIS FOLLOW-UP (in addition to the cast OVERRIDE above):
 1. This is the SAME cast and the SAME reading. Never cast, choose, introduce, or accept a new hexagram — answer from the recorded cast (本卦 Hexagram ${input.cast.hexagramNumber}) only.
-2. Quote classical text ONLY when it appears above. Anything else (e.g., line statements) must be presented as YOUR interpretation ("my reading of Line N is…"), never as a quotation.
+2. Quote classical text ONLY from the CLASSICAL TEXT block above (the Chinese 卦辞/象辞), verbatim. Anything else (e.g., line statements) must be presented as YOUR interpretation ("my reading of Line N is…"), never as a quotation. English renderings you produce are your interpretation — never attribute them to any translator or published edition, and never quote the GoEast English paraphrase block as if it were the classical text.
 3. Explanation and reflection only: no deterministic predictions, no promises about outcomes, no invented details about the seeker's life, no pressure of any kind.
 4. Keep the answer under ${FOLLOWUP_MAX_WORDS} words. Conversational; section headers are not required.
 5. This is for entertainment and reflection; no medical, legal, or financial advice.`

@@ -60,7 +60,7 @@ export const HEXAGRAMS: HexagramData[] = [
     name: "Meng",
     name_zh: "蒙",
     slug: "meng",
-    upper_trigram: "Zhen",
+    upper_trigram: "Gen",
     lower_trigram: "Kan",
     binary: "010001",
     judgment_en:
@@ -80,7 +80,7 @@ export const HEXAGRAMS: HexagramData[] = [
     slug: "xu",
     upper_trigram: "Kan",
     lower_trigram: "Qian",
-    binary: "010111",
+    binary: "111010",
     judgment_en:
       "Waiting. If you are sincere, you have light and success. Perseverance brings good fortune. It furthers one to cross the great water. Waiting means holding back — not because one is uncertain, but because the time is not yet ripe. Sincerity preserves inner clarity.",
     judgment_zh: "需：有孚，光亨，贞吉。利涉大川。",
@@ -96,9 +96,9 @@ export const HEXAGRAMS: HexagramData[] = [
     name: "Song",
     name_zh: "讼",
     slug: "song",
-    upper_trigram: "Kan",
-    lower_trigram: "Qian",
-    binary: "111010",
+    upper_trigram: "Qian",
+    lower_trigram: "Kan",
+    binary: "010111",
     judgment_en:
       "Conflict. If you are sincere and the adversary is obstinate, there is good fortune for the middle way. If one is obstinate and contentious, the end is misfortune. It furthers one to see the great man. It does not further one to cross the great water.",
     judgment_zh: "讼：有孚，窒惕，中吉，终凶。利见大人，不利涉大川。",
@@ -115,7 +115,7 @@ export const HEXAGRAMS: HexagramData[] = [
     name_zh: "师",
     slug: "shi",
     upper_trigram: "Kun",
-    lower_trigram: "Zhen",
+    lower_trigram: "Kan",
     binary: "010000",
     judgment_en:
       "The Army. The army needs perseverance and a strong man. Good fortune without blame. A wise general leads with discipline and clear purpose. The masses require organization and a capable leader to achieve success.",
@@ -132,7 +132,7 @@ export const HEXAGRAMS: HexagramData[] = [
     name: "Bi",
     name_zh: "比",
     slug: "bi",
-    upper_trigram: "Zhen",
+    upper_trigram: "Kan",
     lower_trigram: "Kun",
     binary: "000010",
     judgment_en:
@@ -169,7 +169,7 @@ export const HEXAGRAMS: HexagramData[] = [
     name_zh: "履",
     slug: "lu",
     upper_trigram: "Qian",
-    lower_trigram: "Xun",
+    lower_trigram: "Dui",
     binary: "110111",
     judgment_en:
       "Treading upon the tail of the tiger. It does not bite the man. Success. One walks carefully upon a dangerous path; by conducting oneself with propriety and respect, even the most perilous situations can be navigated without harm.",
@@ -186,9 +186,9 @@ export const HEXAGRAMS: HexagramData[] = [
     name: "Tai",
     name_zh: "泰",
     slug: "tai",
-    upper_trigram: "Qian",
-    lower_trigram: "Kun",
-    binary: "000111",
+    upper_trigram: "Kun",
+    lower_trigram: "Qian",
+    binary: "111000",
     judgment_en:
       "Peace. The small departs, the great approaches. Good fortune. Success. Heaven and earth are in communion; all things flow together in harmony. The ruler leads and the people follow — a time of prosperity and unity.",
     judgment_zh: "泰：小往大来，吉亨。",
@@ -204,9 +204,9 @@ export const HEXAGRAMS: HexagramData[] = [
     name: "Pi",
     name_zh: "否",
     slug: "pi",
-    upper_trigram: "Kun",
-    lower_trigram: "Qian",
-    binary: "111000",
+    upper_trigram: "Qian",
+    lower_trigram: "Kun",
+    binary: "000111",
     judgment_en:
       "Standstill. Evil people do not further the perseverance of the superior man. The great departs; the small approaches. Heaven and earth do not commune; all things lose their connection. The superior man withdraws into inner worth and avoids outward glory.",
     judgment_zh: "否：否之匪人，不利君子贞，大往小来。",
@@ -312,7 +312,7 @@ export const HEXAGRAMS: HexagramData[] = [
     name: "Gu",
     name_zh: "蛊",
     slug: "gu",
-    upper_trigram: "Zhen",
+    upper_trigram: "Gen",
     lower_trigram: "Xun",
     binary: "011001",
     judgment_en:
@@ -368,7 +368,7 @@ export const HEXAGRAMS: HexagramData[] = [
     slug: "shi-he",
     upper_trigram: "Li",
     lower_trigram: "Zhen",
-    binary: "101001",
+    binary: "100101",
     judgment_en:
       "Biting Through has success. It is favorable to let justice be administered. When something obstructs the way, it must be bitten through and removed. Justice must be clear and decisive — obstacles that block harmony must be firmly eliminated.",
     judgment_zh: "噬嗑：亨。利用狱。",
@@ -384,9 +384,9 @@ export const HEXAGRAMS: HexagramData[] = [
     name: "Bi (Grace)",
     name_zh: "贲",
     slug: "bi-grace",
-    upper_trigram: "Zhen",
+    upper_trigram: "Gen",
     lower_trigram: "Li",
-    binary: "100101",
+    binary: "101001",
     judgment_en:
       "Grace has success. In small matters it furthers one to undertake something; in great matters it does not. Grace brings beauty and form, but one must not let ornamentation obscure substance. Simplicity at the core gives grace its true power.",
     judgment_zh: "贲：亨。小利有攸往。",
@@ -474,8 +474,8 @@ export const HEXAGRAMS: HexagramData[] = [
     name: "Yi",
     name_zh: "颐",
     slug: "yi",
-    upper_trigram: "Zhen",
-    lower_trigram: "Gen",
+    upper_trigram: "Gen",
+    lower_trigram: "Zhen",
     binary: "100001",
     judgment_en:
       "The Corners of the Mouth. Perseverance brings good fortune. Pay heed to the providing of nourishment and to what a man seeks to fill his own mouth with. Proper nourishment — both physical and spiritual — is the foundation of health. Watch what you consume and what you provide.",
@@ -564,8 +564,8 @@ export const HEXAGRAMS: HexagramData[] = [
     name: "Heng",
     name_zh: "恒",
     slug: "heng",
-    upper_trigram: "Xun",
-    lower_trigram: "Zhen",
+    upper_trigram: "Zhen",
+    lower_trigram: "Xun",
     binary: "011100",
     judgment_en:
       "Duration. Success. No blame. Perseverance furthers. It furthers one to have somewhere to go. Duration means steadfastness — maintaining the right course over time. Enduring principles provide stability, but one must adapt to changing circumstances.",
@@ -620,7 +620,7 @@ export const HEXAGRAMS: HexagramData[] = [
     slug: "jin",
     upper_trigram: "Li",
     lower_trigram: "Kun",
-    binary: "101000",
+    binary: "000101",
     judgment_en:
       "Progress. The powerful prince is honored with horses in large numbers. He is granted audience three times in a single day. Progress means advancement — like the sun rising, one moves upward with clarity and receives recognition.",
     judgment_zh: "晋：康侯用锡马蕃庶，昼日三接。",
@@ -638,7 +638,7 @@ export const HEXAGRAMS: HexagramData[] = [
     slug: "ming-yi",
     upper_trigram: "Kun",
     lower_trigram: "Li",
-    binary: "000101",
+    binary: "101000",
     judgment_en:
       "Darkening of the Light. In adversity, it furthers one to be persevering. The light has gone under the earth; brightness is concealed. This is a time to hide one's brilliance and endure difficulty with inner clarity intact.",
     judgment_zh: "明夷：利艰贞。",
