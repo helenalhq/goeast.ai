@@ -11,7 +11,7 @@ Status: P0 wired (2026-11-21) · Audience: P1 (per-use product), P2 (measurement
 | `auth_started` | User initiates login | **new** client event on AI-button→login redirect | Existing `login_page_viewed_with_target` additionally fires on login page mount with target |
 | `auth_succeeded` | Login completed | existing `login_succeeded` (client) | Has `return_target: bool` |
 | `auth_failed` | Login attempt failed | **new** client event, 5 branches: `password` / `signup` / `otp_send` / `otp_verify` / `google` | No error strings attached — method enum only |
-| `offer_viewed` | Paid offer actually displayed | **new** client event on pricing page mount (`offer_id: pro_monthly`) | Fires when the offer renders — NOT on homepage load or CTA clicks |
+| `offer_viewed` | Paid offer actually displayed | Client event on pricing (`offer_id: pro_monthly`) | Quote and actionable CTA both in the foreground viewport; same-tab dedup for 30 minutes (including refresh when session storage is available). No impressions for loading/failed/disabled states. |
 | `checkout_started` | User actually redirected to checkout | **new** client event after checkoutUrl received | `upgrade_clicked` = intent (kept); this = redirect began |
 | `checkout_created` | Server created a checkout session | server log in `/api/checkout` (exists) | `{"event":"checkout_created","user_id":…}` — no email |
 | `checkout_failed` | Server failed to create checkout | **new** server log in `/api/checkout` | `{"event":"checkout_failed","user_id":…,"status":…}` |

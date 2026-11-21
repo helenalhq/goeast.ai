@@ -130,23 +130,25 @@ export async function activateSubscription(
 
   // Fallback: find user by email in profiles
   if (!userId && customerEmail) {
-    const { data: profile } = await supabase
+    const { data: profile, error } = await supabase
       .from("profiles")
       .select("id")
       .eq("email", customerEmail)
       .maybeSingle();
+    if (error) return { ok: false, reason: "read_failed" };
     userId = profile?.id ?? null;
   }
 
-  // Fallback: find user by email in auth.users
+  // Fallback: recover an owner from an existing subscription by email
   if (!userId && customerEmail) {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("subscriptions")
       .select("user_id")
       .eq("customer_email", customerEmail)
       .not("user_id", "is", null)
       .limit(1)
       .maybeSingle();
+    if (error) return { ok: false, reason: "read_failed" };
     userId = data?.user_id ?? null;
   }
 
@@ -178,13 +180,14 @@ export async function cancelSubscription(
   subscriptionId: string,
   newStatus: "cancelled" | "expired" = "cancelled",
 ): Promise<void> {
-  await supabase
+  const { error } = await supabase
     .from("subscriptions")
     .update({
       status: newStatus,
       updated_at: new Date().toISOString(),
     })
     .eq("creem_subscription_id", subscriptionId);
+  if (error) throw error;
 }
 
 /**
