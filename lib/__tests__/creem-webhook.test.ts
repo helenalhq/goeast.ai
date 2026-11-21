@@ -38,6 +38,10 @@ const SUB_EVENT = (type: string, extra: Record<string, unknown> = {}) => ({
     customer_id: "cus_1",
     customer_email: "buyer@example.com",
     metadata: { userId: "u-1" },
+    ...(type === "checkout.completed" ? {
+      subscription: { id: "sub_abc" },
+      order: { status: "paid", type: "recurring", amount_paid: 499, transaction: "tran_abc" },
+    } : {}),
     ...extra,
   },
 });
@@ -89,17 +93,15 @@ describe("expiry from event (no more hardcoded +30d)", () => {
     expect(activate.mock.calls[0][4].getTime()).toBeGreaterThan(Date.now() + 40 * 86400000);
   });
 
-  it("falls back to +30d when the event carries no usable expiry", async () => {
-    await POST(signedReq(SUB_EVENT("subscription.active")));
-    const delta = activate.mock.calls[0][4].getTime() - Date.now();
-    expect(delta).toBeGreaterThan(29 * 86400000);
-    expect(delta).toBeLessThan(31 * 86400000);
+  it("passes missing or malformed expiry without making up an extension", async () => {
+    await POST(signedReq(SUB_EVENT("subscription.paid", { current_period_end_date: "garbage" })));
+    expect(activate.mock.calls[0][4]).toBeUndefined();
   });
 
-  it("ignores a past or garbage expiry and falls back", async () => {
-    await POST(signedReq(SUB_EVENT("subscription.paid", { current_period_end_date: "garbage" })));
-    const delta = activate.mock.calls[0][4].getTime() - Date.now();
-    expect(delta).toBeGreaterThan(29 * 86400000);
+  it("preserves an explicitly past date for the elapsed-period guard", async () => {
+    const past = "2025-01-01T00:00:00.000Z";
+    await POST(signedReq(SUB_EVENT("subscription.active", { current_period_end_date: past })));
+    expect(activate.mock.calls[0][4].toISOString()).toBe(past);
   });
 });
 
@@ -111,10 +113,8 @@ describe("replay & lifecycle", () => {
     expect(activate).toHaveBeenCalledTimes(2);
     expect(activate.mock.calls[0].slice(1, 4)).toEqual(activate.mock.calls[1].slice(1, 4));
     expect(activate.mock.calls[0][5]).toEqual(activate.mock.calls[1][5]);
-    // +30d fallback Dates are computed per-event; allow sub-second drift.
-    expect(
-      Math.abs(activate.mock.calls[0][4].getTime() - activate.mock.calls[1][4].getTime())
-    ).toBeLessThan(1000);
+    expect(activate.mock.calls[0][4]).toBeUndefined();
+    expect(activate.mock.calls[1][4]).toBeUndefined();
   });
 
   it("subscription.canceled routes to cancelSubscription with cancelled", async () => {
@@ -232,17 +232,16 @@ describe("delivery reporting accuracy (paid-but-not-delivered vs delivered)", ()
     const response = await POST(signedReq(SUB_EVENT("subscription.paid")));
     expect(response.status).toBe(200);
     const joined = logs.join("\n");
-    expect(joined).toContain('"event":"payment_confirmed"');
+    expect(joined).toContain('"event":"subscription_payment_observed"');
     expect(joined).toContain('"event":"delivery_skipped"');
     expect(joined).not.toContain("delivery_succeeded");
     expect(joined).not.toContain("delivery_failed");
   });
 
-  it("renewal (subscription.paid) is tagged kind=renewal; first (checkout.completed) kind=first", async () => {
-    activate.mockResolvedValue({ ok: true });
-    logs = [];
+  it("paid has unclassified telemetry; checkout reports a first payment", async () => {
     await POST(signedReq(SUB_EVENT("subscription.paid")));
-    expect(logs.join("\n")).toContain('"kind":"renewal"');
+    expect(logs.join("\n")).toContain('"kind":"unclassified"');
+    expect(logs.join("\n")).not.toContain('"event":"payment_confirmed"');
     logs = [];
     await POST(signedReq(SUB_EVENT("checkout.completed")));
     expect(logs.join("\n")).toContain('"kind":"first"');

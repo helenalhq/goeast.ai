@@ -3,6 +3,7 @@
  * https://docs.creem.io
  */
 
+import { createHmac } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 // Environment variables
@@ -67,9 +68,7 @@ export function verifyWebhookSignature(
     console.warn("CREEM_WEBHOOK_SECRET not set");
     return false;
   }
-  const crypto = require("crypto");
-  const computed = crypto
-    .createHmac("sha256", CREEM_WEBHOOK_SECRET)
+  const computed = createHmac("sha256", CREEM_WEBHOOK_SECRET)
     .update(body)
     .digest("hex");
   return computed === signature;
@@ -84,14 +83,14 @@ export function isConfigured(): boolean {
 
 export type ActivationResult =
   | { ok: true; skipped?: false }
-  | { ok: false; reason: "write_failed" | "read_failed" }
-  | { ok: true; skipped: true; reason: "terminal_state" };
+  | { ok: false; reason: "write_failed" | "read_failed" | "missing_period" | "state_changed" }
+  | { ok: true; skipped: true; reason: "terminal_state" | "period_unchanged" | "period_elapsed" };
 
 /**
  * Activate a subscription in Supabase, linking to user.
  * Guard: if the subscription is already cancelled/expired, a late-arriving
  * checkout.completed or subscription.paid event (Creem retry) must NOT
- * re-activate it. Only inactive/scheduled_cancel rows can transition to active.
+ * re-activate it. A repeated/older period cannot overwrite a newer grant.
  *
  * Returns an explicit result — callers (the webhook) must NOT report
  * delivery_succeeded unless ok:true. DB read/write failures surface as
@@ -102,14 +101,14 @@ export async function activateSubscription(
   subscriptionId: string,
   customerId: string | undefined,
   customerEmail: string | undefined,
-  expiresAt: Date,
+  expiresAt: Date | undefined,
   knownUserId?: string,
 ): Promise<ActivationResult> {
   // Check current state: cancelled/expired subscriptions are terminal —
   // late activation events (retries) must not override them.
   const { data: existing, error: readError } = await supabase
     .from("subscriptions")
-    .select("status")
+    .select("status, expires_at, activated_at, user_id, creem_customer_id, customer_email")
     .eq("creem_subscription_id", subscriptionId)
     .maybeSingle();
 
@@ -125,8 +124,22 @@ export async function activateSubscription(
     return { ok: true, skipped: true, reason: "terminal_state" };
   }
 
+  const existingExpiry = existing?.expires_at ? Date.parse(existing.expires_at) : NaN;
+  if (!expiresAt) {
+    return Number.isFinite(existingExpiry) && existingExpiry > Date.now()
+      && (existing?.status === "active" || existing?.status === "scheduled_cancel")
+      ? { ok: true, skipped: true, reason: "period_unchanged" }
+      : { ok: false, reason: "missing_period" };
+  }
+  if (expiresAt.getTime() <= Date.now()) {
+    return { ok: true, skipped: true, reason: "period_elapsed" };
+  }
+  if (Number.isFinite(existingExpiry) && expiresAt.getTime() <= existingExpiry) {
+    return { ok: true, skipped: true, reason: "period_unchanged" };
+  }
+
   // Use the userId from checkout metadata if available (most reliable)
-  let userId: string | null = knownUserId ?? null;
+  let userId: string | null = existing?.user_id ?? knownUserId ?? null;
 
   // Fallback: find user by email in profiles
   if (!userId && customerEmail) {
@@ -152,23 +165,35 @@ export async function activateSubscription(
     userId = data?.user_id ?? null;
   }
 
-  const result = await supabase.from("subscriptions").upsert(
-    {
-      user_id: userId,
-      creem_subscription_id: subscriptionId,
-      creem_customer_id: customerId ?? null,
-      customer_email: customerEmail ?? null,
-      status: "active",
-      activated_at: new Date().toISOString(),
-      expires_at: expiresAt.toISOString(),
-      updated_at: new Date().toISOString(),
-    },
-    { onConflict: "creem_subscription_id" },
-  );
+  const nowIso = new Date().toISOString();
+  const row = {
+    user_id: userId,
+    creem_subscription_id: subscriptionId,
+    creem_customer_id: customerId ?? existing?.creem_customer_id ?? null,
+    customer_email: customerEmail ?? existing?.customer_email ?? null,
+    status: "active",
+    activated_at: existing?.activated_at ?? nowIso,
+    expires_at: expiresAt.toISOString(),
+    updated_at: nowIso,
+  };
+  // Guard in the write as well as the read: two callbacks can race, or an
+  // intervening cancellation can change state. A conflict asks Creem to retry.
+  let result;
+  if (existing) {
+    const update = supabase.from("subscriptions").update(row)
+      .eq("creem_subscription_id", subscriptionId).eq("status", existing.status);
+    result = await (existing.expires_at ? update.eq("expires_at", existing.expires_at) : update.is("expires_at", null))
+      .select("creem_subscription_id").maybeSingle();
+  } else {
+    result = await supabase.from("subscriptions")
+      .upsert(row, { onConflict: "creem_subscription_id", ignoreDuplicates: true })
+      .select("creem_subscription_id").maybeSingle();
+  }
   if (result.error) {
-    console.error("[creem] upsert error:", result.error.message);
+    console.error("[creem] activation write error:", result.error.message);
     return { ok: false, reason: "write_failed" };
   }
+  if (!result.data) return { ok: false, reason: "state_changed" };
   return { ok: true };
 }
 
