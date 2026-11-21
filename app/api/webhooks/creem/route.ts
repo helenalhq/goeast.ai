@@ -14,6 +14,12 @@ function verifySignature(secret: string, body: string, signature: string): boole
   return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
+function retryWebhookDelivery() {
+  // Creem treats a 2xx response as delivered. No durable retry job is
+  // persisted here, so transient persistence errors must not be acknowledged.
+  return NextResponse.json({ received: false }, { status: 503 });
+}
+
 export async function POST(request: NextRequest) {
   // Fail closed: no signing secret configured → never process events.
   const secret = process.env.CREEM_WEBHOOK_SECRET;
@@ -102,6 +108,11 @@ export async function POST(request: NextRequest) {
       // subscription.active = first, subscription.paid on an existing row = renewal.
       // See docs/funnel-contract.md for the counting caveats.
       const kind = eventType === "subscription.paid" ? "renewal" : "first";
+      // Processor event and entitlement delivery are separate outcomes, even
+      // when the entitlement store rejects or throws.
+      console.log(
+        JSON.stringify({ event: "payment_confirmed", offer_id: "pro_monthly", kind, subscription_id: subscriptionId }),
+      );
       try {
         const result = await activateSubscription(
           supabase,
@@ -110,11 +121,6 @@ export async function POST(request: NextRequest) {
           customerEmail,
           expiresAt,
           metadataUserId,
-        );
-        // payment_confirmed records Creem's payment event regardless of our
-        // DB write outcome — payment happened; delivery is a separate matter.
-        console.log(
-          JSON.stringify({ event: "payment_confirmed", offer_id: "pro_monthly", kind, subscription_id: subscriptionId }),
         );
         if (result.ok && !result.skipped) {
           console.log(
@@ -132,12 +138,14 @@ export async function POST(request: NextRequest) {
           console.log(
             JSON.stringify({ event: "delivery_failed", offer_id: "pro_monthly", subscription_id: subscriptionId, reason: result.reason }),
           );
+          return retryWebhookDelivery();
         }
       } catch (err) {
         console.error("Webhook activation error:", err);
         console.log(
           JSON.stringify({ event: "delivery_failed", offer_id: "pro_monthly", subscription_id: subscriptionId, reason: "activation_error" }),
         );
+        return retryWebhookDelivery();
       }
       break;
     }
@@ -151,25 +159,27 @@ export async function POST(request: NextRequest) {
       );
       break;
     }
-    case "subscription.scheduled_cancel": {
-      await supabase
-        .from("subscriptions")
-        .update({ status: "scheduled_cancel", updated_at: new Date().toISOString() })
-        .eq("creem_subscription_id", subscriptionId);
-      break;
-    }
-    case "subscription.canceled": {
-      await cancelSubscription(supabase, subscriptionId, "cancelled");
-      console.log(
-        JSON.stringify({ event: "subscription_cancelled", subscription_id: subscriptionId }),
-      );
-      break;
-    }
+    case "subscription.scheduled_cancel":
+    case "subscription.canceled":
     case "subscription.expired": {
-      await cancelSubscription(supabase, subscriptionId, "expired");
-      console.log(
-        JSON.stringify({ event: "subscription_cancelled", subscription_id: subscriptionId }),
-      );
+      try {
+        if (eventType === "subscription.scheduled_cancel") {
+          const { error } = await supabase
+            .from("subscriptions")
+            .update({ status: "scheduled_cancel", updated_at: new Date().toISOString() })
+            .eq("creem_subscription_id", subscriptionId);
+          if (error) throw error;
+        } else {
+          const status = eventType === "subscription.canceled" ? "cancelled" : "expired";
+          await cancelSubscription(supabase, subscriptionId, status);
+          console.log(
+            JSON.stringify({ event: "subscription_cancelled", subscription_id: subscriptionId }),
+          );
+        }
+      } catch {
+        console.error(JSON.stringify({ event: "subscription_status_update_failed", event_type: eventType, subscription_id: subscriptionId }));
+        return retryWebhookDelivery();
+      }
       break;
     }
     default:
