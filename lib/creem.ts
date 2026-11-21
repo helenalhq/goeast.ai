@@ -82,11 +82,20 @@ export function isConfigured(): boolean {
   return !!CREEM_API_KEY && !!CREEM_WEBHOOK_SECRET;
 }
 
+export type ActivationResult =
+  | { ok: true; skipped?: false }
+  | { ok: false; reason: "write_failed" | "read_failed" }
+  | { ok: true; skipped: true; reason: "terminal_state" };
+
 /**
  * Activate a subscription in Supabase, linking to user.
  * Guard: if the subscription is already cancelled/expired, a late-arriving
  * checkout.completed or subscription.paid event (Creem retry) must NOT
  * re-activate it. Only inactive/scheduled_cancel rows can transition to active.
+ *
+ * Returns an explicit result — callers (the webhook) must NOT report
+ * delivery_succeeded unless ok:true. DB read/write failures surface as
+ * ok:false so "paid but not delivered" is distinguishable from delivered.
  */
 export async function activateSubscription(
   supabase: SupabaseClient,
@@ -95,20 +104,25 @@ export async function activateSubscription(
   customerEmail: string | undefined,
   expiresAt: Date,
   knownUserId?: string,
-): Promise<void> {
+): Promise<ActivationResult> {
   // Check current state: cancelled/expired subscriptions are terminal —
   // late activation events (retries) must not override them.
-  const { data: existing } = await supabase
+  const { data: existing, error: readError } = await supabase
     .from("subscriptions")
     .select("status")
     .eq("creem_subscription_id", subscriptionId)
     .maybeSingle();
 
+  if (readError) {
+    console.error("[creem] state read error:", readError.message);
+    return { ok: false, reason: "read_failed" };
+  }
+
   if (existing?.status === "cancelled" || existing?.status === "expired") {
     console.log(
       `[creem] skip activate: subscription ${subscriptionId} is ${existing.status} (late event guard)`,
     );
-    return;
+    return { ok: true, skipped: true, reason: "terminal_state" };
   }
 
   // Use the userId from checkout metadata if available (most reliable)
@@ -151,7 +165,9 @@ export async function activateSubscription(
   );
   if (result.error) {
     console.error("[creem] upsert error:", result.error.message);
+    return { ok: false, reason: "write_failed" };
   }
+  return { ok: true };
 }
 
 /**

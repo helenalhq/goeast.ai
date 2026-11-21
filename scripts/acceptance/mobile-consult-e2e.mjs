@@ -867,8 +867,10 @@ async function groupG() {
     await page.locator("textarea").first().fill(`G free flow ${PII.question} — same cast must return.`);
     await page.locator("button", { hasText: "Continue" }).first().click();
     await page.waitForSelector("text=Any constraints");
-    await page.locator("button", { hasText: "Review question" }).first().click();
+    // REGRESSION (dbc32cf regression, reintroduced by P0 rewrite): Skip must ADVANCE to confirm
+    await page.locator("button", { hasText: "Skip this step" }).first().tap();
     await page.waitForSelector("text=Cast the Coins", { timeout: 10000 });
+    check(g, "SKIP regression: Skip this step advances to confirm (empty optional input)", true);
     check(g, "confirm shows free cast CTA (no login wall)", true);
 
     await page.locator("button", { hasText: "Cast the Coins" }).first().tap();

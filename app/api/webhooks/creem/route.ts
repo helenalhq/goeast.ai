@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
       // See docs/funnel-contract.md for the counting caveats.
       const kind = eventType === "subscription.paid" ? "renewal" : "first";
       try {
-        await activateSubscription(
+        const result = await activateSubscription(
           supabase,
           subscriptionId,
           customerId,
@@ -111,12 +111,28 @@ export async function POST(request: NextRequest) {
           expiresAt,
           metadataUserId,
         );
+        // payment_confirmed records Creem's payment event regardless of our
+        // DB write outcome — payment happened; delivery is a separate matter.
         console.log(
           JSON.stringify({ event: "payment_confirmed", offer_id: "pro_monthly", kind, subscription_id: subscriptionId }),
         );
-        console.log(
-          JSON.stringify({ event: "delivery_succeeded", offer_id: "pro_monthly", kind, subscription_id: subscriptionId }),
-        );
+        if (result.ok && !result.skipped) {
+          console.log(
+            JSON.stringify({ event: "delivery_succeeded", offer_id: "pro_monthly", kind, subscription_id: subscriptionId }),
+          );
+        } else if (result.ok && result.skipped) {
+          // Terminal-state guard: no write happened (late retry after cancel)
+          // — NOT a delivery, and NOT a failure. Log distinctly so "paid but
+          // not delivered" analysis can exclude guard no-ops.
+          console.log(
+            JSON.stringify({ event: "delivery_skipped", offer_id: "pro_monthly", subscription_id: subscriptionId, reason: result.reason }),
+          );
+        } else {
+          // DB write failed: payment confirmed but entitlement NOT delivered.
+          console.log(
+            JSON.stringify({ event: "delivery_failed", offer_id: "pro_monthly", subscription_id: subscriptionId, reason: result.reason }),
+          );
+        }
       } catch (err) {
         console.error("Webhook activation error:", err);
         console.log(

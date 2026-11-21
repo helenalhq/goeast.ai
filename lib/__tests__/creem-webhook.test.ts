@@ -196,3 +196,73 @@ describe("hasActiveProEntitlement", () => {
     // This is tested indirectly through the route tests above
   });
 });
+
+describe("delivery reporting accuracy (paid-but-not-delivered vs delivered)", () => {
+  let logs: string[];
+  beforeEach(() => {
+    logs = [];
+    vi.spyOn(console, "log").mockImplementation((...a) => { logs.push(a.join(" ")); });
+    vi.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  it("DB write failure → payment_confirmed + delivery_failed, NO delivery_succeeded", async () => {
+    activate.mockResolvedValue({ ok: false, reason: "write_failed" });
+    await POST(signedReq(SUB_EVENT("checkout.completed")));
+    const joined = logs.join("\n");
+    expect(joined).toContain('"event":"payment_confirmed"');
+    expect(joined).toContain('"event":"delivery_failed"');
+    expect(joined).toContain('"reason":"write_failed"');
+    expect(joined).not.toContain("delivery_succeeded");
+  });
+
+  it("successful write → payment_confirmed + delivery_succeeded", async () => {
+    activate.mockResolvedValue({ ok: true });
+    await POST(signedReq(SUB_EVENT("checkout.completed")));
+    const joined = logs.join("\n");
+    expect(joined).toContain('"event":"payment_confirmed"');
+    expect(joined).toContain('"event":"delivery_succeeded"');
+    expect(joined).not.toContain("delivery_failed");
+  });
+
+  it("terminal-state guard (late retry after cancel) → delivery_skipped, not succeeded/failed", async () => {
+    activate.mockResolvedValue({ ok: true, skipped: true, reason: "terminal_state" });
+    await POST(signedReq(SUB_EVENT("subscription.paid")));
+    const joined = logs.join("\n");
+    expect(joined).toContain('"event":"payment_confirmed"');
+    expect(joined).toContain('"event":"delivery_skipped"');
+    expect(joined).not.toContain("delivery_succeeded");
+    expect(joined).not.toContain("delivery_failed");
+  });
+
+  it("renewal (subscription.paid) is tagged kind=renewal; first (checkout.completed) kind=first", async () => {
+    activate.mockResolvedValue({ ok: true });
+    logs = [];
+    await POST(signedReq(SUB_EVENT("subscription.paid")));
+    expect(logs.join("\n")).toContain('"kind":"renewal"');
+    logs = [];
+    await POST(signedReq(SUB_EVENT("checkout.completed")));
+    expect(logs.join("\n")).toContain('"kind":"first"');
+  });
+
+  it("refund event → refund_confirmed (entitlement untouched here)", async () => {
+    await POST(signedReq(SUB_EVENT("refund.completed", { id: "re_1" })));
+    expect(logs.join("\n")).toContain('"event":"refund_confirmed"');
+    expect(activate).not.toHaveBeenCalled();
+  });
+
+  it("duplicate callback replay: entitlement handler idempotent-by-contract, both events acknowledged", async () => {
+    activate.mockResolvedValue({ ok: true });
+    const req = signedReq(SUB_EVENT("checkout.completed"));
+    const r1 = await POST(req);
+    const r2 = await POST(signedReq(SUB_EVENT("checkout.completed")));
+    expect(r1.status).toBe(200);
+    expect(r2.status).toBe(200);
+    expect(activate).toHaveBeenCalledTimes(2); // event-level dedup is a P1 gap, documented
+  });
+
+  it("wrong signature → 401, nothing logged/delivered", async () => {
+    await POST(signedReq(SUB_EVENT("checkout.completed"), "whsec_WRONG"));
+    expect(activate).not.toHaveBeenCalled();
+    expect(logs.join("")).not.toContain("payment_confirmed");
+  });
+});

@@ -16,8 +16,9 @@ Status: P0 wired (2026-11-21) · Audience: P1 (per-use product), P2 (measurement
 | `checkout_created` | Server created a checkout session | server log in `/api/checkout` (exists) | `{"event":"checkout_created","user_id":…}` — no email |
 | `checkout_failed` | Server failed to create checkout | **new** server log in `/api/checkout` | `{"event":"checkout_failed","user_id":…,"status":…}` |
 | `payment_confirmed` | Payment confirmed by processor event | **new** server log in Creem webhook | `checkout.completed`/`subscription.active` → `kind:"first"`; `subscription.paid` → `kind:"renewal"` (inference — see caveats) |
-| `delivery_succeeded` | Entitlement actually granted | **new** server log after `activateSubscription` succeeds | DB row in `subscriptions` is the durable record |
-| `delivery_failed` | Entitlement grant failed | **new** server log on activation error | Durable signal = webhook retried? (see caveats) |
+| `delivery_succeeded` | Entitlement actually granted | **new** server log — ONLY when `activateSubscription` returns `ok:true` (write verified) | DB row in `subscriptions` is the durable record |
+| `delivery_skipped` | Terminal-state guard no-op (late retry after cancel) | **new** server log | Paid-but-guarded: neither delivered nor failed — exclude from both counts |
+| `delivery_failed` | Entitlement grant failed | **new** server log — DB read/write failure (`read_failed`/`write_failed`) or exception | "Paid but not delivered" = payment_confirmed without a later delivery_succeeded for the same subscription_id |
 | `refund_confirmed` | Refund confirmed by processor | **new** server log on `refund.*` events | Creem refund event shape UNVERIFIED (no test config) — see §5 |
 
 Homepage loads, CTA clicks, and the payment return page (`/account?checkout=success`) are **NOT** confirmation events — the return page only renders; entitlement comes from the webhook.
