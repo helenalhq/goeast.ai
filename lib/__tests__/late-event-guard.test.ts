@@ -50,6 +50,7 @@ beforeEach(() => {
 
 describe("late event guard — cancelled subscription must not be re-activated", () => {
   it("webhook returns 200 for late paid event (guard prevents re-activation)", async () => {
+    activate.mockResolvedValueOnce({ ok: true, skipped: true, reason: "terminal_state" });
     const res = await POST(signedReq(SUB_EVENT("subscription.paid")));
     expect(res.status).toBe(200);
     expect(activate).toHaveBeenCalledTimes(1);
