@@ -41,6 +41,8 @@ export function useUpgradeButton(from: string) {
       const res = await fetch("/api/checkout", { method: "POST" });
       const data = await res.json();
       if (data.checkoutUrl) {
+        // Funnel: the checkout redirect actually started (distinct from intent).
+        logEvent("checkout_started", { offer_id: "pro_monthly", from });
         window.location.href = data.checkoutUrl;
         // NOTE: do NOT reset loading here — the browser is navigating away.
         // If the user presses Back, the pageshow listener resets it.

@@ -4,6 +4,7 @@ import { getSiteConfig } from "@/lib/config";
 import JsonLd from "@/components/JsonLd";
 import TryIChingLink from "@/components/TryIChingLink";
 import PricingClient from "./pricing-client";
+import OfferViewedTracker from "./offer-viewed-tracker";
 import ExampleViewed from "./example-viewed";
 import {
   SAMPLE_DEMO_CONDITIONS,
@@ -85,10 +86,10 @@ export default function PricingPage() {
             ))}
           </ul>
           <Link
-            href="/login?next=/pricing"
+            href="/consult"
             className="block w-full text-center px-6 py-2.5 rounded-lg border border-sand text-ink text-sm font-medium hover:bg-cream/50 transition-colors"
           >
-            Get started free
+            Try a free reading →
           </Link>
         </div>
 
@@ -120,6 +121,8 @@ export default function PricingPage() {
             ))}
           </ul>
           <PricingClient paymentEnabled={config.paymentEnabled} />
+          {/* Funnel: the paid offer actually displayed */}
+          {config.paymentEnabled && <OfferViewedTracker offerId="pro_monthly" />}
           <p className="text-xs text-warm/70 mt-3 break-words">
             $4.99/month · auto-renews · cancel anytime in Account ·{" "}
             <Link href="/terms" className="underline hover:text-china-red">

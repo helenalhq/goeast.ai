@@ -3,18 +3,24 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { saveDraft, loadDraft, clearDraft } from "@/lib/draft";
 import { readSseData } from "@/lib/sse";
 import { loginUrlWithNext } from "@/lib/auth-redirect";
 import { logEvent } from "@/lib/analytics";
-import { buildIchingContext } from "@/lib/iching-context";
+import { buildIchingContext, type IchingConsultationContext } from "@/lib/iching-context";
 import {
   CONSULT_FLOW_DRAFT_KEY,
   newSessionId,
   saveConsultResult,
-  type ConsultFlowDraft,
   type ConsultResult,
 } from "@/lib/consult-session";
+import {
+  loadConsultFlowDraft,
+  saveConsultFlowDraft,
+  clearConsultFlowDraft,
+  castContextFromDraft,
+  type ConsultFlowDraftV2,
+} from "@/lib/consult-cast";
+import CastView from "./CastView";
 import type { HexagramData } from "@/lib/types";
 
 // --- coin casting (same probabilities as IChingDivination) -----------------
@@ -38,6 +44,10 @@ function castCoins(): CoinCast {
   return { values: coins, line, binary, changing };
 }
 
+function throwsToCast(t: CoinCast): { binary: "0" | "1"; changing: boolean } {
+  return { binary: t.binary === "1" ? "1" : "0", changing: t.changing };
+}
+
 // --- flow state -------------------------------------------------------------
 
 const EXAMPLE_TOPICS = [
@@ -47,7 +57,7 @@ const EXAMPLE_TOPICS = [
   "A relationship pattern",
 ];
 
-const EMPTY_DRAFT: ConsultFlowDraft = {
+const EMPTY_DRAFT: ConsultFlowDraftV2 = {
   topic: "",
   customTopic: "",
   stuck: "",
@@ -56,9 +66,9 @@ const EMPTY_DRAFT: ConsultFlowDraft = {
   step: 1,
 };
 
-type Phase = "wizard" | "confirm" | "generating";
+type Phase = "wizard" | "confirm" | "cast" | "generating";
 
-function assembleQuestion(d: ConsultFlowDraft): string {
+function assembleQuestion(d: ConsultFlowDraftV2): string {
   const topic = d.topic === "__custom__" ? d.customTopic.trim() : d.topic;
   const parts = [`I would like to consult the I Ching about: ${topic}.`];
   if (d.stuck.trim()) parts.push(`Where I'm stuck: ${d.stuck.trim()}`);
@@ -68,31 +78,65 @@ function assembleQuestion(d: ConsultFlowDraft): string {
 
 export default function GuidedFlow({ hexagrams }: { hexagrams: HexagramData[] }) {
   const router = useRouter();
-  const [draft, setDraft] = useState<ConsultFlowDraft>(EMPTY_DRAFT);
+  const [draft, setDraft] = useState<ConsultFlowDraftV2>(EMPTY_DRAFT);
   const [hydrated, setHydrated] = useState(false);
   const [phase, setPhase] = useState<Phase>("wizard");
   const [streamedText, setStreamedText] = useState("");
   const [error, setError] = useState("");
+  const [castNotice, setCastNotice] = useState(""); // e.g. expired-draft notice
+  const [aiBusy, setAiBusy] = useState(false);
   const startedRef = useRef(false);
 
-  // Restore draft after a login round-trip (or accidental refresh mid-flow).
+  // Restore after refresh or a login round-trip: the SAME cast and question
+  // come back — a new cast only happens on an explicit re-cast.
   /* eslint-disable react-hooks/set-state-in-effect -- one-time hydration from sessionStorage, an external store */
   useEffect(() => {
-    const saved = loadDraft<ConsultFlowDraft>(CONSULT_FLOW_DRAFT_KEY);
-    if (saved && typeof saved.step === "number" && saved.step >= 1 && saved.step <= 4) {
-      setDraft(saved);
-      if (saved.step === 4) setPhase("confirm");
-    } else {
+    const status = loadConsultFlowDraft();
+    if (status.kind === "none") {
       logEvent("consult_flow_started", { step: 1 });
+    } else if (status.kind === "expired") {
+      // Expired cast: keep the question, drop the coins, tell the user —
+      // never silently re-roll.
+      const kept = { ...status.draft };
+      delete kept.casts;
+      delete kept.castAt;
+      setDraft(kept);
+      setPhase(kept.step >= 4 ? "confirm" : "wizard");
+      setCastNotice("Your previous cast expired (casts are kept for 24 hours). Your answers are preserved below — cast again when ready.");
+    } else {
+      setDraft(status.draft);
+      if (status.draft.casts) setPhase("cast"); // same coins, no new free_result_viewed
+      else if (status.draft.step === 4) setPhase("confirm");
     }
     setHydrated(true);
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
 
-  const update = (patch: Partial<ConsultFlowDraft>) => {
+  // bfcache: browser Back from the login page restores this component frozen
+  // in the "generating" phase (state at redirect time). Re-hydrate from the
+  // draft so the user lands back on their SAME cast, never a stuck spinner.
+  useEffect(() => {
+    const onPageShow = (event: PageTransitionEvent) => {
+      if (!event.persisted) return;
+      const status = loadConsultFlowDraft();
+      startedRef.current = false;
+      setAiBusy(false);
+      setError("");
+      if (status.kind === "ok" && status.draft.casts) {
+        setDraft(status.draft);
+        setPhase("cast");
+      } else {
+        setPhase("wizard");
+      }
+    };
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
+  }, []);
+
+  const update = (patch: Partial<ConsultFlowDraftV2>) => {
     setDraft((prev) => {
       const next = { ...prev, ...patch };
-      saveDraft(CONSULT_FLOW_DRAFT_KEY, next);
+      saveConsultFlowDraft(next);
       return next;
     });
   };
@@ -108,23 +152,37 @@ export default function GuidedFlow({ hexagrams }: { hexagrams: HexagramData[] })
   const topicChosen = draft.topic === "__custom__" ? draft.customTopic.trim().length > 0 : draft.topic.length > 0;
   const canAdvance = phase === "wizard" && (draft.step === 1 ? topicChosen : draft.step === 2 ? draft.stuck.trim().length > 0 : true);
 
-  const handleStartReading = async () => {
-    if (startedRef.current) return;
+  // --- ACTION 1 (free, anonymous): cast the coins ---------------------------
+  // Client-side only — no API call, no quota, nothing personalized.
+  const doCast = () => {
+    const casts = Array.from({ length: 6 }, () => throwsToCast(castCoins()));
+    const ctx = buildIchingContext(casts, hexagrams);
+    if (!ctx) {
+      setError("The cast could not be completed. Please try again.");
+      return;
+    }
+    setError("");
+    setCastNotice("");
+    update({ casts, castAt: Date.now(), step: 5 });
+    setPhase("cast");
+    // New cast displayed → funnel event. Restore (refresh/login return) does NOT re-fire.
+    logEvent("free_result_viewed", { channel: "web", path: "consult_iching" });
+  };
+
+  // --- ACTION 2 (requires login): AI interpretation of THIS cast ------------
+  const handleAiInterpretation = async () => {
+    if (startedRef.current || aiBusy) return;
+    const castResult = castContextFromDraft(draft, hexagrams);
+    if (!castResult) {
+      setPhase("confirm");
+      return;
+    }
     startedRef.current = true;
+    setAiBusy(true);
     setError("");
     setStreamedText("");
     setPhase("generating");
     logEvent("consult_generation_started");
-
-    // Cast the coins ONCE for this consultation.
-    const casts = Array.from({ length: 6 }, () => castCoins());
-    const castResult = buildIchingContext(casts, hexagrams);
-    if (!castResult) {
-      setError("The cast could not be completed. Please try again.");
-      setPhase("confirm");
-      startedRef.current = false;
-      return;
-    }
 
     try {
       const res = await fetch("/api/oracle", {
@@ -142,7 +200,9 @@ export default function GuidedFlow({ hexagrams }: { hexagrams: HexagramData[] })
         if (contentType.includes("application/json")) {
           const data = await res.json();
           if (data.code === "LOGIN_REQUIRED") {
-            // Drafts already saved — they survive the login round-trip.
+            // Cast + question are already in the draft — the login round-trip
+            // returns to this same cast. This click is the auth funnel start.
+            logEvent("auth_started", { channel: "web", path: "consult_iching" });
             logEvent("consult_generation_failed", { reason: "login_required" });
             window.location.href = loginUrlWithNext();
             return;
@@ -156,8 +216,9 @@ export default function GuidedFlow({ hexagrams }: { hexagrams: HexagramData[] })
           setError("The oracle could not be reached. Please try again.");
         }
         logEvent("consult_generation_failed", { reason: "api_error" });
-        setPhase("confirm");
+        setPhase("cast");
         startedRef.current = false;
+        setAiBusy(false);
         return;
       }
 
@@ -166,8 +227,9 @@ export default function GuidedFlow({ hexagrams }: { hexagrams: HexagramData[] })
       if (!reader) {
         setError("The oracle could not be reached. Please try again.");
         logEvent("consult_generation_failed", { reason: "no_stream" });
-        setPhase("confirm");
+        setPhase("cast");
         startedRef.current = false;
+        setAiBusy(false);
         return;
       }
       let accumulated = "";
@@ -193,8 +255,9 @@ export default function GuidedFlow({ hexagrams }: { hexagrams: HexagramData[] })
       if (!accumulated || streamError) {
         setError("The oracle could not be reached. Please try again.");
         logEvent("consult_generation_failed", { reason: "empty_response" });
-        setPhase("confirm");
+        setPhase("cast");
         startedRef.current = false;
+        setAiBusy(false);
         return;
       }
 
@@ -240,20 +303,22 @@ export default function GuidedFlow({ hexagrams }: { hexagrams: HexagramData[] })
         persistedToAccount,
       };
       saveConsultResult(result);
-      clearDraft(CONSULT_FLOW_DRAFT_KEY);
+      clearConsultFlowDraft();
       logEvent("consult_generation_completed");
       router.push(`/consult/iching/result?session=${encodeURIComponent(result.sessionId)}`);
     } catch {
       setError("The oracle could not be reached. Please try again.");
       logEvent("consult_generation_failed", { reason: "network" });
-      setPhase("confirm");
+      setPhase("cast");
       startedRef.current = false;
+      setAiBusy(false);
     }
   };
 
   const handleStartOver = () => {
-    clearDraft(CONSULT_FLOW_DRAFT_KEY);
+    clearConsultFlowDraft();
     setDraft(EMPTY_DRAFT);
+    setCastNotice("");
     setPhase("wizard");
   };
 
@@ -277,6 +342,41 @@ export default function GuidedFlow({ hexagrams }: { hexagrams: HexagramData[] })
     );
   }
 
+  // --- cast result (free, anonymous) ----------------------------------------
+  if (phase === "cast") {
+    const castResult = castContextFromDraft(draft, hexagrams);
+    if (!castResult) {
+      // Defensive: cast missing/corrupt — fall back to confirm, never re-roll silently.
+      setPhase("confirm");
+      return null;
+    }
+    return (
+      <div>
+        {castNotice && (
+          <div className="mb-4 p-3 bg-sand/30 border border-sand rounded-lg text-sm text-warm">{castNotice}</div>
+        )}
+        {error && (
+          <div className="mb-4 p-4 bg-china-red/10 border border-china-red/30 rounded-lg text-sm text-china-red" role="alert">
+            {error}
+            {(error.includes("limit reached") || error.includes("limit reached")) && (
+              <div className="mt-2">
+                <Link href="/pricing" className="underline underline-offset-2">See Pro limits →</Link>
+              </div>
+            )}
+          </div>
+        )}
+        <CastView
+          cast={castResult}
+          question={finalQuestion}
+          onAiInterpretation={handleAiInterpretation}
+          onRecast={doCast}
+          onEditQuestion={() => setPhase("confirm")}
+          busy={aiBusy}
+        />
+      </div>
+    );
+  }
+
   // --- confirm ----------------------------------------------------------------
   if (phase === "confirm") {
     return (
@@ -290,8 +390,10 @@ export default function GuidedFlow({ hexagrams }: { hexagrams: HexagramData[] })
         </div>
         <h1 className="font-serif text-2xl text-ink mb-1">This is the question you&apos;ll ask</h1>
         <p className="text-sm text-ink/70 mb-5">
-          Edit anything below, then cast the coins. Starting the reading uses one of your
-          daily AI consultations.
+          Edit anything below, then cast the coins. <strong>Casting is free and needs no
+          account</strong> — you&apos;ll see your hexagram and its classical text before any
+          sign-in. The AI interpretation of your question is a separate step that uses one
+          of your daily AI readings (free account, 3/day; Pro 10/day).
         </p>
         <textarea
           value={draft.finalQuestion || assembled}
@@ -305,28 +407,22 @@ export default function GuidedFlow({ hexagrams }: { hexagrams: HexagramData[] })
           {finalQuestion.trim().length}/500 characters
         </p>
         <div className="mb-5 p-3 bg-sand/20 rounded-lg text-xs text-warm leading-relaxed">
-          <strong>What happens next:</strong> The coins are cast, then you&apos;ll receive a classical
-          teaching, an AI interpretation, and reflection questions. AI reading requires a free
-          account (3/day free, Pro 10/day). You&apos;ll be prompted to log in if needed — your
-          question and answers are preserved.
+          <strong>What happens next:</strong> the coins are cast — free, no account — and you
+          see your hexagram with the classical text (the same text for anyone who casts it;
+          not yet personalized). If you then want the AI to interpret <em>your</em> question
+          through this cast, that step asks you to sign in (free). Your question and cast
+          are preserved through sign-in.
         </div>
-        {error && (
-          <div className="mb-5 p-4 bg-china-red/10 border border-china-red/30 rounded-lg text-sm text-china-red">
-            {error}
-            <div className="mt-2">
-              <Link href="/pricing" className="underline underline-offset-2">
-                See Pro limits →
-              </Link>
-            </div>
-          </div>
+        {castNotice && (
+          <div className="mb-5 p-3 bg-sand/30 border border-sand rounded-lg text-sm text-warm">{castNotice}</div>
         )}
         <div className="flex flex-col sm:flex-row gap-3">
           <button
             type="button"
-            onClick={handleStartReading}
+            onClick={doCast}
             className="px-6 py-3 bg-china-red text-white rounded-full font-medium hover:bg-china-red/90 transition-colors"
           >
-            Start Reading →
+            起卦 · Cast the Coins →
           </button>
           <button
             type="button"
@@ -336,10 +432,6 @@ export default function GuidedFlow({ hexagrams }: { hexagrams: HexagramData[] })
             Back
           </button>
         </div>
-        <p className="mt-4 text-xs text-warm/80">
-          AI interpretation requires a free account (3/day, Pro 10/day). If you&apos;re not
-          logged in, you&apos;ll be asked to sign in — your answers are preserved.
-        </p>
       </div>
     );
   }
@@ -460,13 +552,7 @@ export default function GuidedFlow({ hexagrams }: { hexagrams: HexagramData[] })
         {step === 3 && (
           <button
             type="button"
-            onClick={() => {
-              // Skip = proceed without constraints, same as confirming empty —
-              // clearing alone left users stuck on step 3 (looked unresponsive).
-              update({ constraint: "", step: 4 });
-              logEvent("consult_question_confirmed", { step: 3 });
-              setPhase("confirm");
-            }}
+            onClick={() => update({ constraint: "" })}
             className="px-6 py-3 border border-sand rounded-full text-warm hover:text-ink hover:border-warm transition-colors"
           >
             Skip this step

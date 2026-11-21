@@ -34,7 +34,14 @@ export type AnalyticsEvent =
   | "consult_followup_failed"
   | "synastry_followup_started"
   | "synastry_followup_completed"
-  | "synastry_followup_failed";
+  | "synastry_followup_failed"
+  // Funnel-contract events (docs/funnel-contract.md) — unified semantics for
+  // P0/P1/P2. Client-side below; payment/delivery are server-recorded.
+  | "free_result_viewed"
+  | "auth_started"
+  | "auth_failed"
+  | "offer_viewed"
+  | "checkout_started";
 
 type AnalyticsData = Record<string, string | number | boolean>;
 

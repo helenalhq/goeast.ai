@@ -46,6 +46,8 @@ export async function POST(request: NextRequest) {
     if (!res.ok) {
       const text = await res.text();
       console.error("Creem checkout error:", res.status, text);
+      // Funnel: server-side proof checkout creation failed (no PII in logs)
+      console.log(JSON.stringify({ event: "checkout_failed", user_id: user.id, status: res.status }));
       return NextResponse.json(
         { error: "Failed to create checkout session" },
         { status: 502 },

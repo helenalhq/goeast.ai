@@ -82,6 +82,7 @@ function LoginForm() {
       });
       if (error) {
         setError(error.message);
+        logEvent("auth_failed", { method: "password" });
       } else {
         logEvent("login_succeeded", { return_target: next !== "/account" });
         router.push(next);
@@ -97,6 +98,7 @@ function LoginForm() {
       });
       if (error) {
         setError(error.message);
+        logEvent("auth_failed", { method: "signup" });
       } else {
         setMessage("Check your email for a confirmation link.");
       }
@@ -121,6 +123,7 @@ function LoginForm() {
 
     if (error) {
       setError(error.message);
+      logEvent("auth_failed", { method: "otp_send" });
     } else {
       setOtpStep("enter-code");
       setMessage(`Verification code sent to ${email.trim()}. Check your inbox (and spam folder).`);
@@ -143,6 +146,7 @@ function LoginForm() {
     });
 
     if (error) {
+      logEvent("auth_failed", { method: "otp_verify" });
       setError(
         error.message.includes("Invalid") || error.message.includes("expired")
           ? "Invalid or expired verification code. Please request a new one."
@@ -169,6 +173,7 @@ function LoginForm() {
     });
     if (error) {
       setError(error.message);
+      logEvent("auth_failed", { method: "google" });
       setLoading(false);
     }
   };

@@ -97,16 +97,41 @@ export async function POST(request: NextRequest) {
     case "checkout.completed":
     case "subscription.active":
     case "subscription.paid": {
-      await activateSubscription(
-        supabase,
-        subscriptionId,
-        customerId,
-        customerEmail,
-        expiresAt,
-        metadataUserId,
-      );
+      // Funnel (server-side, PII-free): payment confirmed by Creem event;
+      // first payment vs renewal inferred from event type — checkout.completed /
+      // subscription.active = first, subscription.paid on an existing row = renewal.
+      // See docs/funnel-contract.md for the counting caveats.
+      const kind = eventType === "subscription.paid" ? "renewal" : "first";
+      try {
+        await activateSubscription(
+          supabase,
+          subscriptionId,
+          customerId,
+          customerEmail,
+          expiresAt,
+          metadataUserId,
+        );
+        console.log(
+          JSON.stringify({ event: "payment_confirmed", offer_id: "pro_monthly", kind, subscription_id: subscriptionId }),
+        );
+        console.log(
+          JSON.stringify({ event: "delivery_succeeded", offer_id: "pro_monthly", kind, subscription_id: subscriptionId }),
+        );
+      } catch (err) {
+        console.error("Webhook activation error:", err);
+        console.log(
+          JSON.stringify({ event: "delivery_failed", offer_id: "pro_monthly", subscription_id: subscriptionId, reason: "activation_error" }),
+        );
+      }
+      break;
+    }
+    case "refund.completed":
+    case "refund.created": {
+      // Refund events may arrive without a subscription object — log the
+      // confirmation; entitlement revocation (if any) is handled by the
+      // subscription.canceled/expired events or manual review.
       console.log(
-        JSON.stringify({ event: "subscription_activated", subscription_id: subscriptionId }),
+        JSON.stringify({ event: "refund_confirmed", offer_id: "pro_monthly", object_id: obj.id ?? subscriptionId ?? null }),
       );
       break;
     }

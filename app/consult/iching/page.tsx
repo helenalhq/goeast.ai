@@ -46,7 +46,7 @@ const PROCESS_STEPS = [
 const FAQ_ITEMS = [
   {
     q: "Is the I Ching reading really free?",
-    a: "Casting the coins and seeing your hexagram is free and requires no account. The AI interpretation requires a free account — you get 3 AI readings per day (shared across all GoEast tools: I Ching, Zi Wei natal chart, and synastry). Pro ($4.99/month) gives you 10 per day plus deeper readings.",
+    a: "Two separate actions. (1) Casting the coins is completely free and needs no account — you see your six lines, your hexagram, any changing lines, and the classical text (the same traditional text for anyone who casts that hexagram — not yet personalized). (2) The AI interpretation of YOUR question through your cast requires a free account — 3 AI readings per day (shared across all GoEast tools). Pro ($4.99/month) gives you 10 per day plus deeper readings. You only sign in when you click the AI button, and your cast and question are preserved.",
   },
   {
     q: "How does the coin casting work?",

@@ -845,6 +845,175 @@ if (GROUPS.includes("c")) { RUN.groups.push("C"); console.log("\n=== GROUP C: du
 if (GROUPS.includes("d")) { RUN.groups.push("D"); console.log("\n=== GROUP D: follow-up Q&A ==="); await groupD(); }
 if (GROUPS.includes("e")) { RUN.groups.push("E"); console.log("\n=== GROUP E: action review V1 ==="); await groupE(); }
 if (GROUPS.includes("f")) { RUN.groups.push("F"); console.log("\n=== GROUP F: synastry follow-up V1 ==="); await groupF(); }
+// ============================================================================
+// GROUP G — free first experience (P0): anonymous cast, same-cast restore
+// across refresh & login, no quota before AI, recast, login cancel.
+// ============================================================================
+async function groupG() {
+  const g = "G";
+  const { context, page } = await mobilePage();
+  const consoleEvents = [];
+  page.on("console", (m) => { const t = m.text(); if (t.startsWith("[analytics]")) consoleEvents.push(t); });
+  try {
+    // 1. ANONYMOUS: wizard → confirm → Cast → result visible, ZERO oracle POSTs
+    let oraclePosts = 0;
+    const noApi = (r) => { if (r.url().includes("/api/oracle") && r.method() === "POST") oraclePosts++; };
+    page.on("request", noApi);
+    await page.goto(`${BASE}/consult/iching`, { waitUntil: "domcontentloaded" });
+    await page.waitForSelector("text=What would you like to discuss?", { timeout: 30000 });
+    await page.locator("button", { hasText: "A work decision" }).first().tap();
+    await page.locator("button", { hasText: "Continue" }).first().click();
+    await page.waitForSelector("text=Where are you stuck?");
+    await page.locator("textarea").first().fill(`G free flow ${PII.question} — same cast must return.`);
+    await page.locator("button", { hasText: "Continue" }).first().click();
+    await page.waitForSelector("text=Any constraints");
+    await page.locator("button", { hasText: "Review question" }).first().click();
+    await page.waitForSelector("text=Cast the Coins", { timeout: 10000 });
+    check(g, "confirm shows free cast CTA (no login wall)", true);
+
+    await page.locator("button", { hasText: "Cast the Coins" }).first().tap();
+    await page.waitForSelector("text=Your free cast", { timeout: 10000 });
+    await page.waitForSelector("text=《周易》", { timeout: 5000 });
+    check(g, "anonymous cast result visible (lines + classical text)", true);
+    const hexText = await page.locator("h1", { hasText: "Hexagram" }).first().textContent();
+    const hexNum = hexText.match(/Hexagram (\d+)/)?.[1];
+    const lineAria = await page.locator('[role="img"][aria-label*="six lines"]').getAttribute("aria-label");
+    check(g, "cast shows a hexagram with line summary", !!hexNum && !!lineAria, `${hexNum} | ${lineAria?.slice(0, 50)}`);
+    const freeEvents1 = consoleEvents.filter(e => e.includes("free_result_viewed")).length;
+    if (freeEvents1 === 0 && !BASE.includes("3100")) warn(g, "event lines not capturable in prod build (dev-verified)", "free_result_viewed");
+    else check(g, "free_result_viewed fired exactly once for a new cast", freeEvents1 === 1, `${freeEvents1}`);
+    check(g, "no oracle POST before AI step (no quota)", oraclePosts === 0, `${oraclePosts} POSTs`);
+    await shot(page, "g1-free-cast");
+    page.off("request", noApi);
+
+    // 2. REFRESH → SAME cast (hexagram + lines + question), no re-count
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await page.waitForSelector("text=Your free cast", { timeout: 30000 });
+    const hexText2 = await page.locator("h1", { hasText: "Hexagram" }).first().textContent();
+    check(g, "refresh → same hexagram", hexText2 === hexText, `${hexNum} → ${hexText2.match(/Hexagram (\\d+)/)?.[1]}`);
+    const freeEvents2 = consoleEvents.filter(e => e.includes("free_result_viewed")).length;
+    if (freeEvents2 === 0 && !BASE.includes("3100")) warn(g, "event lines not capturable in prod build (dev-verified)", "refresh no-refire");
+    else check(g, "refresh does NOT re-fire free_result_viewed", freeEvents2 === 1, `${freeEvents2}`);
+
+    // 3. LOGIN round-trip → SAME cast; AI runs on return
+    await page.locator("button", { hasText: "Get my AI interpretation" }).first().tap();
+    await page.waitForURL(/\/login/, { timeout: 15000 });
+    if (!consoleEvents.some(e => e.includes("auth_started")) && !BASE.includes("3100")) warn(g, "event lines not capturable in prod build (dev-verified)", "auth_started");
+    else check(g, "AI click gates at login (auth_started fired)", consoleEvents.some(e => e.includes("auth_started")), "");
+    const backCast = await page.locator("h1", { hasText: "Hexagram" }).first().textContent().catch(() => null);
+    await page.goBack({ waitUntil: "domcontentloaded" }).catch(() => {});
+    await page.waitForSelector("text=Your free cast", { timeout: 30000 }).catch(() => {});
+    const afterCancel = await page.locator("h1", { hasText: "Hexagram" }).first().textContent().catch(() => null);
+    check(g, "login cancel → cast preserved", afterCancel === hexText, `${afterCancel?.slice(0, 30)}`);
+
+    // Now do the real login → return → same cast → AI
+    await page.locator("button", { hasText: "Get my AI interpretation" }).first().tap();
+    await page.waitForURL(/\/login/, { timeout: 15000 });
+    await page.fill("#email", QA.email);
+    await page.fill("#password", QA.password);
+    await page.locator("button", { hasText: "Sign In" }).first().tap();
+    await page.waitForURL(/\/consult\/iching/, { timeout: 30000 });
+    await page.waitForSelector("text=Your free cast", { timeout: 30000 });
+    const hexText3 = await page.locator("h1", { hasText: "Hexagram" }).first().textContent();
+    check(g, "login round-trip → SAME hexagram", hexText3 === hexText, `${hexNum} → ${hexText3.match(/Hexagram (\\d+)/)?.[1]}`);
+
+    await page.locator("button", { hasText: "Get my AI interpretation" }).first().tap();
+    await page.waitForURL(/\/consult\/iching\/result\?session=/, { timeout: 180000 });
+    await page.waitForSelector("text=Your Hexagram", { timeout: 60000 });
+    const resultHex = await page.locator("text=/Hexagram \\d+/").first().textContent();
+    check(g, "AI reading uses the SAME cast", resultHex?.includes(hexNum || "??"), `${hexNum} vs ${resultHex?.slice(0, 30)}`);
+    await shot(page, "g2-after-login-ai");
+
+    // 4. Already-logged-in path: new wizard → cast → AI goes straight through
+    const usageBefore = await usageCount();
+    await page.goto(`${BASE}/consult/iching`, { waitUntil: "domcontentloaded" });
+    await page.waitForSelector("text=What would you like to discuss?");
+    // Start over if a cast draft lingers
+    if (await page.locator("text=Your free cast").count()) {
+      await page.locator("button", { hasText: "Start over" }).first().tap().catch(() => {});
+      await page.goto(`${BASE}/consult/iching`, { waitUntil: "domcontentloaded" });
+      await page.waitForSelector("text=What would you like to discuss?");
+    }
+    await page.locator("button", { hasText: "A creative project" }).first().tap();
+    await page.locator("button", { hasText: "Continue" }).first().click();
+    await page.waitForSelector("text=Where are you stuck?");
+    await page.locator("textarea").first().fill("already logged in flow");
+    await page.locator("button", { hasText: "Continue" }).first().click();
+    await page.waitForSelector("text=Any constraints");
+    await page.locator("button", { hasText: "Review question" }).first().click();
+    await page.locator("button", { hasText: "Cast the Coins" }).first().tap();
+    await page.waitForSelector("text=Your free cast", { timeout: 10000 });
+    await page.locator("button", { hasText: "Get my AI interpretation" }).first().tap();
+    await page.waitForURL(/\/consult\/iching\/result\?session=/, { timeout: 180000 });
+    check(g, "logged-in user: cast → AI straight through (no login redirect)", true);
+    const usageAfter = await usageCount();
+    if (usageAfter === usageBefore + 1) check(g, "exactly +1 quota for the AI reading (cast itself free)", true, `${usageBefore}→${usageAfter}`);
+    else if (!QUOTA_ENFORCED) warn(g, "quota not enforced on dev — +1 check skipped", `${usageBefore}→${usageAfter}`);
+    else check(g, "exactly +1 quota for the AI reading (cast itself free)", false, `${usageBefore}→${usageAfter}`);
+
+    // 5. Explicit re-cast: new cast fires the event again
+    await page.goto(`${BASE}/consult/iching`, { waitUntil: "domcontentloaded" });
+    await page.waitForSelector("text=What would you like to discuss?");
+    if (await page.locator("text=Your free cast").count()) {
+      await page.locator("button", { hasText: "Start over" }).first().tap().catch(() => {});
+      await page.goto(`${BASE}/consult/iching`, { waitUntil: "domcontentloaded" });
+      await page.waitForSelector("text=What would you like to discuss?");
+    }
+    await page.locator("button", { hasText: "A work decision" }).first().tap();
+    await page.locator("button", { hasText: "Continue" }).first().click();
+    await page.waitForSelector("text=Where are you stuck?");
+    await page.locator("textarea").first().fill("recast test");
+    await page.locator("button", { hasText: "Continue" }).first().click();
+    await page.waitForSelector("text=Any constraints");
+    await page.locator("button", { hasText: "Review question" }).first().click();
+    await page.locator("button", { hasText: "Cast the Coins" }).first().tap();
+    await page.waitForSelector("text=Your free cast", { timeout: 10000 });
+    const beforeRecast = consoleEvents.filter(e => e.includes("free_result_viewed")).length;
+    await page.locator("button", { hasText: "Cast again" }).first().tap();
+    await page.waitForTimeout(800);
+    const afterRecast = consoleEvents.filter(e => e.includes("free_result_viewed")).length;
+    if (afterRecast === 0 && !BASE.includes("3100")) warn(g, "event lines not capturable in prod build (dev-verified)", "recast re-fire");
+    else check(g, "explicit re-cast fires free_result_viewed again", afterRecast === beforeRecast + 1, `${beforeRecast}→${afterRecast}`);
+
+    // 6. Expired draft → understandable notice, question kept, NO silent re-roll
+    await page.evaluate(() => {
+      const KEY = "goeast:draft:consult-flow";
+      const raw = window.sessionStorage.getItem(KEY);
+      if (raw) {
+        const d = JSON.parse(raw);
+        d.castAt = Date.now() - 25 * 60 * 60 * 1000; // 25h ago
+        window.sessionStorage.setItem(KEY, JSON.stringify(d));
+      }
+    });
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await page.waitForTimeout(1000);
+    const expiredNotice = await page.locator("text=previous cast expired").count();
+    const keptQuestion = await page.locator("textarea").first().inputValue().catch(() => "");
+    check(g, "expired draft → visible notice", expiredNotice > 0, `${expiredNotice}`);
+    check(g, "expired draft → question preserved", keptQuestion.includes("recast test"), keptQuestion.slice(0, 25));
+    await shot(page, "g3-expired-notice");
+
+    // 7. Pricing: free CTA → /consult (not login); offer_viewed fires
+    const p2 = await context.newPage();
+    let offerEvents = 0;
+    p2.on("console", (m) => { if (m.text().includes("offer_viewed")) offerEvents++; });
+    await p2.goto(`${BASE}/pricing`, { waitUntil: "domcontentloaded" });
+    await p2.waitForSelector("text=Try a free reading");
+    check(g, "pricing free CTA present", true);
+    await p2.locator("a", { hasText: "Try a free reading" }).first().tap();
+    await p2.waitForURL(/\/consult$/, { timeout: 15000 });
+    check(g, "pricing free CTA → /consult directly", true);
+    await p2.waitForTimeout(600);
+    if (offerEvents === 0 && !BASE.includes("3100")) warn(g, "event lines not capturable in prod build (dev-verified)", "offer_viewed");
+    else check(g, "offer_viewed fired on pricing (test env: qa-flagged)", offerEvents >= 1, `${offerEvents}`);
+    await p2.close();
+  } catch (e) {
+    check(g, "group G flow error", false, String(e).slice(0, 300));
+  } finally {
+    await context.close();
+  }
+}
+if (GROUPS.includes("g")) { RUN.groups.push("G"); console.log("\n=== GROUP G: free first experience ==="); await groupG(); }
 
 // ============================================================================
 // GROUP F — synastry follow-up + relationship action V1 (romantic only).
