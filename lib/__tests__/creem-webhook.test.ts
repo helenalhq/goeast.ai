@@ -43,7 +43,9 @@ const SUB_EVENT = (type: string, extra: Record<string, unknown> = {}) => ({
 });
 
 beforeEach(() => {
-  vi.clearAllMocks();
+  vi.resetAllMocks();
+  activate.mockResolvedValue({ ok: true });
+  cancel.mockResolvedValue(undefined);
   vi.stubEnv("CREEM_WEBHOOK_SECRET", SECRET);
   // scheduled_cancel direct-update chain (only used by that branch)
   mockFrom.mockReturnValue({
@@ -207,7 +209,8 @@ describe("delivery reporting accuracy (paid-but-not-delivered vs delivered)", ()
 
   it("DB write failure → payment_confirmed + delivery_failed, NO delivery_succeeded", async () => {
     activate.mockResolvedValue({ ok: false, reason: "write_failed" });
-    await POST(signedReq(SUB_EVENT("checkout.completed")));
+    const response = await POST(signedReq(SUB_EVENT("checkout.completed")));
+    expect(response.status).toBe(503);
     const joined = logs.join("\n");
     expect(joined).toContain('"event":"payment_confirmed"');
     expect(joined).toContain('"event":"delivery_failed"');
@@ -226,7 +229,8 @@ describe("delivery reporting accuracy (paid-but-not-delivered vs delivered)", ()
 
   it("terminal-state guard (late retry after cancel) → delivery_skipped, not succeeded/failed", async () => {
     activate.mockResolvedValue({ ok: true, skipped: true, reason: "terminal_state" });
-    await POST(signedReq(SUB_EVENT("subscription.paid")));
+    const response = await POST(signedReq(SUB_EVENT("subscription.paid")));
+    expect(response.status).toBe(200);
     const joined = logs.join("\n");
     expect(joined).toContain('"event":"payment_confirmed"');
     expect(joined).toContain('"event":"delivery_skipped"');
