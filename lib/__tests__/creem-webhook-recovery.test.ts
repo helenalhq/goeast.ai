@@ -99,20 +99,23 @@ beforeEach(() => {
             if (row) ROWS.set(value, { ...row, ...patch });
             return Promise.resolve({ error: null });
           }
-          return { eq: (_statusColumn: string, status: string) => {
-            const matchExpiry = (_expiryColumn: string, expiry: string | null) => ({
-              select: () => ({ maybeSingle: async () => {
-                if (fail === "write") return { error: { message: "offline write failure" } };
-                beforeUpdate?.();
-                const row = ROWS.get(value);
-                if (!row || row.status !== status || (row.expires_at ?? null) !== expiry) return { data: null, error: null };
-                writeAccepted++;
-                ROWS.set(value, { ...row, ...patch });
-                return { data: { creem_subscription_id: value }, error: null };
-              } }),
-            });
-            return { eq: matchExpiry, is: matchExpiry };
-          } };
+          const filters = new Map<string, string | null>();
+          const addFilter = (key: string, expected: string | null) => {
+            filters.set(key, expected);
+            return conditional;
+          };
+          const conditional = { eq: addFilter, is: addFilter, select: () => ({ maybeSingle: async () => {
+            if (fail === "write") return { error: { message: "offline write failure" } };
+            beforeUpdate?.();
+            const row = ROWS.get(value);
+            if (!row || [...filters].some(([key, expected]) => (row[key] ?? null) !== expected)) {
+              return { data: null, error: null };
+            }
+            writeAccepted++;
+            ROWS.set(value, { ...row, ...patch });
+            return { data: { creem_subscription_id: value }, error: null };
+          } }) };
+          return conditional;
         },
       }),
     };
@@ -210,6 +213,29 @@ describe("Creem webhook: failure acknowledgement and offline recovery", () => {
     expect((await renew()).status).toBe(200);
     expect(ROWS.get(SUB)).toMatchObject({ status: "cancelled", expires_at: EXPIRY });
     expect(writeAccepted).toBe(1);
+  });
+
+  it("links an existing ownerless grant when the same-period checkout carries its verified owner", async () => {
+    ROWS.set(SUB, { status: "active", expires_at: EXPIRY, user_id: null, activated_at: "2026-11-20T11:00:00.000Z" });
+    expect((await deliveryResponse()).status).toBe(200);
+    expect(ROWS.get(SUB)).toMatchObject({
+      user_id: "fixture-owner", status: "active", expires_at: EXPIRY, activated_at: "2026-11-20T11:00:00.000Z",
+    });
+  });
+
+  it("recognizes the documented prod mode for genuine first purchase telemetry", async () => {
+    await deliveryResponse("checkout.completed", { mode: "prod" });
+    const logs = vi.mocked(console.log).mock.calls.flat().filter((v) => typeof v === "string" && v.startsWith("{")).map((v) => JSON.parse(v));
+    expect(logs).toContainEqual(expect.objectContaining({ event: "payment_confirmed", env: "production" }));
+  });
+
+  it("accepts explicit newer same-period resume, but not an older activation replay", async () => {
+    ROWS.set(SUB, { status: "scheduled_cancel", expires_at: EXPIRY, user_id: "fixture-owner",
+      activated_at: "2026-11-20T11:00:00.000Z", updated_at: "2026-11-21T06:00:00.000Z" });
+    await deliveryResponse("subscription.active", { status: "active", updated_at: "2026-11-21T05:00:00.000Z" });
+    expect(ROWS.get(SUB)?.status).toBe("scheduled_cancel");
+    await deliveryResponse("subscription.active", { status: "active", updated_at: "2026-11-21T06:30:00.000Z" });
+    expect(ROWS.get(SUB)).toMatchObject({ status: "active", expires_at: EXPIRY, activated_at: "2026-11-20T11:00:00.000Z" });
   });
 
   it("does not create a grant when its signed payload supplies no valid period end", async () => {

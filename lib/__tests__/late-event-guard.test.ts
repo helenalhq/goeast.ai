@@ -88,9 +88,9 @@ describe("activateSubscription guard logic (direct unit tests)", () => {
           select: () => ({ maybeSingle: async () => ({ data: { creem_subscription_id: "stub" }, error: null }) }),
         }),
         update: vi.fn().mockReturnValue({
-          eq: () => ({ eq: () => ({ is: () => ({
-            select: () => ({ maybeSingle: async () => ({ data: { creem_subscription_id: "stub" }, error: null }) }),
-          }) }) }),
+          eq: vi.fn().mockReturnThis(),
+          is: vi.fn().mockReturnThis(),
+          select: () => ({ maybeSingle: async () => ({ data: { creem_subscription_id: "stub" }, error: null }) }),
         }),
       }),
     } as unknown as SupabaseClient;

@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
       const transaction = checkout ? obj.order?.transaction : obj.last_transaction?.id ?? obj.last_transaction_id;
       const env = obj.mode === "test" || obj.mode === "sandbox" || obj.mode === "local"
         ? "test"
-        : obj.mode === "live" || obj.mode === "production" ? "production" : "unknown";
+        : obj.mode === "prod" || obj.mode === "live" || obj.mode === "production" ? "production" : "unknown";
       const fields = {
         offer_id: "pro_monthly",
         env,
@@ -133,6 +133,8 @@ export async function POST(request: NextRequest) {
           customerEmail,
           expiresAt,
           metadataUserId,
+          eventType === "subscription.active" && obj.status === "active"
+            ? parsePeriodEnd([obj.updated_at, event.created_at]) : undefined,
         );
         if (result.ok && !result.skipped) {
           console.log(

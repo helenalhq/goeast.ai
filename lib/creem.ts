@@ -103,12 +103,13 @@ export async function activateSubscription(
   customerEmail: string | undefined,
   expiresAt: Date | undefined,
   knownUserId?: string,
+  resumeAt?: Date,
 ): Promise<ActivationResult> {
   // Check current state: cancelled/expired subscriptions are terminal —
   // late activation events (retries) must not override them.
   const { data: existing, error: readError } = await supabase
     .from("subscriptions")
-    .select("status, expires_at, activated_at, user_id, creem_customer_id, customer_email")
+    .select("status, expires_at, activated_at, user_id, creem_customer_id, customer_email, updated_at")
     .eq("creem_subscription_id", subscriptionId)
     .maybeSingle();
 
@@ -134,7 +135,12 @@ export async function activateSubscription(
   if (expiresAt.getTime() <= Date.now()) {
     return { ok: true, skipped: true, reason: "period_elapsed" };
   }
-  if (Number.isFinite(existingExpiry) && expiresAt.getTime() <= existingExpiry) {
+  const samePeriod = expiresAt.getTime() === existingExpiry;
+  const canLinkOwner = samePeriod && !existing?.user_id && !!knownUserId
+    && (existing?.status === "active" || existing?.status === "scheduled_cancel");
+  const canResume = samePeriod && existing?.status === "scheduled_cancel" && !!resumeAt
+    && resumeAt.getTime() > Date.parse(existing.updated_at ?? "");
+  if (expiresAt.getTime() < existingExpiry || (samePeriod && !canLinkOwner && !canResume)) {
     return { ok: true, skipped: true, reason: "period_unchanged" };
   }
 
@@ -171,7 +177,7 @@ export async function activateSubscription(
     creem_subscription_id: subscriptionId,
     creem_customer_id: customerId ?? existing?.creem_customer_id ?? null,
     customer_email: customerEmail ?? existing?.customer_email ?? null,
-    status: "active",
+    status: samePeriod && !canResume ? (existing?.status ?? "active") : "active",
     activated_at: existing?.activated_at ?? nowIso,
     expires_at: expiresAt.toISOString(),
     updated_at: nowIso,
@@ -182,8 +188,10 @@ export async function activateSubscription(
   if (existing) {
     const update = supabase.from("subscriptions").update(row)
       .eq("creem_subscription_id", subscriptionId).eq("status", existing.status);
-    result = await (existing.expires_at ? update.eq("expires_at", existing.expires_at) : update.is("expires_at", null))
-      .select("creem_subscription_id").maybeSingle();
+    const sameExpiry = existing.expires_at ? update.eq("expires_at", existing.expires_at) : update.is("expires_at", null);
+    const sameOwner = existing.user_id ? sameExpiry.eq("user_id", existing.user_id) : sameExpiry.is("user_id", null);
+    const sameVersion = existing.updated_at ? sameOwner.eq("updated_at", existing.updated_at) : sameOwner;
+    result = await sameVersion.select("creem_subscription_id").maybeSingle();
   } else {
     result = await supabase.from("subscriptions")
       .upsert(row, { onConflict: "creem_subscription_id", ignoreDuplicates: true })
