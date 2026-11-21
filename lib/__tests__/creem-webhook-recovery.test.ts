@@ -13,17 +13,21 @@ const SUB = "sub_offline";
 const ROWS = new Map<string, Record<string, unknown>>();
 let fail: "read" | "write" | "throw" | "profile" | "owner" | "lifecycle" | undefined;
 let writeAccepted: number;
+let beforeUpdate: (() => void) | undefined;
 
-const deliveryResponse = (type = "checkout.completed") => {
+const deliveryResponse = (type = "checkout.completed", extra: Record<string, unknown> = {}) => {
   const body = JSON.stringify({
     id: "evt_offline",
     eventType: type,
     object: {
       id: type === "checkout.completed" ? "ch_offline" : SUB,
-      subscription: { id: SUB, current_period_end_date: EXPIRY },
-      current_period_end_date: EXPIRY,
+      ...(type === "checkout.completed"
+        ? { subscription: { id: SUB, current_period_end_date: EXPIRY }, order: { status: "paid", type: "recurring", amount_paid: 499, transaction: "tran_first" } }
+        : { current_period_end_date: EXPIRY }),
+      mode: "test",
       customer_email: "fixture@example.invalid",
       metadata: fail === "profile" || fail === "owner" ? {} : { userId: "fixture-owner" },
+      ...extra,
     },
   });
   return POST(new Request("http://localhost/api/webhooks/creem", {
@@ -37,6 +41,7 @@ beforeEach(() => {
   ROWS.clear();
   fail = undefined;
   writeAccepted = 0;
+  beforeUpdate = undefined;
   vi.useFakeTimers();
   vi.setSystemTime(new Date("2026-11-21T07:00:00.000Z"));
   vi.stubEnv("CREEM_WEBHOOK_SECRET", SECRET);
@@ -75,19 +80,42 @@ beforeEach(() => {
           },
         }),
       }),
-      upsert: async (row: Record<string, unknown>, options: { onConflict: string }) => {
-        if (fail === "write") return { error: { message: "offline write failure" } };
-        expect(options.onConflict).toBe("creem_subscription_id");
-        writeAccepted++;
-        ROWS.set(String(row.creem_subscription_id), row);
-        return { error: null };
-      },
+      upsert: (row: Record<string, unknown>, options: { onConflict: string; ignoreDuplicates: boolean }) => ({
+        select: () => ({ maybeSingle: async () => {
+          if (fail === "write") return { error: { message: "offline write failure" } };
+          expect(options).toEqual({ onConflict: "creem_subscription_id", ignoreDuplicates: true });
+          const key = String(row.creem_subscription_id);
+          if (ROWS.has(key)) return { data: null, error: null };
+          writeAccepted++;
+          ROWS.set(key, row);
+          return { data: { creem_subscription_id: key }, error: null };
+        } }),
+      }),
       update: (patch: Record<string, unknown>) => ({
-        eq: async (_column: string, value: string) => {
-          if (fail === "lifecycle") return { error: { message: "offline update failure" } };
-          const row = ROWS.get(value);
-          if (row) ROWS.set(value, { ...row, ...patch });
-          return { error: null };
+        eq: (_column: string, value: string) => {
+          if (!("expires_at" in patch)) {
+            if (fail === "lifecycle") return Promise.resolve({ error: { message: "offline update failure" } });
+            const row = ROWS.get(value);
+            if (row) ROWS.set(value, { ...row, ...patch });
+            return Promise.resolve({ error: null });
+          }
+          const filters = new Map<string, string | null>();
+          const addFilter = (key: string, expected: string | null) => {
+            filters.set(key, expected);
+            return conditional;
+          };
+          const conditional = { eq: addFilter, is: addFilter, select: () => ({ maybeSingle: async () => {
+            if (fail === "write") return { error: { message: "offline write failure" } };
+            beforeUpdate?.();
+            const row = ROWS.get(value);
+            if (!row || [...filters].some(([key, expected]) => (row[key] ?? null) !== expected)) {
+              return { data: null, error: null };
+            }
+            writeAccepted++;
+            ROWS.set(value, { ...row, ...patch });
+            return { data: { creem_subscription_id: value }, error: null };
+          } }) };
+          return conditional;
         },
       }),
     };
@@ -122,6 +150,97 @@ describe("Creem webhook: failure acknowledgement and offline recovery", () => {
     expect(ROWS.size).toBe(1);
     expect(ROWS.get(SUB)).toMatchObject({ user_id: "fixture-owner", status: "active", expires_at: EXPIRY });
     expect(failed.status).toBe(503);
+  });
+
+  it("uses the exact nested checkout period end rather than a conflicting top-level date", async () => {
+    expect((await deliveryResponse("checkout.completed", { current_period_end_date: "2027-02-01T00:00:00Z" })).status).toBe(200);
+    expect(ROWS.get(SUB)?.expires_at).toBe(EXPIRY);
+  });
+
+  it.each([false, true])("reports one initial payment with correlatable provider charge ID, either order (paid first: %s)", async (paidFirst) => {
+    const paid = () => deliveryResponse("subscription.paid", {
+      last_transaction: { id: "tran_first", status: "paid", amount_paid: 499 },
+    });
+    if (paidFirst) await paid();
+    await deliveryResponse();
+    await deliveryResponse("subscription.active");
+    if (!paidFirst) await paid();
+    const logs = vi.mocked(console.log).mock.calls.flat().filter((v) => typeof v === "string" && v.startsWith("{")).map((v) => JSON.parse(v));
+    expect(logs.filter((v) => v.event === "payment_confirmed")).toEqual([
+      expect.objectContaining({ kind: "first", transaction_id: "tran_first", env: "test" }),
+    ]);
+    expect(logs.filter((v) => v.event === "subscription_payment_observed")).toEqual([
+      expect.objectContaining({ transaction_id: "tran_first", env: "test" }),
+    ]);
+    expect(logs).not.toContainEqual(expect.objectContaining({ kind: "renewal" }));
+    expect(ROWS.size).toBe(1);
+    expect(writeAccepted).toBe(1);
+  });
+
+  it("does not grant Pro from a one-time checkout without a subscription", async () => {
+    const result = await deliveryResponse("checkout.completed", {
+      subscription: null, order: { status: "paid", type: "onetime", transaction: "tran_other" },
+    });
+    expect(result.status).toBe(200);
+    expect(ROWS.size).toBe(0);
+  });
+
+  it("never lets late old-period or incomplete signals shorten or extend the renewed entitlement", async () => {
+    const renewalExpiry = "2027-02-03T00:00:00.000Z";
+    await deliveryResponse();
+    const originalActivation = ROWS.get(SUB)?.activated_at;
+    vi.setSystemTime(new Date("2026-12-15T07:00:00.000Z"));
+    await deliveryResponse("subscription.paid", {
+      current_period_end_date: renewalExpiry,
+      last_transaction: { id: "tran_renewed", status: "paid", amount_paid: 499 },
+    });
+    vi.setSystemTime(new Date("2027-01-15T07:00:00.000Z"));
+    expect((await deliveryResponse()).status).toBe(200);
+    expect((await deliveryResponse("subscription.active", { current_period_end_date: null })).status).toBe(200);
+    expect(writeAccepted).toBe(2);
+    expect(ROWS.get(SUB)).toMatchObject({ expires_at: renewalExpiry, activated_at: originalActivation });
+  });
+
+  it("returns 503 when a cancellation wins a concurrent write, and preserves it on retry", async () => {
+    await deliveryResponse();
+    beforeUpdate = () => {
+      const current = ROWS.get(SUB);
+      ROWS.set(SUB, { ...current, status: "cancelled" });
+    };
+    const renew = () => deliveryResponse("subscription.paid", { current_period_end_date: "2027-02-03T00:00:00Z" });
+    expect((await renew()).status).toBe(503);
+    beforeUpdate = undefined;
+    expect((await renew()).status).toBe(200);
+    expect(ROWS.get(SUB)).toMatchObject({ status: "cancelled", expires_at: EXPIRY });
+    expect(writeAccepted).toBe(1);
+  });
+
+  it("links an existing ownerless grant when the same-period checkout carries its verified owner", async () => {
+    ROWS.set(SUB, { status: "active", expires_at: EXPIRY, user_id: null, activated_at: "2026-11-20T11:00:00.000Z" });
+    expect((await deliveryResponse()).status).toBe(200);
+    expect(ROWS.get(SUB)).toMatchObject({
+      user_id: "fixture-owner", status: "active", expires_at: EXPIRY, activated_at: "2026-11-20T11:00:00.000Z",
+    });
+  });
+
+  it("recognizes the documented prod mode for genuine first purchase telemetry", async () => {
+    await deliveryResponse("checkout.completed", { mode: "prod" });
+    const logs = vi.mocked(console.log).mock.calls.flat().filter((v) => typeof v === "string" && v.startsWith("{")).map((v) => JSON.parse(v));
+    expect(logs).toContainEqual(expect.objectContaining({ event: "payment_confirmed", env: "production" }));
+  });
+
+  it("accepts explicit newer same-period resume, but not an older activation replay", async () => {
+    ROWS.set(SUB, { status: "scheduled_cancel", expires_at: EXPIRY, user_id: "fixture-owner",
+      activated_at: "2026-11-20T11:00:00.000Z", updated_at: "2026-11-21T06:00:00.000Z" });
+    await deliveryResponse("subscription.active", { status: "active", updated_at: "2026-11-21T05:00:00.000Z" });
+    expect(ROWS.get(SUB)?.status).toBe("scheduled_cancel");
+    await deliveryResponse("subscription.active", { status: "active", updated_at: "2026-11-21T06:30:00.000Z" });
+    expect(ROWS.get(SUB)).toMatchObject({ status: "active", expires_at: EXPIRY, activated_at: "2026-11-20T11:00:00.000Z" });
+  });
+
+  it("does not create a grant when its signed payload supplies no valid period end", async () => {
+    expect((await deliveryResponse("checkout.completed", { subscription: { id: SUB } })).status).toBe(503);
+    expect(ROWS.size).toBe(0);
   });
 
   it("acknowledges a terminal-state replay without granting or overwriting the subscription", async () => {

@@ -20,6 +20,20 @@ function retryWebhookDelivery() {
   return NextResponse.json({ received: false }, { status: 503 });
 }
 
+function parsePeriodEnd(values: unknown[]): Date | undefined {
+  for (const value of values) {
+    if (typeof value !== "string" && typeof value !== "number") continue;
+    if (typeof value === "string" && value.trim() === "") continue;
+    // Creem returns ISO subscription dates; transaction dates can be Unix ms.
+    const date = new Date(typeof value === "number" && Math.abs(value) < 1e12 ? value * 1000 : value);
+    if (Number.isFinite(date.getTime()) && date.getTime() > 0) return date;
+  }
+}
+
+function periodCandidates(data?: Record<string, unknown>) {
+  return [data?.current_period_end_date, data?.current_period_end, data?.expires_at, data?.expires_date];
+}
+
 export async function POST(request: NextRequest) {
   // Fail closed: no signing secret configured → never process events.
   const secret = process.env.CREEM_WEBHOOK_SECRET;
@@ -57,13 +71,12 @@ export async function POST(request: NextRequest) {
   let customerId: string | undefined;
   let customerEmail: string | undefined;
   let metadataUserId: string | undefined;
-  let expiresAt: Date;
 
   if (eventType === "checkout.completed") {
-    subscriptionId = obj.subscription?.id ?? obj.id;
+    subscriptionId = typeof obj.subscription === "string" ? obj.subscription : obj.subscription?.id;
     customerId = obj.customer?.id ?? obj.customer_id;
     customerEmail = obj.customer?.email ?? obj.customer_email;
-    metadataUserId = obj.metadata?.userId;
+    metadataUserId = obj.metadata?.userId ?? obj.subscription?.metadata?.userId;
   } else {
     subscriptionId = obj.id;
     customerId = obj.customer?.id ?? obj.customer_id;
@@ -76,24 +89,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true });
   }
 
-  // Real expiry from the event when available; +30d fallback keeps renewals safe.
-  // Candidate names cover Creem's schema variants; confirm exact field during test-mode verification.
-  const expiryCandidates = [
-    obj.current_period_end_date,
-    obj.current_period_end,
-    obj.expires_at,
-    obj.expires_date,
-  ];
-  expiresAt = new Date(Date.now() + 30 * 86_400_000);
-  for (const candidate of expiryCandidates) {
-    if (candidate === null || candidate === undefined) continue;
-    const d = new Date(typeof candidate === "number" ? candidate * 1000 : String(candidate));
-    if (!isNaN(d.getTime()) && d.getTime() > Date.now()) {
-      expiresAt = d;
-      break;
-    }
-  }
-
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -103,16 +98,33 @@ export async function POST(request: NextRequest) {
     case "checkout.completed":
     case "subscription.active":
     case "subscription.paid": {
-      // Funnel (server-side, PII-free): payment confirmed by Creem event;
-      // first payment vs renewal inferred from event type — checkout.completed /
-      // subscription.active = first, subscription.paid on an existing row = renewal.
-      // See docs/funnel-contract.md for the counting caveats.
-      const kind = eventType === "subscription.paid" ? "renewal" : "first";
-      // Processor event and entitlement delivery are separate outcomes, even
-      // when the entitlement store rejects or throws.
-      console.log(
-        JSON.stringify({ event: "payment_confirmed", offer_id: "pro_monthly", kind, subscription_id: subscriptionId }),
-      );
+      const checkout = eventType === "checkout.completed";
+      const transaction = checkout ? obj.order?.transaction : obj.last_transaction?.id ?? obj.last_transaction_id;
+      const env = obj.mode === "test" || obj.mode === "sandbox" || obj.mode === "local"
+        ? "test"
+        : obj.mode === "prod" || obj.mode === "live" || obj.mode === "production" ? "production" : "unknown";
+      const fields = {
+        offer_id: "pro_monthly",
+        env,
+        event_type: eventType,
+        subscription_id: subscriptionId,
+        transaction_id: typeof transaction === "string" ? transaction : undefined,
+        event_id: typeof event.id === "string" ? event.id : undefined,
+      };
+      const firstPayment = checkout && obj.order?.status === "paid"
+        && obj.order?.type === "recurring" && obj.order?.amount_paid > 0
+        && typeof transaction === "string" && transaction.length > 0;
+      const kind = firstPayment ? "first" : "unclassified";
+      // Creem sends subscription.paid for both the initial charge and renewals.
+      // It is a reconciliation signal, not a second first/renewal conversion.
+      if (firstPayment) console.log(JSON.stringify({ event: "payment_confirmed", ...fields, kind }));
+      if (eventType === "subscription.paid") console.log(JSON.stringify({ event: "subscription_payment_observed", ...fields, kind }));
+      const expiresAt = parsePeriodEnd([
+        ...(checkout ? periodCandidates(obj.subscription) : []),
+        ...periodCandidates(obj),
+        ...(eventType === "subscription.paid" && obj.last_transaction?.subscription === subscriptionId
+          ? [obj.last_transaction.period_end] : []),
+      ]);
       try {
         const result = await activateSubscription(
           supabase,
@@ -121,29 +133,30 @@ export async function POST(request: NextRequest) {
           customerEmail,
           expiresAt,
           metadataUserId,
+          eventType === "subscription.active" && obj.status === "active"
+            ? parsePeriodEnd([obj.updated_at, event.created_at]) : undefined,
         );
         if (result.ok && !result.skipped) {
           console.log(
-            JSON.stringify({ event: "delivery_succeeded", offer_id: "pro_monthly", kind, subscription_id: subscriptionId }),
+            JSON.stringify({ event: "delivery_succeeded", ...fields, kind }),
           );
         } else if (result.ok && result.skipped) {
-          // Terminal-state guard: no write happened (late retry after cancel)
-          // — NOT a delivery, and NOT a failure. Log distinctly so "paid but
-          // not delivered" analysis can exclude guard no-ops.
+          // No write was needed (existing grant or terminal state). Do not
+          // count a second delivery or misrepresent it as a failure.
           console.log(
-            JSON.stringify({ event: "delivery_skipped", offer_id: "pro_monthly", subscription_id: subscriptionId, reason: result.reason }),
+            JSON.stringify({ event: "delivery_skipped", ...fields, kind, reason: result.reason }),
           );
         } else {
           // DB write failed: payment confirmed but entitlement NOT delivered.
           console.log(
-            JSON.stringify({ event: "delivery_failed", offer_id: "pro_monthly", subscription_id: subscriptionId, reason: result.reason }),
+            JSON.stringify({ event: "delivery_failed", ...fields, kind, reason: result.reason }),
           );
           return retryWebhookDelivery();
         }
       } catch (err) {
         console.error("Webhook activation error:", err);
         console.log(
-          JSON.stringify({ event: "delivery_failed", offer_id: "pro_monthly", subscription_id: subscriptionId, reason: "activation_error" }),
+          JSON.stringify({ event: "delivery_failed", ...fields, kind, reason: "activation_error" }),
         );
         return retryWebhookDelivery();
       }

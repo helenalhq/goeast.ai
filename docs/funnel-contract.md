@@ -15,9 +15,10 @@ Status: P0 wired (2026-11-21) · Audience: P1 (per-use product), P2 (measurement
 | `checkout_started` | User actually redirected to checkout | **new** client event after checkoutUrl received | `upgrade_clicked` = intent (kept); this = redirect began |
 | `checkout_created` | Server created a checkout session | server log in `/api/checkout` (exists) | `{"event":"checkout_created","user_id":…}` — no email |
 | `checkout_failed` | Server failed to create checkout | **new** server log in `/api/checkout` | `{"event":"checkout_failed","user_id":…,"status":…}` |
-| `payment_confirmed` | Payment confirmed by processor event | **new** server log in Creem webhook | `checkout.completed`/`subscription.active` → `kind:"first"`; `subscription.paid` → `kind:"renewal"` (inference — see caveats) |
+| `payment_confirmed` | Payment confirmed by processor event | server log in Creem webhook | Paid, nonzero recurring `checkout.completed` with provider transaction ID → `kind:"first"` |
+| `subscription_payment_observed` | Provider paid callback | server log for `subscription.paid` | First or renewal; reconcile by provider transaction ID, never count as an additional first purchase |
 | `delivery_succeeded` | Entitlement actually granted | **new** server log — ONLY when `activateSubscription` returns `ok:true` (write verified) | DB row in `subscriptions` is the durable record |
-| `delivery_skipped` | Terminal-state guard no-op (late retry after cancel) | **new** server log | Paid-but-guarded: neither delivered nor failed — exclude from both counts |
+| `delivery_skipped` | No write needed (terminal state, elapsed or unchanged period) | **new** server log | Paid-but-guarded: neither delivered nor failed — exclude from both counts |
 | `delivery_failed` | Entitlement grant failed | **new** server log — DB read/write failure (`read_failed`/`write_failed`) or exception | "Paid but not delivered" = payment_confirmed without a later delivery_succeeded for the same subscription_id |
 | `refund_confirmed` | Refund confirmed by processor | **new** server log on `refund.*` events | Creem refund event shape UNVERIFIED (no test config) — see §5 |
 
@@ -38,13 +39,14 @@ attempt to pass objects):
 | `path` | `consult_iching`, `pricing`, … | free_result_viewed, auth_started, offer_viewed |
 | `offer_id` | `pro_monthly` (P1 adds `decision_once`) | offer_viewed, checkout_started, server payment/delivery/refund |
 | `from` | entry surface (`pricing`, `oracle`, `example`, `account`) | upgrade_clicked, checkout_started |
-| `kind` | `first` / `renewal` | server payment_confirmed, delivery_succeeded |
+| `kind` | `first` / `unclassified` | server payment/delivery signals |
+| `transaction_id`, `event_id` | Opaque Creem IDs when present; not user identifiers | server payment/delivery signals |
+| `env` | `production` / `test` / `unknown` from signed Creem mode | server payment/delivery signals |
 | `method` | `password`/`signup`/`otp_send`/`otp_verify`/`google` | auth_failed |
 | `reason` | enum (e.g. `login_required`, `api_error`) | existing consult_generation_failed etc. |
 
 **Forbidden everywhere** (enforced by scalar-only layer + review): question text,
-names, birth data, emails, full URLs, tokens. Server logs carry opaque
-`user_id` (UUID) and `subscription_id` only.
+names, birth data, emails, full URLs, tokens. Server logs carry only necessary opaque IDs for correlation, not customer identity.
 
 **Experiment id**: P1/P2 experiments pass `exp: "<opaque-id>"` as an optional
 field on client events (not yet used in P0 — reserved).
@@ -77,12 +79,17 @@ GROUP BY date, event ORDER BY date, event;
 Server events (Vercel log drain → your store; JSON lines):
 
 ```
--- payment/delivery/refund from webhook logs, deduped by subscription+kind per day
-SELECT event, kind, count(DISTINCT subscription_id)
+-- First paid checkout count: deduplicate across retries and day boundaries.
+-- Use provider payment date for cohort reports, not webhook ingestion time.
+SELECT count(DISTINCT transaction_id)
 FROM server_logs
-WHERE event IN ('payment_confirmed','delivery_succeeded','delivery_failed','refund_confirmed')
-  AND json:env != 'test'
-GROUP BY event, kind;
+WHERE event='payment_confirmed' AND kind='first' AND env='production'
+  AND transaction_id IS NOT NULL;
+
+-- Reconcile other paid callbacks against these same transaction IDs.
+-- Do not assume unmatched subscription_payment_observed rows are renewals.
+-- Entitlement evidence is the owner-linked current DB row; parallel first-period
+-- signals may emit delivery_succeeded on one path and delivery_skipped on another.
 ```
 
 Entitlement truth (Supabase — the authoritative delivery record):
@@ -106,25 +113,26 @@ from subscriptions group by 1; -- renewals upsert the same row: 1 row per subscr
    as event counts, not unique humans. Do NOT splice browser ids to fake
    uniques. Cross-day unique-user math must come from authenticated DB state
    (e.g. `auth.users`, `consult_results.user_id`).
-2. **Dedup — payment/delivery**: webhook `activateSubscription` upserts by
-   `creem_subscription_id`, so **entitlement delivery is idempotent under
-   callback replay**. Event-level analytics dedup should key on
-   `(subscription_id, event, kind, day)`. **Gap**: we do NOT store Creem
-   event ids, so exact once-per-webhook-event dedup for LOG counting is not
-   possible today; P1 should add an `webhook_events` table keyed on event id.
-3. **First vs renewal**: inferred from event type (`subscription.paid` →
-   renewal). **Unverified against Creem docs** (no test config) — treat as
-   approximate until verified; authoritative renewal counting should compare
-   `updated_at` vs `created_at` on the subscriptions row.
+2. **Dedup — payment/delivery**: one entitlement row per subscription, with
+   conditional updates that preserve existing newer periods and terminal states.
+   The same period is not delivered twice. Analytics dedup uses processor mode
+   and transaction ID; event IDs help debug callbacks but are not charge IDs.
+   Logs are not a durable exactly-once payment ledger.
+3. **First vs renewal**: `checkout.completed` reports a qualifying first
+   checkout, `subscription.paid` fires for both first charge and renewal, and
+   `subscription.active` is an entitlement state signal. Reconcile callbacks
+   with matching transaction IDs. A standalone paid event, including a
+   possible first charge after a trial, is unclassified. Use provider history
+   to establish actual renewals and never infer them from row update time.
 4. **Refunds**: `refund.*` handler logs `refund_confirmed`, but **whether
    Creem sends these event types, and their payload shape, is UNVERIFIED —
    no payment test config exists in this environment**. Refund truth today =
    manual reconciliation in Creem dashboard. Not claimed as tested.
-5. **Test exclusion**: client events carry `env` + `qa`; QA runs (scripts set
-   `goeast:qa`) are excluded by `qa IS NULL`. Server logs: mark test-mode
-   traffic — **gap**: webhook logs don't yet carry an explicit test flag;
-   test payments should use test-mode Creem keys (separate project env) so
-   production logs stay clean.
+5. **Test exclusion**: client events carry `env` + `qa`; QA runs are excluded.
+   Only signed provider live/production mode is counted in the server query;
+   `test` and `unknown` are excluded. Also keep Vercel deployment environment
+   separate. Historical checkout logs before this change need reconciliation,
+   not backfilled assumptions.
 6. **Missing data**: Vercel Analytics retention/window limits apply to client
    events; server logs drain only if a log drain is configured (**gap**: no
    drain configured in this environment — logs are view-only in dashboard**).
