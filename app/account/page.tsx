@@ -2,6 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { getSiteConfig } from "@/lib/config";
 import { hasActiveProEntitlement, getSubscriptionByUserId } from "@/lib/creem";
 import { redirect } from "next/navigation";
+import Link from "next/link";
+import { isDecisionOfferEnabled } from "@/lib/decision-config";
 import type { Metadata } from "next";
 import LogoutButton from "./logout-button";
 import UpgradeButton from "./upgrade-button";
@@ -174,6 +176,13 @@ export default async function AccountPage({
         )}
         {!hasAccess && !checkoutPending && config.paymentEnabled && <UpgradeButton />}
       </div>
+
+      {isDecisionOfferEnabled(user.id) && (
+        <section className="mb-6 rounded-xl border border-sand bg-white p-6">
+          <h2 className="mb-2 font-semibold text-ink">One-time decision reports</h2>
+          <Link href="/account/decision-reports" prefetch={false} className="text-sm text-china-red underline underline-offset-2">Open my decision reports</Link>
+        </section>
+      )}
 
       <div className="flex items-center justify-between">
         <LogoutButton />
