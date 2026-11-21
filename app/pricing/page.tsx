@@ -4,7 +4,6 @@ import { getSiteConfig } from "@/lib/config";
 import JsonLd from "@/components/JsonLd";
 import TryIChingLink from "@/components/TryIChingLink";
 import PricingClient from "./pricing-client";
-import OfferViewedTracker from "./offer-viewed-tracker";
 import ExampleViewed from "./example-viewed";
 import {
   SAMPLE_DEMO_CONDITIONS,
@@ -120,16 +119,15 @@ export default function PricingPage() {
               </li>
             ))}
           </ul>
-          <PricingClient paymentEnabled={config.paymentEnabled} />
-          {/* Funnel: the paid offer actually displayed */}
-          {config.paymentEnabled && <OfferViewedTracker offerId="pro_monthly" />}
-          <p className="text-xs text-warm/70 mt-3 break-words">
-            $4.99/month · auto-renews · cancel anytime in Account ·{" "}
-            <Link href="/terms" className="underline hover:text-china-red">
-              Terms &amp; refund policy
-            </Link>
-            . Taxes, if any, are calculated at checkout.
-          </p>
+          <PricingClient paymentEnabled={config.paymentEnabled}>
+            <p className="text-xs text-warm/70 mt-3 break-words">
+              $4.99/month · auto-renews · cancel anytime in Account ·{" "}
+              <Link href="/terms" className="underline hover:text-china-red">
+                Terms &amp; refund policy
+              </Link>
+              . Taxes, if any, are calculated at checkout.
+            </p>
+          </PricingClient>
         </div>
       </div>
 
