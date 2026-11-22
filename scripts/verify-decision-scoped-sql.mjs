@@ -70,6 +70,24 @@ assert.equal(await refund(qa, "prod_once", "ord_1", "tx_1"), "refunded");
 assert.equal(await refund(qa, "prod_once", "ord_1", "tx_1"), "duplicate");
 assert.equal(await value("select status v from goeast_p1_qa.decision_orders where id=$1 and report is null",[id]),"refunded");
 assert.equal(await value("select goeast_p1_qa.decision_record_payment($1,'test','prod_once','ch_1','ord_1','tx_1') v",[id]),"duplicate");
+const recoveryOrder = "23783acb-2e34-47d4-ae37-33330a3c9d4c";
+const castHash = "b".repeat(64);
+const recoveryClaim = store.match(/`(update goeast_p1_qa\.decision_orders set checkout_id=checkout_id[\s\S]*?returning xmin::text as revision)`/)?.[1];
+const recoveryLink = store.match(/`(update goeast_p1_qa\.decision_orders set checkout_id=\$6,checkout_url=\$7[\s\S]*?returning id)`/)?.[1];
+assert.ok(recoveryClaim && recoveryLink, "match exact runtime recovery SQL");
+await query(`insert into goeast_p1_qa.decision_orders(id,owner_id,cast_hash,capture,mode,product_id)
+  values ($1,$2,$3,'{}','test','prod_once')`, [recoveryOrder,qa,castHash]);
+const originalRevision = await value("select xmin::text v from goeast_p1_qa.decision_orders where id=$1", [recoveryOrder]);
+const args = [recoveryOrder,qa,"prod_once",castHash,originalRevision];
+assert.deepEqual((await query(recoveryClaim,[recoveryOrder,other,"prod_once",castHash,originalRevision])).rows,[]);
+const [claimed] = (await query(recoveryClaim,args)).rows;
+assert.ok(claimed?.revision && claimed.revision !== originalRevision);
+assert.deepEqual((await query(recoveryClaim,args)).rows,[]);
+assert.deepEqual((await query(recoveryLink,[...args,"ch_old","https://example.invalid"])).rows,[]);
+assert.deepEqual((await query(recoveryLink,[...args.slice(0,4),claimed.revision,"ch_original","https://checkout.creem.io/ch_original"])).rows,
+  [{id:recoveryOrder}]);
+assert.deepEqual((await query(recoveryClaim,args)).rows,[]);
+assert.equal((await query("select count(*)::int v from goeast_p1_qa.decision_orders")).rows[0]?.v,2);
 await db.close();
 for (const apiRole of ["anon", "authenticated", "service_role"]) {
   const api = await PGlite.create();

@@ -113,6 +113,36 @@ export function decisionDb(config: DecisionConfig) {
   };
 }
 
+type ScopedRecoveryConfig = Extract<DecisionConfig, { mode: "test" }> & { storage: "scoped-postgres" };
+type RecoveryPin = { orderId: string; castHash: string; revision: string };
+
+export async function claimCheckoutRecovery(config: ScopedRecoveryConfig, pin: RecoveryPin) {
+  const [row] = await scopedQuery(config)<{ revision: string }>(
+    `update goeast_p1_qa.decision_orders set checkout_id=checkout_id
+     where id=$1::uuid and owner_id=$2::uuid and mode='test' and product_id=$3 and cast_hash=$4
+       and xmin::text=$5 and status='pending' and checkout_id is null and checkout_url is null
+       and provider_order_id is null and transaction_id is null
+     returning xmin::text as revision`,
+    [pin.orderId, config.qaUserId, config.productId, pin.castHash, pin.revision],
+  );
+  // scopedQuery commits before it resolves. The no-op SQL update changes the
+  // tuple version, requiring a fresh xmin before any later attempt.
+  return row?.revision && row.revision !== pin.revision ? row.revision : null;
+}
+
+export async function saveRecoveredCheckout(
+  config: ScopedRecoveryConfig, pin: RecoveryPin, checkout: { id: string; url: string },
+) {
+  const [row] = await scopedQuery(config)<{ id: string }>(
+    `update goeast_p1_qa.decision_orders set checkout_id=$6,checkout_url=$7
+     where id=$1::uuid and owner_id=$2::uuid and mode='test' and product_id=$3 and cast_hash=$4
+       and xmin::text=$5 and status='pending' and checkout_id is null and checkout_url is null
+       and provider_order_id is null and transaction_id is null returning id`,
+    [pin.orderId, config.qaUserId, config.productId, pin.castHash, pin.revision, checkout.id, checkout.url],
+  );
+  return row?.id === pin.orderId;
+}
+
 // Run the exact linkage check and conditional mutation in the same audited
 // transaction. Never call the refund RPC for unrelated Test Store activity.
 export async function linkedDecisionTestRefund(

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createHmac } from "node:crypto";
 import { GET, POST } from "@/app/api/decision-report/[id]/route";
 import { POST as checkout } from "@/app/api/decision-report/checkout/route";
@@ -170,6 +170,168 @@ describe("decision TEST payment route", () => {
     expect((await checkout(request(input,path+"checkout"))).status).toBe(409);
     expect(handles.scopedQuery).toHaveBeenCalledTimes(1);
     expect(handles.testCheckout).not.toHaveBeenCalled();
+  });
+  describe("sanitized TEST checkout failure diagnostics", () => {
+    const sentinel = "private-fixture-not-for-logs";
+    const fetchMock = vi.fn<typeof fetch>();
+
+    beforeEach(async () => {
+      fetchMock.mockReset();
+      vi.stubGlobal("fetch", fetchMock);
+      vi.spyOn(console, "warn").mockImplementation(() => {});
+      handles.testProduct.mockResolvedValue(true);
+      const real = await vi.importActual<typeof import("@/lib/decision-provider")>("@/lib/decision-provider");
+      handles.testCheckout.mockImplementation(real.createDecisionTestCheckout);
+      handles.scopedQuery.mockResolvedValueOnce([]).mockResolvedValueOnce([]); // lookup, durable claim
+    });
+
+    afterEach(() => {
+      vi.mocked(console.warn).mockRestore();
+      vi.unstubAllGlobals();
+      handles.testProduct.mockReset();
+      handles.testCheckout.mockReset();
+    });
+
+    async function verifyFailure(status: number, diagnostic: Record<string, unknown>) {
+      const response = await checkout(request(input, path + "checkout"));
+      expect(response.status).toBe(status);
+      expect(await response.json()).toEqual({
+        error: status === 409
+          ? "This checkout is being verified. Check Decision reports before trying again."
+          : "Decision reports are temporarily unavailable. Try again shortly.",
+      });
+      expect(console.warn).toHaveBeenCalledExactlyOnceWith("[decision-report]",
+        JSON.stringify({ event: "test_checkout_failed", ...diagnostic }));
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    }
+
+    it("reports a bounded provider HTTP status without reading or logging its error body", async () => {
+      const reply = new Response(sentinel, { status: 422, statusText: sentinel });
+      const body = vi.spyOn(reply, "json");
+      const text = vi.spyOn(reply, "text");
+      fetchMock.mockResolvedValueOnce(reply);
+      await verifyFailure(503, { stage: "provider", reason: "http", http_status: 422 });
+      expect(body).not.toHaveBeenCalled();
+      expect(text).not.toHaveBeenCalled();
+      expect(handles.scopedQuery).toHaveBeenCalledTimes(2);
+    });
+
+    it("distinguishes transport failure and keeps a second request on the existing claim", async () => {
+      fetchMock.mockRejectedValueOnce(new Error(sentinel));
+      await verifyFailure(503, { stage: "provider", reason: "transport" });
+      expect(handles.scopedQuery).toHaveBeenCalledTimes(2);
+      handles.scopedQuery.mockResolvedValueOnce([{ id, status: "pending", product_id: product, checkout_id: null }]);
+      expect((await checkout(request(input, path + "checkout"))).status).toBe(409);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(console.warn).toHaveBeenCalledTimes(1);
+    });
+
+    it("distinguishes invalid JSON from a correlated-field mismatch", async () => {
+      fetchMock.mockResolvedValueOnce(new Response(sentinel, { status: 200 }));
+      await verifyFailure(503, { stage: "provider", reason: "invalid_json" });
+      expect(handles.scopedQuery).toHaveBeenCalledTimes(2);
+    });
+
+    it("reports only the names of mismatched fields and does not attempt to save", async () => {
+      fetchMock.mockResolvedValueOnce(Response.json({ id: "ch_fixture", mode: sentinel, request_id: sentinel,
+        product: { id: sentinel }, status: sentinel, checkout_url: "https://example.invalid/" + sentinel }));
+      await verifyFailure(503, { stage: "correlation", mismatch_fields: ["checkout_url", "mode", "request_id", "product", "status"] });
+      expect(handles.scopedQuery).toHaveBeenCalledTimes(2);
+    });
+
+    function validProviderReply() {
+      fetchMock.mockImplementationOnce(async (_url, init) => {
+        const body = JSON.parse(String(init?.body));
+        return Response.json({ id: "ch_fixture", mode: "test", request_id: body.request_id,
+          product, status: "pending", checkout_url: "https://checkout.creem.io/ch_fixture" });
+      });
+    }
+
+    it("reports a save exception after valid provider correlation without leaking DB error details", async () => {
+      validProviderReply();
+      handles.scopedQuery.mockRejectedValueOnce(new Error(sentinel));
+      await verifyFailure(503, { stage: "save", reason: "write_error" });
+      expect(handles.scopedQuery).toHaveBeenCalledTimes(3);
+    });
+
+    it("reports no matching save row after valid provider correlation and keeps HTTP 409", async () => {
+      validProviderReply();
+      handles.scopedQuery.mockResolvedValueOnce([]);
+      await verifyFailure(409, { stage: "save", reason: "no_matching_row" });
+      expect(handles.scopedQuery).toHaveBeenCalledTimes(3);
+    });
+  });
+  describe("one-shot checkout recovery", () => {
+    const recover = (origin = "https://preview.goeast.ai", data = input) => new Request(path+"checkout", {
+      method:"POST", headers:{"content-type":"application/json", origin}, body:JSON.stringify(data),
+    });
+    const pending = {id, owner_id:owner, mode:"test", status:"pending",product_id:product,checkout_id:null,checkout_url:null};
+    const success = {id:"ch_fixture",url:"https://checkout.creem.io/ch_fixture"};
+    beforeEach(() => {
+      vi.stubEnv("DECISION_REPORT_RECOVERY_ENABLED","true");
+      vi.stubEnv("DECISION_REPORT_RECOVERY_ORDER_ID",id);
+      vi.stubEnv("DECISION_REPORT_RECOVERY_XMIN","110");
+      handles.testCheckout.mockReset();
+      handles.testProduct.mockReset();
+    });
+    afterEach(() => {
+      for (const name of ["DECISION_REPORT_RECOVERY_ENABLED","DECISION_REPORT_RECOVERY_ORDER_ID","DECISION_REPORT_RECOVERY_XMIN"]) {
+        vi.stubEnv(name,undefined);
+      }
+    });
+    it("consumes the exact existing row revision before sending only one original provider request", async () => {
+      handles.scopedQuery.mockImplementation(async (sql:string) => {
+        if (sql.includes("checkout_id=checkout_id")) {
+          const consumed = handles.scopedQuery.mock.calls.filter(([query]) => query.includes("checkout_id=checkout_id")).length;
+          return consumed === 1 ? [{revision:"111"}] : [];
+        }
+        if (sql.includes("returning id")) return [{id}];
+        return [pending];
+      });
+      handles.testCheckout.mockResolvedValue(success);
+      const responses = await Promise.all([checkout(recover()),checkout(recover())]);
+      expect(responses.map(x=>x.status).sort()).toEqual([200,409]);
+      expect(handles.testCheckout).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({qaUserId:owner,mode:"test"}),id,true);
+      expect(handles.scopedQuery.mock.calls.some(([sql])=>sql.startsWith("insert"))).toBe(false);
+      expect(handles.scopedQuery).toHaveBeenCalledWith(expect.stringContaining("xmin::text=$5"),
+        [id,owner,product,expect.any(String),"110"]);
+      expect(handles.scopedQuery).toHaveBeenCalledWith(expect.stringContaining("checkout_url=$7"),
+        [id,owner,product,expect.any(String),"111","ch_fixture",success.url]);
+    });
+    it("fails closed on an absent or wrong cast while opt-in is armed and respects the origin", async () => {
+      handles.scopedQuery.mockResolvedValueOnce([]);
+      expect((await checkout(recover())).status).toBe(409);
+      handles.scopedQuery.mockResolvedValueOnce([pending]);
+      expect((await checkout(recover("https://example.invalid"))).status).toBe(400);
+      expect(handles.scopedQuery).toHaveBeenCalledTimes(1);
+      expect(handles.testProduct).not.toHaveBeenCalled();
+      expect(handles.testCheckout).not.toHaveBeenCalled();
+    });
+    it("makes exactly the original Test payload, with redirect disabled, on an intentional recovery", async () => {
+      const provider = await vi.importActual<typeof import("@/lib/decision-provider")>("@/lib/decision-provider");
+      handles.testCheckout.mockImplementation(provider.createDecisionTestCheckout);
+      handles.scopedQuery.mockResolvedValueOnce([pending]).mockResolvedValueOnce([{revision:"111"}]).mockResolvedValueOnce([{id}]);
+      const providerFetch = vi.fn(async () => Response.json({ id:"ch_fixture", mode:"test", request_id:id, product,
+        status:"pending", checkout_url:success.url }));
+      vi.stubGlobal("fetch", providerFetch);
+      try {
+        expect((await checkout(recover())).status).toBe(200);
+        expect(providerFetch).toHaveBeenCalledExactlyOnceWith("https://test-api.creem.io/v1/checkouts", expect.objectContaining({
+          method:"POST",redirect:"error",body:JSON.stringify({product_id:product,request_id:id,units:1,
+            success_url:"https://preview.goeast.ai/account/decision-reports/"+id,
+            metadata:{offer_id:"decision_once",order_id:id}}),
+        }));
+      } finally { vi.unstubAllGlobals(); }
+    });
+    it("does not replay after a committed claim and ambiguous provider failure", async () => {
+      handles.scopedQuery.mockResolvedValueOnce([pending]).mockResolvedValueOnce([{revision:"111"}])
+        .mockResolvedValueOnce([pending]).mockResolvedValueOnce([]);
+      handles.testCheckout.mockRejectedValueOnce(new Error("lost acknowledgment"));
+      expect((await checkout(recover())).status).toBe(503);
+      expect((await checkout(recover())).status).toBe(409);
+      expect(handles.testCheckout).toHaveBeenCalledTimes(1);
+      expect(handles.scopedQuery).toHaveBeenCalledTimes(4);
+    });
   });
   it("uses an owner, product, order, transaction and TEST qualified atomic refund check", async () => {
     handles.testRefund.mockResolvedValue(refundTx);
