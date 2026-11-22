@@ -15,8 +15,7 @@ export async function POST(request: Request) {
     if (!input) return json({ error: "A career question and its original six cast lines are required." }, 400);
     const hash = decisionFingerprint(owner, input);
     const product = config.mode === "mock" ? "mock_decision_once" : config.productId;
-    const previous = await db.from("decision_orders").select("id,status,checkout_id,checkout_url,product_id")
-      .eq("owner_id", owner).eq("cast_hash", hash).eq("mode", config.mode).maybeSingle();
+    const previous = await db.previous(owner, hash, config.mode);
     if (previous.error) return retryLater();
     if (previous.data) {
       const row = previous.data;
@@ -31,7 +30,7 @@ export async function POST(request: Request) {
       return retryLater();
     }
     const id = randomUUID();
-    const claim = await db.from("decision_orders").insert({
+    const claim = await db.claim({
       id, owner_id: owner, cast_hash: hash, capture: input, mode: config.mode, product_id: product,
       checkout_id: config.mode === "mock" ? "mock_ch_" + id : null,
     });
@@ -43,9 +42,7 @@ export async function POST(request: Request) {
       // No fresh provider session is minted after an ambiguous response: the
       // durable pending claim locks the cast until a QA operator reconciles it.
       const paidFlow = await createDecisionTestCheckout(config, id);
-      const saved = await db.from("decision_orders").update({ checkout_id: paidFlow.id, checkout_url: paidFlow.url })
-        .eq("id", id).eq("owner_id", owner).eq("mode", "test").eq("status", "pending")
-        .is("checkout_id", null).select("id").maybeSingle();
+      const saved = await db.saveCheckout(id, owner, paidFlow.id, paidFlow.url);
       if (saved.error || !saved.data) return pendingError();
       checkoutUrl = paidFlow.url;
     }

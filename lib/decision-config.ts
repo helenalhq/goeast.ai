@@ -1,7 +1,25 @@
 import type { DecisionMode } from "./decision-types";
 
 export const DECISION_UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
-type ConfigBase = { dbUrl: string; dbKey: string; qaUserId: string };
+type ConfigBase = { qaUserId: string } & (
+  | { storage: "isolated-supabase"; dbUrl: string; dbKey: string }
+  | { storage: "scoped-postgres"; dsn: string }
+);
+export const DECISION_QA_ROLE = "goeast_p1_qa";
+
+function scopedDsn(raw: string | undefined, auth: string | null): string | null {
+  if (!raw || !auth) return null;
+  const ref = /^https:\/\/([a-z0-9]{20})\.supabase\.co$/.exec(auth)?.[1];
+  try {
+    const url = new URL(raw);
+    // Require Supabase transaction pooler and the specific QA login for this
+    // same project. Connection options are fixed by the server-side adapter.
+    if (!ref || url.protocol !== "postgresql:" || !/^aws-[0-9]+-[a-z0-9-]+\.pooler\.supabase\.com$/.test(url.hostname)
+        || url.port !== "6543" || url.pathname !== "/postgres" || url.username !== DECISION_QA_ROLE + "." + ref
+        || !decodeURIComponent(url.password) || raw.includes("?") || raw.includes("#")) return null;
+    return raw;
+  } catch { return null; }
+}
 export type DecisionConfig = ConfigBase & (
   | { mode: "mock" }
   | { mode: "test"; apiKey: string; webhookSecret: string; productId: string; publicOrigin: string }
@@ -18,16 +36,24 @@ function httpsOrigin(raw: string | undefined): string | null {
 export function decisionConfig(env: Record<string, string | undefined> = process.env): DecisionConfig | null {
   if (env.VERCEL_ENV !== "preview" || env.DECISION_REPORT_ENABLED !== "true") return null;
   const mode = env.DECISION_REPORT_MODE;
-  const dbUrl = httpsOrigin(env.DECISION_REPORT_SUPABASE_URL);
   const auth = httpsOrigin(env.NEXT_PUBLIC_SUPABASE_URL);
   const qaUserId = env.DECISION_REPORT_PREVIEW_QA_USER_ID;
-  const dbKey = env.DECISION_REPORT_SUPABASE_SERVICE_ROLE_KEY;
-  // Accept only an official project endpoint, not a custom alias of the live DB.
-  // An operator must independently verify the new project has no live data.
-  if (!dbUrl || !/^https:\/\/[a-z0-9]+\.supabase\.co$/.test(dbUrl)
-      || !auth || dbUrl === auth || !qaUserId || !DECISION_UUID.test(qaUserId)
-      || !dbKey || dbKey === env.SUPABASE_SERVICE_ROLE_KEY) return null;
-  const base = { dbUrl, qaUserId: qaUserId.toLowerCase(), dbKey };
+  if (!qaUserId || !DECISION_UUID.test(qaUserId)) return null;
+  let base: ConfigBase;
+  const storage = env.DECISION_REPORT_STORAGE;
+  if (storage === "scoped-postgres") {
+    const dsn = scopedDsn(env.DECISION_REPORT_SCOPED_DATABASE_URL, auth);
+    if (!dsn || env.DECISION_REPORT_SUPABASE_URL || env.DECISION_REPORT_SUPABASE_SERVICE_ROLE_KEY) return null;
+    base = { storage, dsn, qaUserId: qaUserId.toLowerCase() };
+  } else {
+    if ((storage !== undefined && storage !== "isolated-supabase") || env.DECISION_REPORT_SCOPED_DATABASE_URL) return null;
+    const dbUrl = httpsOrigin(env.DECISION_REPORT_SUPABASE_URL);
+    const dbKey = env.DECISION_REPORT_SUPABASE_SERVICE_ROLE_KEY;
+    // Legacy separate-project option: never points at the current app DB.
+    if (!dbUrl || !/^https:\/\/[a-z0-9]+\.supabase\.co$/.test(dbUrl)
+        || !auth || dbUrl === auth || !dbKey || dbKey === env.SUPABASE_SERVICE_ROLE_KEY) return null;
+    base = { storage:"isolated-supabase", dbUrl, qaUserId: qaUserId.toLowerCase(), dbKey };
+  }
   if (mode === "mock") return { ...base, mode };
   if (mode !== "test") return null;
   const apiKey = env.DECISION_REPORT_CREEM_API_KEY;

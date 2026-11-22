@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     const db = decisionDb(config);
     let stage: string | null = null;
     if (event.type === "paid") {
-      const applied = await db.rpc("decision_record_payment", { p_id: event.orderId, p_mode: "test",
+      const applied = await db.payment({ p_id: event.orderId, p_mode: "test",
         p_product: config.productId, p_checkout: event.checkoutId, p_order: event.providerOrderId, p_tx: event.transactionId });
       if (applied.error) return retryLater();
       if (applied.data === "invalid") {
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
         decisionFault("mismatched_refund_order");
         return json({ received: true, ignored: true });
       }
-      const applied = await db.rpc("decision_record_refund", {
+      const applied = await db.refund({
         p_mode: "test", p_order: refund.providerOrderId, p_tx: event.transactionId,
       });
       if (applied.error) return retryLater();

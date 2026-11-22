@@ -40,40 +40,39 @@ export async function POST(request: Request, { params }: Context) {
       const transaction = "mock_transaction_" + id;
       const order = "mock_order_" + id;
       if (payload.action === "mock-pay") {
-        const result = await db.rpc("decision_record_payment", { p_id: id, p_mode: "mock", p_product: row.product_id,
+        const result = await db.payment({ p_id: id, p_mode: "mock", p_product: row.product_id,
           p_checkout: "mock_ch_" + id, p_order: order, p_tx: transaction });
         if (result.error) return retryLater();
         if (result.data === "paid") activity("payment_confirmed", "mock", id);
       } else {
         if (row.status === "pending") return json({ error: "This mock checkout has not been paid." }, 409);
-        const result = await db.rpc("decision_record_refund", { p_mode: "mock", p_order: order, p_tx: transaction });
+        const result = await db.refund({ p_mode: "mock", p_order: order, p_tx: transaction });
         if (result.error) return retryLater();
         if (result.data === "refunded") activity("refund_confirmed", "mock", id);
       }
     } else if (payload.action === "note") {
       if (typeof payload.note !== "string" || payload.note.length > 500) return json({ error: "Use at most 500 characters." }, 400);
       if (row.status !== "delivered") return json({ error: "A delivered report is required." }, 409);
-      const saved = await db.from("decision_orders").update({ action_note: payload.note.trim() || null })
-        .eq("id", id).eq("owner_id", owner).eq("status", "delivered").eq("mode", config.mode).select("id").maybeSingle();
+      const saved = await db.saveNote(id, owner, config.mode, payload.note.trim() || null);
       if (saved.error) return retryLater();
     } else if (payload.action === "generate") {
       if (row.status === "pending" || row.status === "refunded") return json({ error: "A paid order is required." }, 409);
       if (row.status === "delivered") return json(decisionDetail(row));
       const token = randomUUID();
-      const leased = await db.rpc("decision_acquire_generation", { p_id: id, p_owner: owner, p_token: token });
+      const leased = await db.acquire({ p_id: id, p_owner: owner, p_token: token });
       if (leased.error) return retryLater();
       if (leased.data) {
         try {
           const input = decisionInput(row.capture);
           if (!input) throw new Error("Invalid stored cast");
           const report = await generateDecisionReport(input, config.mode);
-          const saved = await db.rpc("decision_finish_generation", { p_id: id, p_owner: owner, p_token: token, p_report: report });
+          const saved = await db.finish({ p_id: id, p_owner: owner, p_token: token, p_report: report });
           if (saved.error) throw new Error("Generation write failed");
           if (saved.data) activity("delivery_succeeded", config.mode, id);
         } catch {
           // On interruption before this write the bounded lease also allows
           // the same order to be retried; a stale process cannot finish it.
-          await db.rpc("decision_finish_generation", { p_id: id, p_owner: owner, p_token: token, p_report: null });
+          await db.finish({ p_id: id, p_owner: owner, p_token: token, p_report: null });
           activity("delivery_failed", config.mode, id);
           return retryLater();
         }
