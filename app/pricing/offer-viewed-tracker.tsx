@@ -12,10 +12,18 @@ export default function OfferViewedTracker({
   offerId,
   children,
   enabled = true,
+  path = "pricing",
+  previewQa = false,
+  liveDecision = false,
+  liveCanary = false,
 }: {
   offerId: string;
   children: ReactNode;
   enabled?: boolean;
+  path?: "pricing" | "consult_iching";
+  previewQa?: boolean;
+  liveDecision?: boolean;
+  liveCanary?: boolean;
 }) {
   const quote = useRef<HTMLDivElement>(null);
 
@@ -40,7 +48,13 @@ export default function OfferViewedTracker({
       } catch {
         // Without session storage, only deduplicate for this mount.
       }
-      logEvent("offer_viewed", { offer_id: offerId, channel: "web", path: "pricing" });
+      logEvent("offer_viewed", {
+        offer_id: offerId,
+        channel: "web",
+        path,
+        ...(previewQa ? { env: "preview", qa: "decision-report-preview" } : liveDecision
+          ? {env:"production",...(liveCanary?{qa:"decision-report-live-canary"}:{})} : {}),
+      });
     };
 
     const observer = new IntersectionObserver((entries) => {
@@ -54,7 +68,7 @@ export default function OfferViewedTracker({
       observer.disconnect();
       document.removeEventListener("visibilitychange", countIfVisible);
     };
-  }, [enabled, offerId]);
+  }, [enabled, offerId, path, previewQa, liveDecision, liveCanary]);
 
   return <div ref={quote}>{children}</div>;
 }

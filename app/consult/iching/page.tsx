@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllHexagrams } from "@/lib/iching-data";
 import GuidedFlow from "./GuidedFlow";
+import { decisionReportOfferConfigured, decisionReportOfferForUser } from "@/lib/decision-report-availability";
+import { createClient } from "@/lib/supabase/server";
+import type { DecisionDisplayMode } from "@/lib/decision-types";
 
 export const metadata: Metadata = {
   title: "I Ching Reading Online with AI Interpretation | GoEast",
@@ -86,8 +89,19 @@ const FAQ_ITEMS = [
   },
 ];
 
-export default function ConsultIchingPage() {
+export default async function ConsultIchingPage() {
   const hexagrams = getAllHexagrams();
+  let decisionMode: DecisionDisplayMode | null = null;
+  let decisionCanary = false;
+  if (decisionReportOfferConfigured()) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const offer = decisionReportOfferForUser(user.id);
+      decisionMode = offer.mode;
+      decisionCanary = offer.canary;
+    }
+  }
   return (
     <div className="min-h-screen bg-cream">
       <main className="max-w-2xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
@@ -113,6 +127,11 @@ export default function ConsultIchingPage() {
             >
               See a completed example first →
             </Link>
+            {process.env.VERCEL_ENV === "preview" && (
+              <Link href="/examples/iching-decision-report" className="mt-2 block text-sm text-china-red underline underline-offset-4">
+                Read a fictional career decision report
+              </Link>
+            )}
           </div>
         </header>
 
@@ -165,7 +184,7 @@ export default function ConsultIchingPage() {
         </section>
 
         {/* Interactive tool */}
-        <GuidedFlow hexagrams={hexagrams} />
+        <GuidedFlow hexagrams={hexagrams} decisionMode={decisionMode} decisionCanary={decisionCanary} />
 
         {/* FAQ — SSR */}
         <section className="mt-12">

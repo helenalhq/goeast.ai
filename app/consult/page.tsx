@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import EntryViewTracker from "./EntryViewTracker";
 import MyReadings from "./MyReadings";
+import { decisionReportAccessConfigured } from "@/lib/decision-report-availability";
+import { createClient } from "@/lib/supabase/server";
 import SynastryHistoryList from "@/components/SynastryHistoryList";
 
 export const metadata: Metadata = {
@@ -17,7 +19,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ConsultPage() {
+export default async function ConsultPage() {
+  let showDecisionReports = false;
+  if (decisionReportAccessConfigured()) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    showDecisionReports = !!user && decisionReportAccessConfigured(user.id);
+  }
   return (
     <div className="min-h-screen bg-cream">
       <EntryViewTracker />
@@ -92,7 +100,7 @@ export default function ConsultPage() {
       </main>
 
       {/* Recent readings for logged-in users — minimal history entry point */}
-      <MyReadings />
+      <MyReadings showDecisionReports={showDecisionReports} />
       <SynastryHistoryList />
     </div>
   );

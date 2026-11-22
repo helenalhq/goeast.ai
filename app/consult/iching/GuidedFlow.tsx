@@ -21,6 +21,8 @@ import {
   type ConsultFlowDraftV2,
 } from "@/lib/consult-cast";
 import CastView from "./CastView";
+import DecisionReportOffer from "./DecisionReportOffer";
+import type { DecisionDisplayMode } from "@/lib/decision-types";
 import type { HexagramData } from "@/lib/types";
 
 // --- coin casting (same probabilities as IChingDivination) -----------------
@@ -76,7 +78,11 @@ function assembleQuestion(d: ConsultFlowDraftV2): string {
   return parts.join(" ");
 }
 
-export default function GuidedFlow({ hexagrams }: { hexagrams: HexagramData[] }) {
+export default function GuidedFlow({ hexagrams, decisionMode = null, decisionCanary = false }: {
+  hexagrams: HexagramData[];
+  decisionMode?: DecisionDisplayMode | null;
+  decisionCanary?: boolean;
+}) {
   const router = useRouter();
   const [draft, setDraft] = useState<ConsultFlowDraftV2>(EMPTY_DRAFT);
   const [hydrated, setHydrated] = useState(false);
@@ -373,6 +379,15 @@ export default function GuidedFlow({ hexagrams }: { hexagrams: HexagramData[] })
           onEditQuestion={() => setPhase("confirm")}
           busy={aiBusy}
         />
+        {decisionMode && draft.topic === "A work decision" && draft.casts && (
+          <DecisionReportOffer
+            key={draft.castAt}
+            question={finalQuestion}
+            casts={draft.casts}
+            mode={decisionMode}
+            liveCanary={decisionCanary}
+          />
+        )}
       </div>
     );
   }

@@ -1,0 +1,20 @@
+export type DecisionMode = "mock" | "test";
+export type DecisionDisplayMode = DecisionMode | "live";
+export type DecisionStatus = "pending" | "paid" | "generating" | "delivered" | "refunded";
+export type DecisionCoin = { binary: "0" | "1"; changing: boolean };
+export type DecisionOption = { title: string; blindSpot: string; assumption: boolean };
+export type DecisionReport = {
+  question: string;
+  casts: DecisionCoin[];
+  primary: { number: number; name: string };
+  changingLines: number[];
+  transformed: { number: number; name: string } | null;
+  source: { original: string; restatement: string; label: string; url: string };
+  options: [DecisionOption, DecisionOption];
+  verifyQuestion: string;
+  sevenDayStep: string;
+  interpretation: string;
+};
+export const DECISION_OFFER = "decision_once";
+export const DECISION_CENTS = 199;
+export const DECISION_CURRENCY = "USD";
