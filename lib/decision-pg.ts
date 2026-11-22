@@ -1,5 +1,7 @@
+import { checkServerIdentity } from "node:tls";
 import { Pool, type PoolClient } from "pg";
 import { type DecisionConfig } from "./decision-config";
+import { SUPABASE_PROD_ROOT_2021_CA } from "./decision-supabase-ca";
 
 type ScopedConfig = Extract<DecisionConfig, { storage: "scoped-postgres" }>;
 const DIAGNOSTIC_CODES = new Set([
@@ -31,7 +33,10 @@ function getPool(dsn: string): Pool {
   const pool = new Pool({
     host: url.hostname, port: 6543, user: url.username,
     password: decodeURIComponent(url.password), database: "postgres",
-    ssl: { rejectUnauthorized: true }, max: 2,
+    // Trust only the official Supabase root for this connection. The default
+    // Node hostname algorithm still verifies the exact configured pooler host.
+    ssl: { rejectUnauthorized: true, ca: SUPABASE_PROD_ROOT_2021_CA, checkServerIdentity },
+    max: 2,
     connectionTimeoutMillis: 5_000, idleTimeoutMillis: 10_000,
     query_timeout: 10_000, allowExitOnIdle: true,
   });

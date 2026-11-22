@@ -1,3 +1,5 @@
+import { X509Certificate } from "node:crypto";
+import { checkServerIdentity } from "node:tls";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { decisionDb } from "../decision-store";
 import { decisionConfig } from "../decision-config";
@@ -31,7 +33,19 @@ describe("scoped store operations", () => {
     expect(console.warn).toHaveBeenCalledExactlyOnceWith("[decision-report]","scoped_db_connect","28P01");
     expect(pg.query).not.toHaveBeenCalled();
     expect(pg.release).not.toHaveBeenCalled();
-    expect(pg.setup).toHaveBeenCalledWith(expect.objectContaining({ ssl:{ rejectUnauthorized:true } }));
+  });
+  it("uses the verified Supabase root exclusively, retaining hostname verification", async () => {
+    pg.connect.mockRejectedValue({ code:"28P01" });
+    await expect(decisionDb(config).history(qa,"mock")).rejects.toBeTruthy();
+    const tls = pg.setup.mock.calls[0]?.[0].ssl;
+    expect(tls).toEqual({ rejectUnauthorized:true, ca:expect.any(String), checkServerIdentity });
+    const root = new X509Certificate(tls.ca);
+    expect(root.ca).toBe(true);
+    expect(root.subject).toContain("CN=Supabase Root 2021 CA");
+    expect(root.issuer).toBe(root.subject);
+    expect(root.verify(root.publicKey)).toBe(true);
+    expect(root.fingerprint256.replaceAll(":","").toLowerCase()).toBe(
+      "807025ad50d4ed219d2c9c7d299c004f824eb00cf7f65afef607d07b72e6cafa");
   });
   it("redacts even a custom code and distinguishes the failing query stage", async () => {
     pg.query.mockImplementation(async (sql: string) => {
