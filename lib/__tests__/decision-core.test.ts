@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
+import { afterEach, describe, it, expect, vi } from "vitest";
 import { createHmac } from "node:crypto";
-import { validTestCheckoutLink } from "../decision-provider";
+import { createDecisionTestCheckout, validTestCheckoutLink } from "../decision-provider";
 import { decisionConfig } from "../decision-config";
 import { decisionInput, fullDecisionRefund, parseDecisionEvent, validDecisionSignature } from "../decision-core";
 
@@ -93,5 +93,66 @@ describe("one-time decision order", () => {
     expect(validDecisionSignature(raw,sig,"fixture-secret")).toBe(true);
     expect(validDecisionSignature(raw+" ",sig,"fixture-secret")).toBe(false);
     expect(validDecisionSignature(raw,"bad","fixture-secret")).toBe(false);
+  });
+});
+
+describe("TEST provider checkout echo correlation", () => {
+  const productId = "prod_fixture";
+  const config = { mode: "test", storage: "scoped-postgres", dsn: "fixture", qaUserId: qa,
+    apiKey: "fixture", webhookSecret: "fixture", productId, publicOrigin: "https://preview.goeast.ai" } as const;
+  const successUrl = "https://preview.goeast.ai/account/decision-reports/" + qa;
+  const url = "https://checkout.creem.io/ch_fixture";
+  const anchors = { metadata: { offer_id: "decision_once", order_id: qa }, success_url: successUrl };
+  const another = "43783acb-2e34-47d4-ae37-33330a3c9d4c";
+  const reply = (fields: Record<string, unknown>) => {
+    vi.stubGlobal("fetch", vi.fn(async () => Response.json({ id: "ch_fixture", mode: "test",
+      status: "pending", product: productId, checkout_url: url, ...fields })));
+    return createDecisionTestCheckout(config, qa);
+  };
+  afterEach(() => vi.unstubAllGlobals());
+
+  it.each([qa, qa.toUpperCase()])("keeps accepting the same UUID when extra echoes are absent (%s)", async request_id => {
+    await expect(reply({ request_id })).resolves.toEqual({ id: "ch_fixture", url });
+  });
+
+  it.each([undefined, null, "provider_echo"])("accepts an absent or opaque request echo only with exact alternate anchors (%s)", async request_id => {
+    await expect(reply({ request_id, ...anchors })).resolves.toEqual({ id: "ch_fixture", url });
+  });
+
+  it.each([
+    [{ ...anchors, request_id: another }, "different_uuid", true, true, true],
+    [{ ...anchors, request_id: {}, }, "not_uuid", true, true, true],
+    [{ ...anchors, success_url: undefined }, "missing", true, true, false],
+    [{ ...anchors, request_id: null, success_url: successUrl + "?extra=1" }, "null", true, true, false],
+    [{ ...anchors, metadata: { ...anchors.metadata, order_id: another } }, "missing", false, true, true],
+    [{ ...anchors, request_id: "provider_echo", metadata: { ...anchors.metadata, offer_id: "other_offer" } }, "not_uuid", true, false, true],
+  ] as const)("rejects contradictory or insufficient fallback and only records safe checks (%j)",
+    async (fields, shape, orderMatches, offerMatches, urlMatches) => {
+      await expect(reply(fields)).rejects.toMatchObject({ diagnostic: { stage: "correlation",
+        mismatch_fields: expect.arrayContaining(["request_id"]),
+        echo_checks: { request_id_shape: shape, metadata_order_matches: orderMatches,
+          metadata_offer_matches: offerMatches, success_url_matches: urlMatches } } });
+    });
+
+  it.each([
+    [{ metadata: { ...anchors.metadata, order_id: another } }, "metadata.order_id"],
+    [{ success_url: "https://elsewhere.invalid/" }, "success_url"],
+    [{ checkout_url: "https://elsewhere.invalid/" }, "checkout_url"],
+    [{ status: "completed" }, "status"],
+    [{ mode: "prod" }, "mode"],
+    [{ product: "prod_other" }, "product"],
+  ] as const)("rejects other contradictions even with the correct UUID (%j)", async (changes, field) => {
+    await expect(reply({ ...anchors, request_id: qa, ...changes })).rejects.toMatchObject({ diagnostic: {
+      stage: "correlation", mismatch_fields: [field] } });
+  });
+  it("requires a signed metadata anchor and rejects contradictions in the webhook parser", () => {
+    const event = (fields: Record<string, unknown>) => ({ ...checkout, object: { ...checkout.object, ...fields } });
+    for (const request_id of [undefined, null, "opaque-provider", qa.toUpperCase()]) {
+      expect(parseDecisionEvent(event({ request_id }), "prod_once")?.type).toBe("paid");
+    }
+    for (const fields of [{ request_id: another }, { request_id: 123 },
+      { success_url: successUrl + "?different=1" }, { metadata: { order_id: qa } }]) {
+      expect(parseDecisionEvent(event(fields), "prod_once")).toBeNull();
+    }
   });
 });

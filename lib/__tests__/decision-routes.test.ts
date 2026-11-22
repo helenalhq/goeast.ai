@@ -235,7 +235,9 @@ describe("decision TEST payment route", () => {
     it("reports only the names of mismatched fields and does not attempt to save", async () => {
       fetchMock.mockResolvedValueOnce(Response.json({ id: "ch_fixture", mode: sentinel, request_id: sentinel,
         product: { id: sentinel }, status: sentinel, checkout_url: "https://example.invalid/" + sentinel }));
-      await verifyFailure(503, { stage: "correlation", mismatch_fields: ["checkout_url", "mode", "request_id", "product", "status"] });
+      await verifyFailure(503, { stage: "correlation", mismatch_fields: ["checkout_url", "mode", "request_id", "product", "status"],
+        echo_checks: { request_id_shape: "not_uuid", metadata_order_matches: false,
+          metadata_offer_matches: false, success_url_matches: false } });
       expect(handles.scopedQuery).toHaveBeenCalledTimes(2);
     });
 
@@ -333,12 +335,22 @@ describe("decision TEST payment route", () => {
       expect(handles.scopedQuery).toHaveBeenCalledTimes(4);
     });
   });
+  it("uses signed exact metadata and the stored checkout constraint when the request echo is absent", async () => {
+    const noEcho = { ...valid, object: { ...valid.object, request_id: undefined } };
+    handles.scopedQuery.mockResolvedValueOnce([{result:"invalid"}]);
+    expect(await (await webhook(callback(noEcho))).json()).toEqual({received:true,ignored:true});
+    expect(handles.scopedQuery).toHaveBeenCalledExactlyOnceWith(expect.stringContaining("decision_record_payment"),
+      [id,"test",product,"ch_abc","ord_a","tran_a"]);
+    expect(await (await webhook(callback({ ...noEcho, object: { ...noEcho.object, request_id: other } }))).json())
+      .toEqual({received:true,ignored:true});
+    expect(handles.scopedQuery).toHaveBeenCalledTimes(1);
+  });
   it("uses an owner, product, order, transaction and TEST qualified atomic refund check", async () => {
     handles.testRefund.mockResolvedValue(refundTx);
     handles.scopedQuery.mockResolvedValueOnce([{result:"refunded"}]);
     expect((await webhook(callback(refund))).status).toBe(200);
     expect(handles.scopedQuery).toHaveBeenCalledExactlyOnceWith(
-      expect.stringMatching(/owner_id=\$1.*mode='test'.*product_id=\$2.*provider_order_id=\$3.*transaction_id=\$4.*decision_record_refund/s),
+      expect.stringMatching(/owner_id=\$1[\s\S]*mode='test'[\s\S]*product_id=\$2[\s\S]*provider_order_id=\$3[\s\S]*transaction_id=\$4[\s\S]*decision_record_refund/),
       [owner,product,"ord_a","tran_a"]);
     expect(handles.supabaseStore).not.toHaveBeenCalled();
   });

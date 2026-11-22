@@ -1,5 +1,5 @@
 import { createHash, createHmac, timingSafeEqual } from "node:crypto";
-import { DECISION_UUID } from "./decision-config";
+import { CANONICAL_DECISION_TEST_ORIGIN, DECISION_UUID } from "./decision-config";
 import { DECISION_CENTS, DECISION_CURRENCY, DECISION_OFFER, type DecisionCoin } from "./decision-types";
 
 export type DecisionInput = { question: string; casts: DecisionCoin[]; alternative: string | null };
@@ -46,6 +46,21 @@ export function exactDecisionProduct(raw: unknown, productId: string): boolean {
     && product.currency === DECISION_CURRENCY && product.billing_type === "onetime";
 }
 
+export function decisionCheckoutSuccessUrl(orderId: string): string {
+  return CANONICAL_DECISION_TEST_ORIGIN + "/account/decision-reports/" + orderId;
+}
+
+export function decisionRequestIdShape(value: unknown, orderId: string) {
+  if (value === undefined) return "missing";
+  if (value === null) return "null";
+  if (typeof value !== "string" || !DECISION_UUID.test(value)) return "not_uuid";
+  return value.toLowerCase() === orderId.toLowerCase() ? "match" : "different_uuid";
+}
+
+export function usableDecisionRequestIdEcho(value: unknown) {
+  return value == null || typeof value === "string";
+}
+
 export function parseDecisionEvent(raw: unknown, productId: string): DecisionEvent | null {
   const event = record(raw);
   const eventId = opaqueId(event.id, "evt_");
@@ -62,7 +77,12 @@ export function parseDecisionEvent(raw: unknown, productId: string): DecisionEve
     const tax = order.tax_amount ?? 0;
     if (typeof tax !== "number" || !Number.isSafeInteger(tax) || tax < 0) return null;
     const gross = DECISION_CENTS + tax;
-    if (!checkoutId || !providerOrderId || !transactionId || !orderId || obj.request_id !== orderId
+    // An absent/provider-shaped request echo is not an alternate ID. Select
+    // the order from signed metadata, then require the exact existing checkout
+    // ID in the atomic payment RPC. An explicitly different app order is fatal.
+    if (!checkoutId || !providerOrderId || !transactionId || !orderId
+      || !usableDecisionRequestIdEcho(obj.request_id) || decisionRequestIdShape(obj.request_id, orderId) === "different_uuid"
+      || (obj.success_url != null && obj.success_url !== decisionCheckoutSuccessUrl(orderId))
       || meta.offer_id !== DECISION_OFFER || obj.mode !== "test" || obj.status !== "completed"
       || obj.subscription != null || (order.mode != null && order.mode !== "test")
       || order.product !== productId || !exactDecisionProduct(obj.product, productId)

@@ -77,6 +77,12 @@ const recoveryLink = store.match(/`(update goeast_p1_qa\.decision_orders set che
 assert.ok(recoveryClaim && recoveryLink, "match exact runtime recovery SQL");
 await query(`insert into goeast_p1_qa.decision_orders(id,owner_id,cast_hash,capture,mode,product_id)
   values ($1,$2,$3,'{}','test','prod_once')`, [recoveryOrder,qa,castHash]);
+// A signed provider callback cannot attach a foreign checkout to either
+// an unlinked pending claim or a row that has a different stored checkout.
+assert.equal(await value("select goeast_p1_qa.decision_record_payment($1,'test','prod_once','ch_1','ord_cross','tx_cross') v",
+  [recoveryOrder]), "invalid");
+assert.equal(await value("select status v from goeast_p1_qa.decision_orders where id=$1 and checkout_id is null",
+  [recoveryOrder]), "pending");
 const originalRevision = await value("select xmin::text v from goeast_p1_qa.decision_orders where id=$1", [recoveryOrder]);
 const args = [recoveryOrder,qa,"prod_once",castHash,originalRevision];
 assert.deepEqual((await query(recoveryClaim,[recoveryOrder,other,"prod_once",castHash,originalRevision])).rows,[]);
@@ -87,6 +93,10 @@ assert.deepEqual((await query(recoveryLink,[...args,"ch_old","https://example.in
 assert.deepEqual((await query(recoveryLink,[...args.slice(0,4),claimed.revision,"ch_original","https://checkout.creem.io/ch_original"])).rows,
   [{id:recoveryOrder}]);
 assert.deepEqual((await query(recoveryClaim,args)).rows,[]);
+assert.equal(await value("select goeast_p1_qa.decision_record_payment($1,'test','prod_once','ch_1','ord_cross','tx_cross') v",
+  [recoveryOrder]), "invalid");
+assert.equal(await value("select status v from goeast_p1_qa.decision_orders where id=$1 and checkout_id='ch_original'",
+  [recoveryOrder]), "pending");
 assert.equal((await query("select count(*)::int v from goeast_p1_qa.decision_orders")).rows[0]?.v,2);
 await db.close();
 for (const apiRole of ["anon", "authenticated", "service_role"]) {
