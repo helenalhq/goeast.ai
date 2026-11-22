@@ -10,6 +10,12 @@ export function decisionReportOfferConfigured() {
   return isDecisionOfferEnabled() || liveCheckoutConfigured(decisionLiveRuntime());
 }
 
+/** Public discovery must never advertise an owner-only or Preview offer. */
+export function decisionReportPublicCheckoutConfigured() {
+  const runtime = decisionLiveRuntime();
+  return liveCheckoutConfigured(runtime) && runtime.policy.phase === "public";
+}
+
 export function decisionReportOfferForUser(userId: string) {
   const runtime=decisionLiveRuntime();
   if (runtime && liveCheckoutConfigured(runtime)

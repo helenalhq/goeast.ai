@@ -4,6 +4,7 @@ import React, { useId, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { loginUrlWithNext } from "@/lib/auth-redirect";
+import { WORK_DECISION_LOGIN } from "@/lib/decision-report-entry";
 import { logEvent } from "@/lib/analytics";
 import type { DecisionCoin, DecisionDisplayMode } from "@/lib/decision-types";
 import OfferViewedTracker from "@/app/pricing/offer-viewed-tracker";
@@ -32,11 +33,13 @@ export default function DecisionReportOffer({
   casts,
   mode,
   liveCanary = false,
+  returnToWorkDecision = false,
 }: {
   question: string;
   casts: DecisionCoin[];
   mode: DecisionDisplayMode;
   liveCanary?: boolean;
+  returnToWorkDecision?: boolean;
 }) {
   const router = useRouter();
   const otherId = useId();
@@ -141,7 +144,7 @@ export default function DecisionReportOffer({
         </p>
         {!questionValid && <p className="text-sm text-warm">Edit your question to 500 characters or fewer before ordering.</p>}
         {error && <p role="alert" className="text-sm text-china-red">{error}</p>}
-        {needsLogin && <Link href={loginUrlWithNext()} className="inline-block text-china-red underline underline-offset-2">Sign in again</Link>}
+        {needsLogin && <Link href={returnToWorkDecision ? WORK_DECISION_LOGIN : loginUrlWithNext()} className="inline-block text-china-red underline underline-offset-2">Sign in again</Link>}
       </form>
     </section>
   );

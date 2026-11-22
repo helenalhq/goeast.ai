@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { readSseData } from "@/lib/sse";
 import { loginUrlWithNext } from "@/lib/auth-redirect";
+import { WORK_DECISION_ENTRY, WORK_DECISION_LOGIN, WORK_DECISION_TOPIC } from "@/lib/decision-report-entry";
 import { logEvent } from "@/lib/analytics";
-import { buildIchingContext, type IchingConsultationContext } from "@/lib/iching-context";
+import { buildIchingContext } from "@/lib/iching-context";
 import {
-  CONSULT_FLOW_DRAFT_KEY,
   newSessionId,
   saveConsultResult,
   type ConsultResult,
@@ -54,7 +54,7 @@ function throwsToCast(t: CoinCast): { binary: "0" | "1"; changing: boolean } {
 
 const EXAMPLE_TOPICS = [
   "A writing habit",
-  "A work decision",
+  WORK_DECISION_TOPIC,
   "A creative project",
   "A relationship pattern",
 ];
@@ -78,10 +78,17 @@ function assembleQuestion(d: ConsultFlowDraftV2): string {
   return parts.join(" ");
 }
 
-export default function GuidedFlow({ hexagrams, decisionMode = null, decisionCanary = false }: {
+function hasDraftProgress(d: ConsultFlowDraftV2) {
+  return !!(d.topic || d.customTopic || d.stuck || d.constraint || d.finalQuestion || d.casts || d.step > 1);
+}
+
+export default function GuidedFlow({ hexagrams, decisionMode = null, decisionCanary = false,
+  workDecisionIntent = false, promptWorkDecisionSignIn = false }: {
   hexagrams: HexagramData[];
   decisionMode?: DecisionDisplayMode | null;
   decisionCanary?: boolean;
+  workDecisionIntent?: boolean;
+  promptWorkDecisionSignIn?: boolean;
 }) {
   const router = useRouter();
   const [draft, setDraft] = useState<ConsultFlowDraftV2>(EMPTY_DRAFT);
@@ -98,7 +105,12 @@ export default function GuidedFlow({ hexagrams, decisionMode = null, decisionCan
   /* eslint-disable react-hooks/set-state-in-effect -- one-time hydration from sessionStorage, an external store */
   useEffect(() => {
     const status = loadConsultFlowDraft();
-    if (status.kind === "none") {
+    if (status.kind === "none" || (workDecisionIntent && !hasDraftProgress(status.draft))) {
+      if (workDecisionIntent) {
+        const preset = { ...EMPTY_DRAFT, topic: WORK_DECISION_TOPIC };
+        setDraft(preset);
+        saveConsultFlowDraft(preset);
+      }
       logEvent("consult_flow_started", { step: 1 });
     } else if (status.kind === "expired") {
       // Expired cast: keep the question, drop the coins, tell the user —
@@ -115,7 +127,7 @@ export default function GuidedFlow({ hexagrams, decisionMode = null, decisionCan
       else if (status.draft.step === 4) setPhase("confirm");
     }
     setHydrated(true);
-  }, []);
+  }, [workDecisionIntent]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
   // bfcache: browser Back from the login page restores this component frozen
@@ -210,7 +222,7 @@ export default function GuidedFlow({ hexagrams, decisionMode = null, decisionCan
             // returns to this same cast. This click is the auth funnel start.
             logEvent("auth_started", { channel: "web", path: "consult_iching" });
             logEvent("consult_generation_failed", { reason: "login_required" });
-            window.location.href = loginUrlWithNext();
+            window.location.href = workDecisionIntent ? WORK_DECISION_LOGIN : loginUrlWithNext();
             return;
           }
           if (data.code === "LIMIT_REACHED") {
@@ -332,6 +344,16 @@ export default function GuidedFlow({ hexagrams, decisionMode = null, decisionCan
     return <div className="p-6 bg-cream rounded-xl border border-sand text-center text-warm">Loading…</div>;
   }
 
+  const workDecisionDraftNotice = workDecisionIntent && draft.topic !== WORK_DECISION_TOPIC && hasDraftProgress(draft) && (
+    <aside className="mb-4 rounded-lg border border-sand bg-white p-4 text-sm text-warm">
+      <p>Your current draft is unchanged. Continue it here, or start a separate work decision.</p>
+      <a href={WORK_DECISION_ENTRY} target="_blank" rel="noopener noreferrer"
+        className="mt-2 inline-block text-china-red underline underline-offset-2">
+        Start a work decision in a new tab
+      </a>
+    </aside>
+  );
+
   // --- generating -----------------------------------------------------------
   if (phase === "generating") {
     return (
@@ -358,6 +380,7 @@ export default function GuidedFlow({ hexagrams, decisionMode = null, decisionCan
     }
     return (
       <div>
+        {workDecisionDraftNotice}
         {castNotice && (
           <div className="mb-4 p-3 bg-sand/30 border border-sand rounded-lg text-sm text-warm">{castNotice}</div>
         )}
@@ -379,14 +402,24 @@ export default function GuidedFlow({ hexagrams, decisionMode = null, decisionCan
           onEditQuestion={() => setPhase("confirm")}
           busy={aiBusy}
         />
-        {decisionMode && draft.topic === "A work decision" && draft.casts && (
+        {decisionMode && draft.topic === WORK_DECISION_TOPIC && draft.casts && (
           <DecisionReportOffer
             key={draft.castAt}
             question={finalQuestion}
             casts={draft.casts}
             mode={decisionMode}
             liveCanary={decisionCanary}
+            returnToWorkDecision={workDecisionIntent}
           />
+        )}
+        {!decisionMode && promptWorkDecisionSignIn && draft.topic === WORK_DECISION_TOPIC && (
+          <section aria-label="Career Decision Report" className="mt-5 space-y-3 rounded-xl border border-sand bg-white p-5">
+            <h2 className="font-serif text-xl font-semibold text-ink">Career Decision Report</h2>
+            <p className="text-sm text-warm">Sign in to see the optional one-time $1.99 USD report. Your free cast stays in this tab. Signing in does not buy anything.</p>
+            <a href={WORK_DECISION_LOGIN} className="inline-block text-sm font-semibold text-china-red underline underline-offset-2">
+              Sign in to continue
+            </a>
+          </section>
         )}
       </div>
     );
@@ -396,6 +429,7 @@ export default function GuidedFlow({ hexagrams, decisionMode = null, decisionCan
   if (phase === "confirm") {
     return (
       <div className="p-6 sm:p-8 bg-cream rounded-xl border border-sand">
+        {workDecisionDraftNotice}
         <div className="flex items-center gap-2 mb-3">
           {[1,2,3].map(n => (
             <span key={n} className="inline-block w-2.5 h-2.5 rounded-full bg-jade" />
@@ -455,6 +489,7 @@ export default function GuidedFlow({ hexagrams, decisionMode = null, decisionCan
   const step = draft.step;
   return (
     <div className="p-6 sm:p-8 bg-cream rounded-xl border border-sand">
+      {workDecisionDraftNotice}
       <div className="flex gap-2 mb-6" aria-hidden>
         {[1, 2, 3].map((s) => (
           <span
@@ -480,6 +515,7 @@ export default function GuidedFlow({ hexagrams, decisionMode = null, decisionCan
                 key={t}
                 type="button"
                 onClick={() => update({ topic: t })}
+                aria-pressed={draft.topic === t}
                 className={`p-4 text-left rounded-lg border transition-colors ${
                   draft.topic === t
                     ? "border-china-red bg-china-red/5 text-ink"

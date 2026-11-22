@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllHexagrams } from "@/lib/iching-data";
 import GuidedFlow from "./GuidedFlow";
-import { decisionReportOfferConfigured, decisionReportOfferForUser } from "@/lib/decision-report-availability";
+import { decisionReportOfferConfigured, decisionReportOfferForUser, decisionReportPublicCheckoutConfigured } from "@/lib/decision-report-availability";
 import { createClient } from "@/lib/supabase/server";
+import { isWorkDecisionEntry } from "@/lib/decision-report-entry";
 import type { DecisionDisplayMode } from "@/lib/decision-types";
 
 export const metadata: Metadata = {
@@ -89,7 +90,11 @@ const FAQ_ITEMS = [
   },
 ];
 
-export default async function ConsultIchingPage() {
+export default async function ConsultIchingPage({ searchParams }: {
+  searchParams: Promise<{ topic?: string | string[] }>;
+}) {
+  const workDecisionIntent = isWorkDecisionEntry((await searchParams).topic);
+  let promptWorkDecisionSignIn = false;
   const hexagrams = getAllHexagrams();
   let decisionMode: DecisionDisplayMode | null = null;
   let decisionCanary = false;
@@ -100,6 +105,8 @@ export default async function ConsultIchingPage() {
       const offer = decisionReportOfferForUser(user.id);
       decisionMode = offer.mode;
       decisionCanary = offer.canary;
+    } else {
+      promptWorkDecisionSignIn = workDecisionIntent && decisionReportPublicCheckoutConfigured();
     }
   }
   return (
@@ -184,7 +191,9 @@ export default async function ConsultIchingPage() {
         </section>
 
         {/* Interactive tool */}
-        <GuidedFlow hexagrams={hexagrams} decisionMode={decisionMode} decisionCanary={decisionCanary} />
+        <GuidedFlow key={workDecisionIntent ? "work-decision" : "consult"} hexagrams={hexagrams}
+          decisionMode={decisionMode} decisionCanary={decisionCanary} workDecisionIntent={workDecisionIntent}
+          promptWorkDecisionSignIn={promptWorkDecisionSignIn} />
 
         {/* FAQ — SSR */}
         <section className="mt-12">

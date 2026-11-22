@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getSiteConfig } from "@/lib/config";
+import { decisionReportPublicCheckoutConfigured } from "@/lib/decision-report-availability";
+import { WORK_DECISION_ENTRY } from "@/lib/decision-report-entry";
 import JsonLd from "@/components/JsonLd";
 import TryIChingLink from "@/components/TryIChingLink";
 import PricingClient from "./pricing-client";
@@ -11,6 +13,8 @@ import {
   SAMPLE_FREE,
   SAMPLE_PRO,
 } from "@/lib/sample-reading";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Pricing — GoEast.ai",
@@ -130,6 +134,28 @@ export default function PricingPage() {
           </PricingClient>
         </div>
       </div>
+
+      {decisionReportPublicCheckoutConfigured() && (
+        <section aria-labelledby="career-decision-report" className="mb-12 rounded-xl border border-sand bg-cream p-6 sm:p-8">
+          <div className="flex flex-wrap items-start justify-between gap-x-8 gap-y-4">
+            <div className="min-w-0 max-w-lg">
+              <h2 id="career-decision-report" className="mb-2 text-xl font-semibold text-ink">Career Decision Report</h2>
+              <p className="text-sm leading-relaxed text-warm">
+                Turn your I Ching cast into a private report comparing two work options, with one question to verify and a reversible seven-day test.
+              </p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-ink">$1.99 USD</p>
+              <p className="text-xs text-warm">One-time payment. No subscription.</p>
+            </div>
+          </div>
+          <Link href={WORK_DECISION_ENTRY} prefetch={false}
+            className="mt-5 inline-block rounded-lg bg-ink px-5 py-3 text-sm font-semibold text-white hover:bg-ink/90">
+            Start a work decision
+          </Link>
+          <p className="mt-3 text-xs text-warm">Casting is free. Sign in after casting if you choose to order. Any tax is shown at checkout.</p>
+        </section>
+      )}
 
       {/* What Pro actually adds — faithful to the implementation (docs/entitlements.md) */}
       <section className="mb-12 p-6 bg-cream rounded-xl border border-sand">
