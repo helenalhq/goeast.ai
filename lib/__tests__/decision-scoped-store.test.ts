@@ -1,12 +1,12 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { decisionDb } from "../decision-store";
 import { decisionConfig } from "../decision-config";
 
-const pg = vi.hoisted(() => ({ query:vi.fn(), release:vi.fn(), setup:vi.fn() }));
+const pg = vi.hoisted(() => ({ query:vi.fn(), connect:vi.fn(), release:vi.fn(), setup:vi.fn() }));
 vi.mock("pg", () => ({ Pool: class {
   constructor(options: unknown) { pg.setup(options); }
   on() { return this; }
-  async connect() { return { query:pg.query, release:pg.release }; }
+  async connect() { return pg.connect(); }
 } }));
 
 const project = "abcdefghijklmnopqrst";
@@ -19,7 +19,30 @@ const config = decisionConfig({ VERCEL_ENV:"preview", DECISION_REPORT_ENABLED:"t
 if (!config) throw new Error("Invalid fixture");
 
 describe("scoped store operations", () => {
-  beforeEach(() => { pg.query.mockReset(); pg.release.mockReset(); });
+  beforeEach(() => {
+    pg.query.mockReset(); pg.release.mockReset();
+    pg.connect.mockReset().mockResolvedValue({ query:pg.query, release:pg.release });
+    vi.spyOn(console,"warn").mockImplementation(() => {});
+  });
+  afterEach(() => { vi.restoreAllMocks(); });
+  it("logs only sanctioned connect diagnostics, not the driver error", async () => {
+    pg.connect.mockRejectedValue({ code:"28P01", message:"secret password", detail:"secret query value" });
+    await expect(decisionDb(config).history(qa,"mock")).rejects.toMatchObject({ code:"28P01" });
+    expect(console.warn).toHaveBeenCalledExactlyOnceWith("[decision-report]","scoped_db_connect","28P01");
+    expect(pg.query).not.toHaveBeenCalled();
+    expect(pg.release).not.toHaveBeenCalled();
+    expect(pg.setup).toHaveBeenCalledWith(expect.objectContaining({ ssl:{ rejectUnauthorized:true } }));
+  });
+  it("redacts even a custom code and distinguishes the failing query stage", async () => {
+    pg.query.mockImplementation(async (sql: string) => {
+      if (sql.includes("isolation_ok")) return { rows:[{ ok:true }] };
+      if (sql.includes("decision_orders")) throw { code:"secret", host:"secret.example" };
+      return { rows:[] };
+    });
+    await expect(decisionDb(config).history(qa,"mock")).rejects.toBeTruthy();
+    expect(console.warn).toHaveBeenCalledExactlyOnceWith("[decision-report]","scoped_db_operation","unknown");
+    expect(pg.release).toHaveBeenCalledWith(true);
+  });
   it("never issues application operations when the DB audit denies access", async () => {
     pg.query.mockResolvedValue({ rows:[{ ok:false }] });
     await expect(decisionDb(config).history(qa,"mock")).rejects.toThrow("Decision QA isolation check failed");
@@ -28,7 +51,7 @@ describe("scoped store operations", () => {
       "select goeast_p1_qa.decision_qa_isolation_ok($1::uuid) as ok",
     ]);
     expect(pg.release).toHaveBeenCalledWith(true);
-    expect(pg.setup).toHaveBeenCalledWith(expect.objectContaining({ ssl:{ rejectUnauthorized:true } }));
+    expect(console.warn).toHaveBeenCalledExactlyOnceWith("[decision-report]","scoped_db_audit_denied");
   });
   it("executes the scoped owner/mode read and normalizes timestamps to ISO", async () => {
     const date = new Date("2026-11-22T15:00:00.123Z");
