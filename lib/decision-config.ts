@@ -33,6 +33,24 @@ function httpsOrigin(raw: string | undefined): string | null {
   } catch { return null; }
 }
 
+const QA_RETURN_BRANCH = "emma/goeast-p1-scoped-qa";
+const QA_RETURN_HOST = "go-east-git-emma-goeast-p1-scoped-qa-pclius-projects-c305da2a.vercel.app";
+const QA_RETURN_ORIGIN = "https://" + QA_RETURN_HOST;
+
+function testReturnOrigin(env: Record<string, string | undefined>): string | null {
+  const configured = env.DECISION_REPORT_PREVIEW_ORIGIN;
+  const origin = httpsOrigin(configured);
+  if (origin === QA_RETURN_ORIGIN) {
+    // Require both system attestations even if a malformed configuration also
+    // puts this stable alias in VERCEL_URL. Never derive origins from requests.
+    return configured === QA_RETURN_ORIGIN
+      && env.VERCEL_GIT_COMMIT_REF === QA_RETURN_BRANCH
+      && env.VERCEL_BRANCH_URL === QA_RETURN_HOST ? origin : null;
+  }
+  return origin && (origin === "https://preview.goeast.ai"
+    || origin === httpsOrigin(env.VERCEL_URL ? "https://" + env.VERCEL_URL : undefined)) ? origin : null;
+}
+
 export function decisionConfig(env: Record<string, string | undefined> = process.env): DecisionConfig | null {
   if (env.VERCEL_ENV !== "preview" || env.DECISION_REPORT_ENABLED !== "true") return null;
   const mode = env.DECISION_REPORT_MODE;
@@ -59,11 +77,10 @@ export function decisionConfig(env: Record<string, string | undefined> = process
   const apiKey = env.DECISION_REPORT_CREEM_API_KEY;
   const webhookSecret = env.DECISION_REPORT_CREEM_WEBHOOK_SECRET;
   const productId = env.DECISION_REPORT_CREEM_PRODUCT_ID;
-  const publicOrigin = httpsOrigin(env.DECISION_REPORT_PREVIEW_ORIGIN);
+  const publicOrigin = testReturnOrigin(env);
   if (!apiKey?.startsWith("creem_test_") || !webhookSecret || webhookSecret === env.CREEM_WEBHOOK_SECRET
       || !productId || !/^prod_[a-zA-Z0-9]+$/.test(productId)
       || productId === env.CREEM_PRODUCT_ID || !publicOrigin
-      || !(publicOrigin === "https://preview.goeast.ai" || publicOrigin === httpsOrigin(env.VERCEL_URL ? "https://" + env.VERCEL_URL : undefined))
       || !env.AZURE_OPENAI_API_KEY || !env.AZURE_OPENAI_ENDPOINT) return null;
   return { ...base, mode, apiKey, webhookSecret, productId, publicOrigin };
 }
