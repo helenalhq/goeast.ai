@@ -76,6 +76,14 @@ describe("Production P1 wiring with fake database and no external calls",()=>{
     }
     expect(deps.auth).not.toHaveBeenCalled();expect(deps.fetch).not.toHaveBeenCalled();
   });
+  it("acknowledges a signed placeholder checkout probe without ledger or provider access",async()=>{
+    vi.stubEnv("DECISION_REPORT_LIVE_CHECKOUT_ENABLED",undefined);
+    const res=await webhook(callback({id:"evt_operator_fixture",eventType:"checkout.completed",object:{
+      id:"ch_fixture",mode:"prod",status:"completed",product,
+    }}));
+    expect(res.status).toBe(200);expect(await res.json()).toEqual({received:true,ignored:true});
+    expect(deps.callbackDb).not.toHaveBeenCalled();expect(deps.fetch).not.toHaveBeenCalled();
+  });
   it("requires a deliberate public gate, exact role credentials and explicit safe model without broadening settlement",()=>{
     expect(liveCheckoutConfigured(decisionLiveRuntime())).toBe(true);
     expect(decisionLiveRuntime({...env,DECISION_REPORT_LIVE_PHASE:"public"})?.policy.phase).toBe("settlement_only");

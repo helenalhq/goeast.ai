@@ -49,6 +49,17 @@ export function decisionLiveRuntime(env: Environment = process.env): LiveRuntime
   const baseline = decisionLivePolicy({ ...env, DECISION_REPORT_LIVE_PHASE:"settlement_only" });
   if (!baseline) return null;
   const policy = (env.DECISION_REPORT_LIVE_CHECKOUT_ENABLED === "true" ? decisionLivePolicy(env) : null) ?? baseline;
+  return parseLiveRuntime(policy,env);
+}
+
+/** Same production configuration, without enabling settlement or sales. */
+export function decisionLivePresaleRuntime(env: Environment = process.env): LiveRuntime | null {
+  if (env.DECISION_REPORT_LIVE_CHECKOUT_ENABLED === "true" || env.DECISION_REPORT_LIVE_PUBLIC_ENABLED === "true") return null;
+  const policy=decisionLivePolicy({ ...env, DECISION_REPORT_LIVE_PHASE:"settlement_only" });
+  return policy ? parseLiveRuntime(policy,env) : null;
+}
+
+function parseLiveRuntime(policy:DecisionLivePolicy,env:Environment):LiveRuntime {
   const ref = env.DECISION_REPORT_LIVE_DB_PROJECT_REF;
   const projectRef = ref && /^[a-z0-9]{20}$/.test(ref) ? ref : "";
   const ownerDsn = poolerDsn(env.DECISION_REPORT_LIVE_APP_DATABASE_URL,projectRef,"p1_live_app");

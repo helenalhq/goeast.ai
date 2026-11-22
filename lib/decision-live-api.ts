@@ -1,13 +1,13 @@
-import { randomUUID } from "node:crypto";
+import { randomUUID, timingSafeEqual } from "node:crypto";
 import OpenAI from "openai";
 import { DECISION_UUID } from "./decision-config";
 import { decisionFingerprint, decisionInput, record } from "./decision-core";
 import { generateLiveDecisionReport } from "./decision-generation";
-import { decisionLiveCheckoutAllowed, decisionLiveWebhookDestinationMatches } from "./decision-live-policy";
+import { decisionLiveCheckoutAllowed, decisionLiveWebhookDestinationMatches, isDecisionLiveProduct } from "./decision-live-policy";
 import { buildDecisionLiveCheckout, decisionLiveAmount, decisionLiveTransactionOrder, matchesLiveHostedCheckout,
   normalizeDecisionLiveCheckout, normalizeDecisionLiveWebhook, reconcileDecisionLiveRefund } from "./decision-live-provider";
-import { decisionLiveRuntime, liveCheckoutConfigured, type LiveRuntime } from "./decision-live-runtime-config";
-import { liveCallbackDb, liveOwnerDb, type LiveClaim, type LiveOrder } from "./decision-live-store";
+import { decisionLivePresaleRuntime, decisionLiveRuntime, liveCheckoutConfigured, type LiveRuntime } from "./decision-live-runtime-config";
+import { checkLiveDbIsolation, liveCallbackDb, liveOwnerDb, type LiveClaim, type LiveOrder } from "./decision-live-store";
 import { DECISION_CENTS, DECISION_CURRENCY } from "./decision-types";
 import { createClient } from "./supabase/server";
 
@@ -72,6 +72,35 @@ async function provider(cfg:LiveRuntime, path:string, body?:unknown) {
   const raw=await boundedBody(res.body,128*1024);
   if (!raw) throw new Error("Decision Live provider body unavailable");
   return record(JSON.parse(new TextDecoder("utf-8",{fatal:true}).decode(raw)));
+}
+
+/** Only an operator secret admits this presale, read-only production check. */
+export async function liveReadiness(request:Request) {
+  const hidden=()=>reply({ok:false},404);
+  const failed=()=>reply({ok:false},503);
+  if (request.method!=="GET" || process.env.VERCEL_ENV!=="production"
+      || process.env.VERCEL_GIT_COMMIT_REF!=="main"
+      || !fixedDestination(request,"https://www.goeast.ai","/api/decision-report/readiness")
+      || process.env.DECISION_REPORT_LIVE_CHECKOUT_ENABLED==="true"
+      || process.env.DECISION_REPORT_LIVE_PUBLIC_ENABLED==="true") return hidden();
+  const token=process.env.DECISION_REPORT_LIVE_READINESS_TOKEN;
+  const presented=/^Bearer ([0-9a-f]{64})$/.exec(request.headers.get("authorization")??"")?.[1];
+  if (!token || !/^[0-9a-f]{64}$/.test(token) || !presented
+      || !timingSafeEqual(Buffer.from(token,"hex"),Buffer.from(presented,"hex"))
+      || [process.env.DECISION_REPORT_LIVE_CREEM_WEBHOOK_SECRET,process.env.CREEM_WEBHOOK_SECRET,
+        process.env.DECISION_REPORT_CREEM_WEBHOOK_SECRET,process.env.AZURE_OPENAI_API_KEY,
+        process.env.DECISION_REPORT_LIVE_MODEL_API_KEY].includes(token)) return hidden();
+  try {
+    const cfg=decisionLivePresaleRuntime();
+    if (!cfg?.ownerDsn || !cfg.callbackDsn || !cfg.creemApiKey || !cfg.signingSecret || !cfg.model) return failed();
+    const checks=await Promise.allSettled([
+      checkLiveDbIsolation(cfg.ownerDsn,"owner"),
+      checkLiveDbIsolation(cfg.callbackDsn,"callback"),
+      provider(cfg,"/products?product_id="+encodeURIComponent(cfg.policy.productId))
+        .then(raw=>isDecisionLiveProduct(cfg.policy,raw)),
+    ]);
+    return checks.every(check=>check.status==="fulfilled" && check.value===true) ? reply({ok:true}) : failed();
+  } catch {return failed();}
 }
 
 function resume(row:LiveClaim) {
