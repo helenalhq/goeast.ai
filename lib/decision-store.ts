@@ -113,6 +113,25 @@ export function decisionDb(config: DecisionConfig) {
   };
 }
 
+// Run the exact linkage check and conditional mutation in the same audited
+// transaction. Never call the refund RPC for unrelated Test Store activity.
+export async function linkedDecisionTestRefund(
+  config: Extract<DecisionConfig, { mode: "test" }> & { storage: "scoped-postgres" },
+  orderId: string,
+  transactionId: string,
+) {
+  const query = scopedQuery(config);
+  const [row] = await query<{ result: string }>(
+    `select case when exists (
+      select 1 from goeast_p1_qa.decision_orders
+      where owner_id=$1::uuid and mode='test' and product_id=$2
+        and provider_order_id=$3 and transaction_id=$4
+    ) then goeast_p1_qa.decision_record_refund('test',$3,$4) else 'unlinked' end as result`,
+    [config.qaUserId, config.productId, orderId, transactionId],
+  );
+  return row?.result ?? null;
+}
+
 export function json(data: unknown, status = 200) {
   return Response.json(data, { status, headers: { "Cache-Control": "private, no-store, max-age=0" } });
 }

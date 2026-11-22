@@ -35,7 +35,7 @@ export function decisionFingerprint(owner: string, input: DecisionInput): string
   return createHash("sha256").update(JSON.stringify([owner, input.question, input.casts])).digest("hex");
 }
 
-export function validDecisionSignature(raw: string, signature: string, secret: string): boolean {
+export function validDecisionSignature(raw: string | Uint8Array, signature: string, secret: string): boolean {
   if (!secret || !/^[0-9a-f]{64}$/i.test(signature)) return false;
   return timingSafeEqual(createHmac("sha256", secret).update(raw).digest(), Buffer.from(signature, "hex"));
 }

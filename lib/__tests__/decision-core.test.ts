@@ -30,15 +30,18 @@ describe("preview isolation", () => {
     expect(decisionConfig({...env, DECISION_REPORT_SUPABASE_URL:"https://shared.supabase.co/"})).toBeNull();
   });
   it("requires distinct test provider product and the explicit test API", () => {
+    const product = "prod_61uy92GSfzQr7WkhGkbt4s";
     const test = {...env, DECISION_REPORT_MODE:"test", DECISION_REPORT_CREEM_API_KEY:"creem_test_fake",
-      DECISION_REPORT_CREEM_WEBHOOK_SECRET:"secret", DECISION_REPORT_CREEM_PRODUCT_ID:"prod_once",
+      DECISION_REPORT_CREEM_WEBHOOK_SECRET:"secret", DECISION_REPORT_CREEM_PRODUCT_ID:product,
       CREEM_PRODUCT_ID:"prod_pro", DECISION_REPORT_PREVIEW_ORIGIN:"https://preview.goeast.ai",
-      AZURE_OPENAI_API_KEY:"fake", AZURE_OPENAI_ENDPOINT:"https://example.invalid"};
+      DECISION_REPORT_STORAGE:"scoped-postgres",
+      DECISION_REPORT_SUPABASE_URL:undefined, DECISION_REPORT_SUPABASE_SERVICE_ROLE_KEY:undefined,
+      NEXT_PUBLIC_SUPABASE_URL:"https://abcdefghijklmnopqrst.supabase.co",
+      DECISION_REPORT_SCOPED_DATABASE_URL:"postgresql://goeast_p1_qa.abcdefghijklmnopqrst:dummy@aws-0-us-east-1.pooler.supabase.com:6543/postgres",
+      VERCEL_GIT_COMMIT_REF:"develop", AZURE_OPENAI_API_KEY:"fake", AZURE_OPENAI_ENDPOINT:"https://example.invalid"};
     expect(decisionConfig(test)?.mode).toBe("test");
     expect(decisionConfig({...test, DECISION_REPORT_PREVIEW_ORIGIN:"https://go-east-pclius-projects-c305da2a.vercel.app"})).toBeNull();
-    expect(decisionConfig({...test, DECISION_REPORT_PREVIEW_ORIGIN:"https://go-east-test.vercel.app",
-      VERCEL_URL:"go-east-test.vercel.app"})?.mode).toBe("test");
-    expect(decisionConfig({...test, CREEM_PRODUCT_ID:"prod_once"})).toBeNull();
+    expect(decisionConfig({...test, CREEM_PRODUCT_ID:product})).toBeNull();
     expect(decisionConfig({...test, DECISION_REPORT_CREEM_API_KEY:"creem_not_test"})).toBeNull();
   });
 });
