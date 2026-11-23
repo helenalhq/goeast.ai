@@ -14,7 +14,8 @@ function stripHtml(html: string): string {
 
 function firstSentences(text: string, count: number): string {
   const clean = stripHtml(text);
-  const sentences = clean.match(/[^.!?]+[.!?]+/g) || [clean];
+  // Include Chinese sentence enders (。！？) — hexagram judgments are zh text.
+  const sentences = clean.match(/[^.!?。！？]+[.!?。！？]+/g) || [clean];
   return sentences.slice(0, count).join(" ").trim();
 }
 
@@ -40,8 +41,10 @@ function generatePhilosopherSnippet(p: PhilosopherDeep): string {
 }
 
 function generateHexagramSnippet(h: HexagramData): string {
-  const judgmentFirst = firstSentences(h.judgment_en, 1);
-  return `Hexagram ${h.number}, ${h.name} (${h.name_zh}), combines the ${h.upper_trigram} (upper) and ${h.lower_trigram} (lower) trigrams. ${judgmentFirst}`;
+  // English judgment text has unverified provenance — cite the collated
+  // Chinese classical text instead (docs/iching-english-source-status.md).
+  const judgmentFirst = firstSentences(h.judgment_zh, 1);
+  return `Hexagram ${h.number}, ${h.name} (${h.name_zh}), combines the ${h.upper_trigram} (upper) and ${h.lower_trigram} (lower) trigrams. Judgment (卦辞): ${judgmentFirst}`;
 }
 
 function generateGlossarySnippet(g: GlossaryEntry): string {

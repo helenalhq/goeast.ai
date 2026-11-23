@@ -144,13 +144,11 @@ export async function GET() {
     sections.push(`- Lower Trigram: ${hex.lower_trigram}`);
     sections.push(`- URL: https://www.goeast.ai/iching/${hex.slug}`);
     sections.push("");
-    sections.push("**Judgment:**");
-    sections.push(hex.judgment_en);
-    sections.push(`(${hex.judgment_zh})`);
+    sections.push("**Judgment (卦辞):**");
+    sections.push(hex.judgment_zh);
     sections.push("");
-    sections.push("**Image:**");
-    sections.push(hex.image_en);
-    sections.push(`(${hex.image_zh})`);
+    sections.push("**Image (象辞):**");
+    sections.push(hex.image_zh);
     if (hex.modern_application) {
       sections.push("");
       sections.push("**Modern Application:**");

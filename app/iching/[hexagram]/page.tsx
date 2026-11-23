@@ -29,7 +29,7 @@ export async function generateMetadata({
   return {
     title: `Hexagram ${h.number}: ${h.name} Meaning (${h.name_zh}) | I Ching | GoEast.ai`,
     description: clipText(
-      `Hexagram ${h.number}: ${h.name} (${h.name_zh}) meaning and interpretation from the I Ching Book of Changes. ${h.judgment_en}`,
+      `Hexagram ${h.number}: ${h.name} (${h.name_zh}) meaning and interpretation from the I Ching Book of Changes. ${h.judgment_zh}`,
       200
     ),
     alternates: {
@@ -73,7 +73,7 @@ export default async function HexagramDetailPage({
           "@type": "CreativeWork",
           name: `${h.name} (${h.name_zh})`,
           alternateName: `Hexagram ${h.number}`,
-          text: h.judgment_en,
+          text: h.judgment_zh,
           about: [
             { "@type": "Thing", name: h.upper_trigram },
             { "@type": "Thing", name: h.lower_trigram },
@@ -135,15 +135,21 @@ export default async function HexagramDetailPage({
           <ArticleStudyCTA hexagramNumber={h.number} hexagramSlug={h.slug} />
         )}
 
-        {/* Judgment — classical Chinese primary (blockquote), English clearly a paraphrase */}
+        {/* Judgment — verified classical Chinese, rendered by the program.
+            English translation: provenance unverified → not displayed (see docs/iching-english-source-status.md). */}
         <section className="mb-10">
           <h2 className="text-2xl font-bold text-ink mb-4">Judgment (卦辞)</h2>
           <blockquote className="pl-4 border-l-3 border-china-red text-ink leading-relaxed">
             {h.judgment_zh}
           </blockquote>
-          <p className="mt-1 text-xs text-warm/60">Source: 《周易》 (Zhouyi core text, public domain)</p>
-          <p className="mt-3 text-ink/80 italic leading-relaxed">{h.judgment_en}</p>
-          <p className="mt-1 text-xs text-warm/50">Modern English paraphrase by GoEast — not a published translation.</p>
+          <p className="mt-1 text-xs text-warm/60">
+            Source: 《周易》 core text (Zhouyi, public domain) — collated item-by-item
+            2026-11-14; simplified characters, modern punctuation.
+          </p>
+          <p className="mt-3 text-sm text-warm/70 bg-cream/60 border border-sand rounded-lg p-3">
+            English translation: not yet source-verified — temporarily unavailable.
+            英文译文暂未核验来源，暂不展示。
+          </p>
         </section>
 
         {/* Image */}
@@ -152,9 +158,10 @@ export default async function HexagramDetailPage({
           <blockquote className="pl-4 border-l-3 border-china-red text-ink leading-relaxed">
             {h.image_zh}
           </blockquote>
-          <p className="mt-1 text-xs text-warm/60">Source: 《周易》</p>
-          <p className="mt-3 text-ink/80 italic leading-relaxed">{h.image_en}</p>
-          <p className="mt-1 text-xs text-warm/50">Modern English paraphrase by GoEast.</p>
+          <p className="mt-1 text-xs text-warm/60">Source: 《周易》 core text — collated 2026-11-14.</p>
+          <p className="mt-3 text-sm text-warm/70 bg-cream/60 border border-sand rounded-lg p-3">
+            English translation: not yet source-verified — temporarily unavailable.
+          </p>
         </section>
 
         {/* Trigram breakdown */}

@@ -13,11 +13,13 @@ Date: 2026-11-13 · Branch: `feat/iching-collation` · Status: awaiting preview 
 - **Chinese classical text**: 卦辞/象辞 are the *Zhouyi* (周易) core text —
   public domain. Stored in `lib/iching-data.ts` (`judgment_zh`/`image_zh`),
   complete for all 64 (tested).
-- **English text**: `judgment_en`/`image_en` are **modern English paraphrases
-  written in-house by GoEast**. Source/license of the *original wording*:
-  house-authored; no external translation is copied, and none is claimed.
-  They are therefore never displayed or prompted as a quotation or as a
-  published translation (see §3).
+- **English text**: `judgment_en`/`image_en` — **[CORRECTED 2026-11-14]** The
+  claim below that these were "written in-house by GoEast / house-authored"
+  was itself an unproven provenance assertion, and has been retracted. Their
+  actual provenance and license could not be documented; as of 2026-11-14 they
+  are removed from all public display and model context, pending per-item
+  disposition. See `docs/iching-english-source-status.md` and
+  `docs/2026-11-14-iching-text-collation-report.md`.
 
 Convention preserved: `binary[0]` = initial (bottom) line; lines read
 bottom-up. Trigram bits bottom-up: Qian 111, Dui 110, Li 101, Zhen 100,
@@ -93,7 +95,7 @@ Fixes:
 | Text | Source | License/use basis |
 |---|---|---|
 | 卦辞 / 象辞 (Chinese) | *Zhouyi* core text, in-house database | Public domain (ancient); quoted verbatim with source label |
-| judgment_en / image_en | House-authored modern paraphrases by GoEast | Our own wording; labeled as paraphrase — never as a quotation or published translation |
+| judgment_en / image_en | **[RETRACTED 2026-11-14]** Provenance unverified — the "house-authored" claim could not be evidenced | Removed from display and model context 2026-11-14; see docs/iching-english-source-status.md |
 | Wilhelm/Baynes, Legge, etc. | — | **Not used** for I Ching content; no authorization claimed; named only as reading references in editorial guides |
 
 ## 4. Tests

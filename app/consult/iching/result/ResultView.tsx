@@ -371,23 +371,11 @@ export default function ResultView() {
           <>
             <div className="mb-4">
               <p className="text-xs font-semibold text-warm mb-1">
-                Original Chinese 原文 <span className="font-normal text-warm/60">(《周易》， public domain)</span>
+                Original Chinese 原文 <span className="font-normal text-warm/60">(《周易》 core text, public domain — collated 2026-11-14)</span>
               </p>
               <blockquote className="pl-4 border-l-2 border-china-red/30 text-ink leading-relaxed text-base font-serif">
                 {hexagram.judgment_zh}
               </blockquote>
-            </div>
-            <div className="mb-4">
-              <p className="text-xs font-semibold text-warm mb-1">
-                Modern English paraphrase <span className="font-normal text-warm/60">(by GoEast)</span>
-              </p>
-              <p className="pl-4 border-l-2 border-warm/30 text-ink/80 leading-relaxed italic">
-                {hexagram.judgment_en}
-              </p>
-              <p className="text-xs text-warm/50 mt-1">
-                Note: this is GoEast&apos;s own paraphrase for sense — it is not the classical
-                original and not a published translation.
-              </p>
             </div>
             {hexagram.image_zh && (
               <div className="mb-4">
@@ -397,8 +385,6 @@ export default function ResultView() {
                 <blockquote className="pl-4 border-l-2 border-gold/30 text-ink leading-relaxed text-base font-serif">
                   {hexagram.image_zh}
                 </blockquote>
-                <p className="text-sm text-warm/70 mt-1 italic">{hexagram.image_en}</p>
-                <p className="text-xs text-warm/50 mt-1">English: GoEast paraphrase — not a published translation.</p>
               </div>
             )}
             {transformed && (
@@ -407,9 +393,12 @@ export default function ResultView() {
                 <blockquote className="pl-4 border-l-2 border-gold/30 text-ink leading-relaxed text-base font-serif">
                   {transformed.judgment_zh}
                 </blockquote>
-                <p className="text-sm text-warm/70 mt-1 italic">{transformed.judgment_en}</p>
               </div>
             )}
+            <p className="text-xs text-warm/60">
+              English translation: not yet source-verified — temporarily unavailable.
+              英文译文暂未核验来源，暂不展示。
+            </p>
           </>
         )}
       </Section>

@@ -105,40 +105,41 @@ export function validateIchingContext(raw: unknown): IchingConsultationContext |
 }
 
 /**
- * Classical text for one hexagram, for prompts and display.
+ * Verified classical text for one hexagram — the ONLY text the platform
+ * treats as traditional quotation, rendered deterministically by pages and
+ * passed to the model as interpretation CONTEXT only.
  *
- * Source policy (collation 2026-11):
- * - judgment_zh / image_zh are the Zhouyi (周易) core text — public domain,
- *   quotable verbatim. Source label: 《周易》.
- * - judgment_en / image_en are MODERN ENGLISH PARAPHRASES written in-house
- *   by GoEast. They are NOT the classical original and NOT any published
- *   translation; they must never be quoted as either, and no translator or
- *   edition may be named for them.
- * - Empty fields mean the text is unavailable: say so — never reconstruct
+ * Source policy (collation 2026-11-14):
+ * - judgment_zh / image_zh: Zhouyi (周易) core text — collated item-by-item
+ *   against the Wikisource 周易 electronic edition (simplified conversion,
+ *   modern punctuation; variants recorded in
+ *   docs/2026-11-14-iching-text-collation-report.md). Source label: 《周易》.
+ * - judgment_en / image_en: PROVENANCE UNVERIFIED. They are deliberately
+ *   NOT rendered as traditional text, NOT shown publicly, and NOT passed to
+ *   the model (see docs/iching-english-source-status.md). Never assert who
+ *   wrote them or what license applies.
+ * - Empty zh fields mean the text is unavailable: say so — never reconstruct
  *   classical text from memory.
  */
 export function classicalTextBlock(hexagram: {
   judgment_zh?: string;
-  judgment_en?: string;
   image_zh?: string;
-  image_en?: string;
 }): string {
   const parts: string[] = [];
-  if (hexagram.judgment_zh) parts.push(`- Judgment (卦辞, from 《周易》, quote verbatim): ${hexagram.judgment_zh}`);
-  if (hexagram.image_zh) parts.push(`- Image (象辞, from 《周易》, quote verbatim): ${hexagram.image_zh}`);
-  if (!hexagram.judgment_zh && !hexagram.image_zh) {
-    parts.push("- No classical text is available for this hexagram in our database. State that plainly; never reconstruct or quote classical text from memory.");
+  if (hexagram.judgment_zh) parts.push(`- Judgment (卦辞, 《周易》 core text): ${hexagram.judgment_zh}`);
+  if (hexagram.image_zh) parts.push(`- Image (象辞, 《周易》 core text): ${hexagram.image_zh}`);
+  if (!parts.length) {
+    parts.push("- No verified classical text is available for this hexagram. State that plainly; never reconstruct, translate-as-quote, or attribute classical text from memory.");
   }
-  const paraphrase: string[] = [];
-  if (hexagram.judgment_en) paraphrase.push(`Judgment paraphrase: ${hexagram.judgment_en}`);
-  if (hexagram.image_en) paraphrase.push(`Image paraphrase: ${hexagram.image_en}`);
   return `
 
-CLASSICAL TEXT (deterministically loaded from the GoEast verified database):
-${parts.join("\n")}${paraphrase.length ? `
+VERIFIED CLASSICAL TEXT (《周易》 core text, collated 2026-11-14; the platform displays this text itself — it is given to you as CONTEXT for interpretation only):
+${parts.join("\n")}
 
-MODERN ENGLISH PARAPHRASE (written by GoEast; NOT the classical original, NOT a published translation — use for sense only; never present as a quotation and never attribute it to any translator or edition):
-${paraphrase.join("\n")}` : ""}`;
+CITATION RULES:
+- Do NOT reproduce the classical text as a quotation in your answer. The page already shows it verbatim. Explain and paraphrase it in your own words.
+- No English translation of the classical text is provided or approved. If you refer to the text in English, clearly mark your wording as your own explanation ("in my reading, the judgment says…") — never as a quotation, never as a published translation, and never attribute it to any translator or edition.
+- Line statements (爻辞) are not provided; referencing a line is your interpretation only.`;
 }
 
 /** Server-side prompt block. Names come from our data, never from the client. */
@@ -168,7 +169,7 @@ CONSULTATION CONTEXT — THE USER'S I CHING CAST (authoritative; do not recalcul
 ${classicalTextBlock(hexagram)}
 
 Structure the answer in three labeled parts:
-1. TRADITIONAL TEACHING — quote ONLY the Chinese classical text (卦辞/象辞) provided in the CLASSICAL TEXT block above, verbatim. If you render it in English, that rendering is YOUR interpretation — introduce it as such and never as a published translation. Do NOT fabricate line statements (爻辞) — changing line numbers are given for your interpretation only; if you reference a line, say "Line N suggests…" as your interpretation, not as a classical quote. The English paraphrase block above is GoEast's own summary: use it for sense, never quote it.
+1. TRADITIONAL TEACHING — explain the classical teaching above in your own words. Do NOT reproduce the 卦辞/象辞 as a quotation (the page displays the verified text itself); do NOT fabricate line statements (爻辞) — changing line numbers are given for your interpretation only; if you reference a line, say "Line N suggests…" as your interpretation, not as a classical quote.
 2. AI INTERPRETATION — your reading of the user's question through this specific cast.
 3. REFLECTION — 2-3 open questions for the user to consider.
 The reading is material for reflection — never a prediction of what will happen, never a reason to fear, and never a reason to pay.`;
