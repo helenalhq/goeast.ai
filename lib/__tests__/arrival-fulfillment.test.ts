@@ -1,6 +1,6 @@
 import { createHmac } from "node:crypto";
 import { describe, it, expect } from "vitest";
-import { arrivalCheckoutCorrelation, arrivalCheckoutMetadata, arrivalWebhookOrderId, matchArrivalPayment, matchRetrievedArrivalPayment, noticeSubject, verifiedEvent, approveArrival, type ArrivalOrder } from "../arrival-fulfillment";
+import { arrivalCheckoutCorrelation, arrivalCheckoutMetadata, arrivalWebhookOrderId, matchArrivalPayment, matchSignedArrivalPayment, matchRetrievedArrivalPayment, noticeSubject, verifiedEvent, approveArrival, type ArrivalOrder } from "../arrival-fulfillment";
 
 const product = "prod_6mUIh9LkfcmjyuSLmfByO";
 const secret = "a".repeat(40);
@@ -50,6 +50,16 @@ describe("Arrival Test fulfillment contract",()=>{
     expect(matchRetrievedArrivalPayment(order,{...checkout,request_id:null},transaction).kind).toBe("ignore");
     expect(matchRetrievedArrivalPayment(order,checkout,{...transaction,created_at:null}).kind).toBe("review");
     expect(matchRetrievedArrivalPayment({...order,expires:"2026-11-28T11:59:00Z"},checkout,transaction).kind).toBe("review");
+  });
+  it("uses a matched provider transaction clock on either ingress, not delayed callback time",()=>{
+    const signedCheckout={...event.object,order:{...event.object.order,transaction:"tran_a"}};
+    const delayed={...event,created_at:Date.parse(order.expires)+2000,object:signedCheckout};
+    const early={id:"tran_a",mode:"test",type:"payment",status:"paid",created_at:Date.parse(order.expires)-1000,order:"ord_test",amount:1290,amount_paid:1290,currency:"USD"};
+    expect(matchSignedArrivalPayment(order,delayed,signedCheckout,early)).toEqual(matchRetrievedArrivalPayment(order,signedCheckout,early));
+    expect(matchSignedArrivalPayment(order,delayed,signedCheckout,early).kind).toBe("paid");
+    expect(matchSignedArrivalPayment(order,event,signedCheckout,early).kind).toBe("ignore");
+    expect(matchSignedArrivalPayment(order,{...delayed,object:{...signedCheckout,order:{...signedCheckout.order,id:"ord_other"}}},signedCheckout,early).kind).toBe("ignore");
+    expect(matchSignedArrivalPayment(order,delayed,signedCheckout,{...early,created_at:Date.parse(order.expires)+1000}).kind).toBe("review");
   });
   it("puts only an opaque order ID in the notice; gates approval on payment, version and checks",()=>{
     expect(noticeSubject(order.id)).toBe("[GoEast Arrival QA] Paid "+order.id);

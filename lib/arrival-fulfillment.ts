@@ -66,6 +66,14 @@ export function matchRetrievedArrivalPayment(order:ArrivalOrder,input:unknown,tr
     || tx.amount!==1290 || tx.amount_paid!==1290) return {kind:"ignore"};
   return paymentForCheckout(order,checkout,tx.created_at);
 }
+export function matchSignedArrivalPayment(order:ArrivalOrder,input:unknown,retrieved:unknown,transaction:unknown):Payment {
+  const event=bag(input), signed=bag(event.object), read=bag(retrieved);
+  const signedOrder=bag(signed.order), actualOrder=bag(read.order);
+  if(event.eventType!=="checkout.completed"||typeof event.id!=="string"||signed.mode!=="test"||
+    signed.status!=="completed"||!arrivalCheckoutCorrelation(order.id,signed)||signed.id!==order.checkout||
+    signedOrder.id!==actualOrder.id||signedOrder.transaction!==actualOrder.transaction) return {kind:"ignore"};
+  return matchRetrievedArrivalPayment(order,read,transaction);
+}
 export function noticeSubject(id:string){
   if(!orderId.test(id)) throw new Error("invalid order ID");
   return "[GoEast Arrival QA] Paid "+id;

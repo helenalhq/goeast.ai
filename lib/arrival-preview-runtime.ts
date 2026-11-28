@@ -4,7 +4,7 @@ import { claimSql,listClaimableSql } from "./arrival-preview-claim";
 import { checkServerIdentity } from "node:tls";
 import { SUPABASE_PROD_ROOT_2021_CA } from "./decision-supabase-ca";
 import { Resend } from "resend";
-import { arrivalTestProduct, arrivalCheckoutCorrelation, arrivalCheckoutMetadata, arrivalWebhookOrderId, matchArrivalPayment, matchRetrievedArrivalPayment, noticeSubject, verifiedEvent, type ArrivalOrder } from "./arrival-fulfillment";
+import { arrivalTestProduct, arrivalCheckoutCorrelation, arrivalCheckoutMetadata, arrivalWebhookOrderId, matchSignedArrivalPayment, matchRetrievedArrivalPayment, noticeSubject, verifiedEvent, type ArrivalOrder } from "./arrival-fulfillment";
 import { validTestCheckoutLink } from "./decision-provider";
 import cases from "../scripts/fixtures/arrival-reports.qa.json";
 
@@ -71,25 +71,31 @@ export async function createArrivalCheckout(sample:number){
 export async function acceptArrivalWebhook(raw:string,signature:string):Promise<{status:number;body:Record<string,unknown>;queued?:string}>{
   const secret=process.env.ARRIVAL_CREEM_TEST_WEBHOOK_SECRET??"";
   if(!secret) return {status:503,body:{error:"preview unconfigured"}};
-  const event=verifiedEvent(raw,signature,secret) as {object?:{request_id?:unknown}}|null;
+  const event=verifiedEvent(raw,signature,secret) as {id?:unknown;eventType?:unknown;object?:{id?:unknown;mode?:unknown;status?:unknown;product?:unknown}}|null;
   if(!event) return {status:401,body:{error:"invalid signature"}};
   const id=arrivalWebhookOrderId(event.object);
-  if(!id) return {status:200,body:{ignored:true}};
-  return recordPayment(id,order=>matchArrivalPayment(order,event));
+  const product=event.object?.product;
+  const sku=typeof product==="string"?product:product&&typeof product==="object"&&"id" in product?product.id:null;
+  if(event.eventType!=="checkout.completed"||typeof event.id!=="string"||!id||event.object?.mode!=="test"||
+    event.object?.status!=="completed"||sku!==arrivalTestProduct) return {status:200,body:{ignored:true}};
+  const entry=await find(id);
+  if(!entry||entry.checkout!==event.object.id) return {status:200,body:{ignored:true}};
+  const result=await reconcilePayment(entry,event);
+  if(result.body.result==="pending"||result.status===409)
+    return {status:503,body:{error:"awaiting exact Creem Test readback"}};
+  return {...result,body:{...result.body,source:"creem_test_webhook"}};
 }
 
 const testKey=()=>process.env.ARRIVAL_CREEM_TEST_API_KEY??process.env.CREEM_API_KEY??"";
-export async function reconcileExactArrival(id:string){
-  if(!orderId.test(id)) return {status:400,body:{error:"invalid order ID"}};
-  const entry=await find(id);
-  if(!entry||!entry.checkout||!checkoutId.test(entry.checkout)) return {status:404,body:{error:"checkout not found"}};
-  if(entry.state!=="pending"&&entry.state!=="paid") return {status:409,body:{error:"order requires review"}};
+type Recorded={status:number;body:Record<string,unknown>;queued?:string};
+async function reconcilePayment(entry:Job,signedEvent?:unknown):Promise<Recorded>{
+  const id=entry.id;
   const key=testKey();
   if(!key.startsWith("creem_test_")) return {status:503,body:{error:"test checkout unconfigured"}};
   const checkoutUrl=new URL(api);
   checkoutUrl.searchParams.set("checkout_id",entry.checkout);
-  const request={headers:{"x-api-key":key},cache:"no-store" as const,redirect:"error" as const,signal:AbortSignal.timeout(8000)};
-  const checkoutResponse=await fetch(checkoutUrl,request);
+  const request={headers:{"x-api-key":key},cache:"no-store" as const,redirect:"error" as const};
+  const checkoutResponse=await fetch(checkoutUrl,{...request,signal:AbortSignal.timeout(8000)});
   if(!checkoutResponse.ok) throw new Error("test checkout lookup rejected");
   const checkout=await checkoutResponse.json() as {mode?:string;id?:string;request_id?:string;status?:string;order?:{transaction?:string}};
   if(checkout.mode!=="test"||checkout.id!==entry.checkout||!arrivalCheckoutCorrelation(id,checkout)) return {status:409,body:{error:"checkout did not match"}};
@@ -98,7 +104,7 @@ export async function reconcileExactArrival(id:string){
   if(typeof tx!=="string"||!/^tran_[A-Za-z0-9_]+$/.test(tx)) return {status:409,body:{error:"paid transaction not confirmed"}};
   const url=new URL("/v1/transactions",api);
   url.searchParams.set("transaction_id",tx);
-  const transactionResponse=await fetch(url,request);
+  const transactionResponse=await fetch(url,{...request,signal:AbortSignal.timeout(8000)});
   if(!transactionResponse.ok) throw new Error("test transaction lookup rejected");
   const transaction:unknown=await transactionResponse.json();
   const txRecord=transaction&&typeof transaction==="object"?transaction as Record<string,unknown>:{};
@@ -111,13 +117,21 @@ export async function reconcileExactArrival(id:string){
     orderProduct:ref(paidRecord?.product)===arrivalTestProduct, orderPaid:paidRecord?.status==="paid",
     orderType:paidRecord?.type==="onetime", orderAmount:paidRecord?.amount===1290, orderCurrency:paidRecord?.currency==="USD",
   };
-  const result=await recordPayment(id,order=>matchRetrievedArrivalPayment(order,checkout,transaction));
+  const result=await recordPayment(id,order=>signedEvent===undefined?matchRetrievedArrivalPayment(order,checkout,transaction):matchSignedArrivalPayment(order,signedEvent,checkout,transaction));
   if(result.body.result==="ignore") console.warn("[arrival-preview] readback mismatch",Object.keys(summary).filter(key=>!summary[key as keyof typeof summary]));
+  return result;
+}
+export async function reconcileExactArrival(id:string){
+  if(!orderId.test(id)) return {status:400,body:{error:"invalid order ID"}};
+  const entry=await find(id);
+  if(!entry||!entry.checkout||!checkoutId.test(entry.checkout)) return {status:404,body:{error:"checkout not found"}};
+  if(entry.state!=="pending"&&entry.state!=="paid") return {status:409,body:{error:"order requires review"}};
+  const result=await reconcilePayment(entry);
   const sent=result.queued ? await sendArrivalNotice(result.queued).catch(()=>false) : undefined;
   return {status:sent===false?503:result.status,body:{...result.body,source:"creem_test_api",notification:sent===undefined?undefined:sent?"sent":"pending"}};
 }
 
-async function recordPayment(id:string,match:(order:ArrivalOrder)=>ReturnType<typeof matchArrivalPayment>){
+async function recordPayment(id:string,match:(order:ArrivalOrder)=>ReturnType<typeof matchRetrievedArrivalPayment>){
   const c=await db().connect();
   try{
     await c.query("BEGIN");
