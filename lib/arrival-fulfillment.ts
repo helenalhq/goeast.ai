@@ -16,12 +16,32 @@ export function verifiedEvent(raw:string,signature:string,secret:string):unknown
   try { return JSON.parse(raw); } catch { return null; }
 }
 
+const offer = "shanghai_arrival_qa";
+const uuid = /^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i;
+export const arrivalCheckoutMetadata=(id:string)=>({offer_id:offer,order_id:id});
+
+export function arrivalCheckoutCorrelation(id:string,input:unknown){
+  const checkout=bag(input), metadata=bag(checkout.metadata), echo=checkout.request_id;
+  if(!orderId.test(id) || (echo!=null&&typeof echo!=="string") ||
+     (typeof echo==="string"&&((uuid.test(echo)&&echo.toLowerCase()!==id.slice(3))||(orderId.test(echo)&&echo!==id)))) return false;
+  const metadataMatches=metadata.order_id===id&&metadata.offer_id===offer;
+  if(checkout.metadata!=null&&!metadataMatches) return false;
+  return echo===id||echo===id.slice(3)||metadataMatches;
+}
+export function arrivalWebhookOrderId(input:unknown){
+  const checkout=bag(input), candidate=bag(checkout.metadata).order_id;
+  if(typeof candidate==="string"&&arrivalCheckoutCorrelation(candidate,checkout)) return candidate;
+  const echo=checkout.request_id;
+  if(typeof echo==="string"&&orderId.test(echo)&&arrivalCheckoutCorrelation(echo,checkout)) return echo;
+  return null;
+}
+
 function paymentForCheckout(order:ArrivalOrder,input:unknown,timestamp:unknown):Payment {
   const checkout=bag(input), paid=bag(checkout.order);
   const product=typeof checkout.product==="string"?checkout.product:bag(checkout.product).id;
   const orderProduct=typeof paid.product==="string"?paid.product:bag(paid.product).id;
   if (!orderId.test(order.id)
-    || checkout.mode!=="test" || checkout.status!=="completed" || checkout.request_id!==order.id || checkout.id!==order.checkout
+    || checkout.mode!=="test" || checkout.status!=="completed" || !arrivalCheckoutCorrelation(order.id,checkout) || checkout.id!==order.checkout
     || product!==arrivalTestProduct || orderProduct!==arrivalTestProduct
     || paid.status!=="paid" || paid.type!=="onetime" || paid.amount!==1290 || paid.currency!=="USD" || typeof paid.id!=="string" || !providerId.test(paid.id)) return {kind:"ignore"};
   if (order.providerOrder===paid.id) return {kind:"duplicate"};
@@ -40,7 +60,7 @@ export function matchArrivalPayment(order:ArrivalOrder,input:unknown):Payment {
 export function matchRetrievedArrivalPayment(order:ArrivalOrder,input:unknown,transaction:unknown):Payment {
   const checkout=bag(input), paid=bag(checkout.order), tx=bag(transaction);
   if(typeof paid.transaction!=="string"||!/^tran_[A-Za-z0-9_]+$/.test(paid.transaction)
-    || tx.id!==paid.transaction || tx.order!==paid.id || tx.product!==arrivalTestProduct
+    || tx.id!==paid.transaction || (typeof tx.order==="string"?tx.order:bag(tx.order).id)!==paid.id || (typeof tx.product==="string"?tx.product:bag(tx.product).id)!==arrivalTestProduct
     || tx.mode!=="test" || tx.type!=="payment" || tx.status!=="paid" || tx.currency!=="USD"
     || tx.amount!==1290 || tx.amount_paid!==1290) return {kind:"ignore"};
   return paymentForCheckout(order,checkout,tx.created_at);

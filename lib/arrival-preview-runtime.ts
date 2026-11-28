@@ -4,7 +4,8 @@ import { claimSql,listClaimableSql } from "./arrival-preview-claim";
 import { checkServerIdentity } from "node:tls";
 import { SUPABASE_PROD_ROOT_2021_CA } from "./decision-supabase-ca";
 import { Resend } from "resend";
-import { arrivalTestProduct, matchArrivalPayment, matchRetrievedArrivalPayment, noticeSubject, verifiedEvent, type ArrivalOrder } from "./arrival-fulfillment";
+import { arrivalTestProduct, arrivalCheckoutCorrelation, arrivalCheckoutMetadata, arrivalWebhookOrderId, matchArrivalPayment, matchRetrievedArrivalPayment, noticeSubject, verifiedEvent, type ArrivalOrder } from "./arrival-fulfillment";
+import { validTestCheckoutLink } from "./decision-provider";
 import cases from "../scripts/fixtures/arrival-reports.qa.json";
 
 const api = "https://test-api.creem.io/v1/checkouts";
@@ -50,12 +51,18 @@ export async function createArrivalCheckout(sample:number){
   const expires=new Date(+when+15*60_000);
   const deadline=new Date(+when+12*60*60_000);
   await db().query("INSERT INTO arrival_preview.jobs (id,trip,expires,deadline) VALUES ($1,$2,$3,$4)",[id,cases[sample].trip,expires,deadline]);
-  const response=await fetch(api,{method:"POST",headers:{"content-type":"application/json","x-api-key":key},signal:AbortSignal.timeout(8000),redirect:"error",body:JSON.stringify({product_id:arrivalTestProduct,request_id:id,units:1,success_url:origin+"/shanghai-arrival-check",customer:{email:"goeast-arrival-qa@example.com"}})});
-  if(!response.ok) throw new Error("test checkout rejected");
-  const data=await response.json() as {mode?:string;id?:string;checkout_url?:string;request_id?:string};
-  const url=new URL(data.checkout_url??"");
-  if(data.mode!=="test"||!checkoutId.test(data.id??"")||data.request_id!==id||url.protocol!=="https:"||url.username||url.password||
-    !["creem.io","www.creem.io","test.creem.io","checkout.creem.io"].includes(url.hostname)) throw new Error("test checkout unverified");
+  const successUrl=origin+"/shanghai-arrival-check";
+  const response=await fetch(api,{method:"POST",headers:{"content-type":"application/json","x-api-key":key},signal:AbortSignal.timeout(12000),redirect:"error",body:JSON.stringify({product_id:arrivalTestProduct,request_id:id.slice(3),units:1,success_url:successUrl,metadata:arrivalCheckoutMetadata(id)})});
+  if(!response.ok){ console.warn("[arrival-preview] checkout rejected",response.status); throw new Error("test checkout rejected"); }
+  const data=await response.json() as {mode?:string;id?:string;checkout_url?:string;status?:string;product?:string|{id?:string};success_url?:string};
+  const checks={
+    mode:data.mode==="test", status:data.status==="pending", link:typeof data.id==="string"&&checkoutId.test(data.id)&&typeof data.checkout_url==="string"&&validTestCheckoutLink(data.checkout_url,data.id,arrivalTestProduct),
+    correlation:arrivalCheckoutCorrelation(id,data),
+    product:(typeof data.product==="string"?data.product:data.product?.id)===arrivalTestProduct,
+    returnTo:data.success_url===successUrl,
+  };
+  if(Object.values(checks).some(value=>!value)){ console.warn("[arrival-preview] checkout mismatch",Object.keys(checks).filter(key=>!checks[key as keyof typeof checks])); throw new Error("test checkout unverified"); }
+  const url=new URL(data.checkout_url!);
   const update=await db().query("UPDATE arrival_preview.jobs SET checkout=$2 WHERE id=$1 AND checkout IS NULL",[id,data.id]);
   if(update.rowCount!==1) throw new Error("checkout not stored");
   return {id,url:url.href};
@@ -66,8 +73,8 @@ export async function acceptArrivalWebhook(raw:string,signature:string):Promise<
   if(!secret) return {status:503,body:{error:"preview unconfigured"}};
   const event=verifiedEvent(raw,signature,secret) as {object?:{request_id?:unknown}}|null;
   if(!event) return {status:401,body:{error:"invalid signature"}};
-  const id=event.object?.request_id;
-  if(typeof id!=="string"||!orderId.test(id)) return {status:200,body:{ignored:true}};
+  const id=arrivalWebhookOrderId(event.object);
+  if(!id) return {status:200,body:{ignored:true}};
   return recordPayment(id,order=>matchArrivalPayment(order,event));
 }
 
@@ -85,7 +92,7 @@ export async function reconcileExactArrival(id:string){
   const checkoutResponse=await fetch(checkoutUrl,request);
   if(!checkoutResponse.ok) throw new Error("test checkout lookup rejected");
   const checkout=await checkoutResponse.json() as {mode?:string;id?:string;request_id?:string;status?:string;order?:{transaction?:string}};
-  if(checkout.mode!=="test"||checkout.id!==entry.checkout||checkout.request_id!==id) return {status:409,body:{error:"checkout did not match"}};
+  if(checkout.mode!=="test"||checkout.id!==entry.checkout||!arrivalCheckoutCorrelation(id,checkout)) return {status:409,body:{error:"checkout did not match"}};
   if(checkout.status!=="completed") return {status:200,body:{result:"pending",source:"creem_test_api"}};
   const tx=checkout.order?.transaction;
   if(typeof tx!=="string"||!/^tran_[A-Za-z0-9_]+$/.test(tx)) return {status:409,body:{error:"paid transaction not confirmed"}};

@@ -1,6 +1,6 @@
 import { createHmac } from "node:crypto";
 import { describe, it, expect } from "vitest";
-import { matchArrivalPayment, matchRetrievedArrivalPayment, noticeSubject, verifiedEvent, approveArrival, type ArrivalOrder } from "../arrival-fulfillment";
+import { arrivalCheckoutCorrelation, arrivalCheckoutMetadata, arrivalWebhookOrderId, matchArrivalPayment, matchRetrievedArrivalPayment, noticeSubject, verifiedEvent, approveArrival, type ArrivalOrder } from "../arrival-fulfillment";
 
 const product = "prod_6mUIh9LkfcmjyuSLmfByO";
 const secret = "a".repeat(40);
@@ -21,6 +21,21 @@ describe("Arrival Test fulfillment contract",()=>{
       expect(matchArrivalPayment(order,{...event,object:{...event.object,...change}}).kind).toBe("ignore");
     }
     expect(matchArrivalPayment({...order,expires:"2026-11-28T11:59:00Z"},event).kind).toBe("review");
+  });
+  it("correlates Creem's optional/provider-shaped checkout echo using exact order and offer metadata",()=>{
+    const metadata=arrivalCheckoutMetadata(order.id);
+    for(const request_id of [order.id.slice(3),null,undefined,"provider_echo"]){
+      const checkout={...event.object,metadata,request_id};
+      expect(arrivalCheckoutCorrelation(order.id,checkout)).toBe(true);
+      expect(arrivalWebhookOrderId(checkout)).toBe(order.id);
+      expect(matchArrivalPayment(order,{...event,object:checkout}).kind).toBe("paid");
+    }
+    for(const checkout of [
+      {request_id:"123e4567-e89b-42d3-a456-426614174999",metadata},
+      {request_id:"ar_123e4567-e89b-42d3-a456-426614174999",metadata},
+      {request_id:"provider_echo",metadata:{...metadata,offer_id:"decision_once"}},
+      {request_id:"provider_echo"},
+    ]) expect(arrivalCheckoutCorrelation(order.id,checkout)).toBe(false);
   });
   it("reconciles only the bound Creem Test checkout and its independently paid transaction",()=>{
     const checkout={...event.object,order:{...event.object.order,transaction:"tran_a"}};
