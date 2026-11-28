@@ -16,22 +16,34 @@ export function verifiedEvent(raw:string,signature:string,secret:string):unknown
   try { return JSON.parse(raw); } catch { return null; }
 }
 
-export function matchArrivalPayment(order:ArrivalOrder,input:unknown):Payment {
-  const event=bag(input), checkout=bag(event.object), paid=bag(checkout.order);
+function paymentForCheckout(order:ArrivalOrder,input:unknown,timestamp:unknown):Payment {
+  const checkout=bag(input), paid=bag(checkout.order);
   const product=typeof checkout.product==="string"?checkout.product:bag(checkout.product).id;
   const orderProduct=typeof paid.product==="string"?paid.product:bag(paid.product).id;
-  if (event.eventType!=="checkout.completed" || typeof event.id!=="string" || !orderId.test(order.id)
+  if (!orderId.test(order.id)
     || checkout.mode!=="test" || checkout.status!=="completed" || checkout.request_id!==order.id || checkout.id!==order.checkout
     || product!==arrivalTestProduct || orderProduct!==arrivalTestProduct
     || paid.status!=="paid" || paid.type!=="onetime" || paid.amount!==1290 || paid.currency!=="USD" || typeof paid.id!=="string" || !providerId.test(paid.id)) return {kind:"ignore"};
   if (order.providerOrder===paid.id) return {kind:"duplicate"};
   if (order.state!=="pending") return {kind:"review"};
-  // Use the checkout completion event's provider time, not local receipt or order creation time.
-  const timestamp=event.created_at;
   const paidAt=typeof timestamp==="number" && Number.isSafeInteger(timestamp) ? timestamp : millis(timestamp);
   if (!Number.isFinite(paidAt)||!Number.isFinite(millis(order.expires))||!Number.isFinite(millis(order.deadline))
       || paidAt<=0||paidAt>millis(order.expires)||paidAt>=millis(order.deadline)) return {kind:"review"};
   return {kind:"paid",providerOrder:paid.id,paidAt:new Date(paidAt).toISOString()};
+}
+export function matchArrivalPayment(order:ArrivalOrder,input:unknown):Payment {
+  const event=bag(input);
+  if(event.eventType!=="checkout.completed"||typeof event.id!=="string") return {kind:"ignore"};
+  return paymentForCheckout(order,event.object,event.created_at);
+}
+// Only invoked after authenticated server-to-server reads of both Creem Test resources.
+export function matchRetrievedArrivalPayment(order:ArrivalOrder,input:unknown,transaction:unknown):Payment {
+  const checkout=bag(input), paid=bag(checkout.order), tx=bag(transaction);
+  if(typeof paid.transaction!=="string"||!/^tran_[A-Za-z0-9_]+$/.test(paid.transaction)
+    || tx.id!==paid.transaction || tx.order!==paid.id || tx.product!==arrivalTestProduct
+    || tx.mode!=="test" || tx.type!=="payment" || tx.status!=="paid" || tx.currency!=="USD"
+    || tx.amount!==1290 || tx.amount_paid!==1290) return {kind:"ignore"};
+  return paymentForCheckout(order,checkout,tx.created_at);
 }
 export function noticeSubject(id:string){
   if(!orderId.test(id)) throw new Error("invalid order ID");

@@ -19,3 +19,7 @@ Scope: fixed, fictional trips in a branch-only rehearsal; no production database
 ### Lost wake recovery
 
 The authenticated operator GET without an ID lists paid orders even after the mail provider accepts the notification. This queue no longer treats notification acceptance as acknowledgement. POST with `{"claim":"ar_...","version":1}` acquires a 30-minute claim for that exact revision, atomically. Concurrent or stale claims return 409. Expired leases reappear in the list; the lease is not a fulfillment receipt. Never deliver twice based solely on this lease; a durable delivery receipt is still required.
+
+### Exact-order readback when a Test callback cannot reach Preview
+
+An authenticated operator may POST `{"reconcile":"ar_..."}` after the checkout. The server retrieves that order's already-bound checkout and corresponding transaction from the Creem Test API, independently verifies one-time $12.90 USD payment, and uses the same atomic queue transition and internal notice. The response labels this evidence `creem_test_api`. An ordinary success redirect, forged body, or manually relayed message is not evidence. This is a manual rehearsal/recovery command, not automatic callback delivery or proof that Gmail woke the assistant. Provider shape changes, refund, dispute or missing timestamps fail closed.

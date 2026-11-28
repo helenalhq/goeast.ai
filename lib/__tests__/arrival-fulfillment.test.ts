@@ -1,6 +1,6 @@
 import { createHmac } from "node:crypto";
 import { describe, it, expect } from "vitest";
-import { matchArrivalPayment, noticeSubject, verifiedEvent, approveArrival, type ArrivalOrder } from "../arrival-fulfillment";
+import { matchArrivalPayment, matchRetrievedArrivalPayment, noticeSubject, verifiedEvent, approveArrival, type ArrivalOrder } from "../arrival-fulfillment";
 
 const product = "prod_6mUIh9LkfcmjyuSLmfByO";
 const secret = "a".repeat(40);
@@ -21,6 +21,19 @@ describe("Arrival Test fulfillment contract",()=>{
       expect(matchArrivalPayment(order,{...event,object:{...event.object,...change}}).kind).toBe("ignore");
     }
     expect(matchArrivalPayment({...order,expires:"2026-11-28T11:59:00Z"},event).kind).toBe("review");
+  });
+  it("reconciles only the bound Creem Test checkout and its independently paid transaction",()=>{
+    const checkout={...event.object,order:{...event.object.order,transaction:"tran_a"}};
+    const transaction={id:"tran_a",mode:"test",type:"payment",status:"paid",created_at:Date.parse(now),order:"ord_test",product,amount:1290,amount_paid:1290,currency:"USD"};
+    expect(matchRetrievedArrivalPayment(order,checkout,transaction)).toEqual({kind:"paid",providerOrder:"ord_test",paidAt:now});
+    expect(matchRetrievedArrivalPayment({...order,state:"paid",providerOrder:"ord_test"},checkout,transaction)).toEqual({kind:"duplicate"});
+    for(const invalid of [{mode:"prod"},{status:"refunded"},{status:"chargeback"},{amount_paid:0},{order:"ord_other"},{id:"tran_other"},{product:"prod_other"}]){
+      expect(matchRetrievedArrivalPayment(order,checkout,{...transaction,...invalid}).kind).toBe("ignore");
+    }
+    expect(matchRetrievedArrivalPayment(order,{...checkout,id:"ch_other"},transaction).kind).toBe("ignore");
+    expect(matchRetrievedArrivalPayment(order,{...checkout,request_id:null},transaction).kind).toBe("ignore");
+    expect(matchRetrievedArrivalPayment(order,checkout,{...transaction,created_at:null}).kind).toBe("review");
+    expect(matchRetrievedArrivalPayment({...order,expires:"2026-11-28T11:59:00Z"},checkout,transaction).kind).toBe("review");
   });
   it("puts only an opaque order ID in the notice; gates approval on payment, version and checks",()=>{
     expect(noticeSubject(order.id)).toBe("[GoEast Arrival QA] Paid "+order.id);

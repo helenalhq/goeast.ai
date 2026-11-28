@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { claimArrival,createArrivalCheckout,findPaidArrival,listClaimableArrivals,operator,previewEnabled,sendArrivalNotice } from "@/lib/arrival-preview-runtime";
+import { claimArrival,createArrivalCheckout,findPaidArrival,listClaimableArrivals,operator,previewEnabled,reconcileExactArrival,sendArrivalNotice } from "@/lib/arrival-preview-runtime";
 
 export const runtime="nodejs";
 const options={headers:{"Cache-Control":"no-store","X-Robots-Tag":"noindex, nofollow"}};
@@ -17,6 +17,10 @@ export async function POST(request:Request){
     if(typeof value?.claim==="string"){
       const claim=await claimArrival(value.claim,value.version);
       return NextResponse.json(claim??{error:"order unavailable or already claimed"},{...options,status:claim?200:409});
+    }
+    if(typeof value?.reconcile==="string"){
+      const result=await reconcileExactArrival(value.reconcile);
+      return NextResponse.json(result.body,{...options,status:result.status});
     }
     if(typeof value?.sendNoticeFor==="string") return NextResponse.json({sent:await sendArrivalNotice(value.sendNoticeFor)},options);
     if(![0,1].includes(value?.sample)) return NextResponse.json({error:"choose a QA sample"},{...options,status:400});

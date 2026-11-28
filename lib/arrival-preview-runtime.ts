@@ -4,7 +4,7 @@ import { claimSql,listClaimableSql } from "./arrival-preview-claim";
 import { checkServerIdentity } from "node:tls";
 import { SUPABASE_PROD_ROOT_2021_CA } from "./decision-supabase-ca";
 import { Resend } from "resend";
-import { arrivalTestProduct, matchArrivalPayment, noticeSubject, verifiedEvent, type ArrivalOrder } from "./arrival-fulfillment";
+import { arrivalTestProduct, matchArrivalPayment, matchRetrievedArrivalPayment, noticeSubject, verifiedEvent, type ArrivalOrder } from "./arrival-fulfillment";
 import cases from "../scripts/fixtures/arrival-reports.qa.json";
 
 const api = "https://test-api.creem.io/v1/checkouts";
@@ -42,7 +42,7 @@ async function find(id:string){return (await db().query<Job>("SELECT * FROM arri
 
 export async function createArrivalCheckout(sample:number){
   if(!Number.isInteger(sample)||sample<0||sample>=cases.length) throw new Error("invalid case");
-  const key=process.env.ARRIVAL_CREEM_TEST_API_KEY??process.env.CREEM_API_KEY??"";
+  const key=testKey();
   const origin=process.env.ARRIVAL_PREVIEW_ORIGIN??(process.env.VERCEL_URL?"https://"+process.env.VERCEL_URL:"");
   if(!key.startsWith("creem_test_")||!/^https:\/\/[a-z0-9-]+\.vercel\.app$/.test(origin)) throw new Error("test checkout unconfigured");
   const id="ar_"+randomUUID();
@@ -50,7 +50,7 @@ export async function createArrivalCheckout(sample:number){
   const expires=new Date(+when+15*60_000);
   const deadline=new Date(+when+12*60*60_000);
   await db().query("INSERT INTO arrival_preview.jobs (id,trip,expires,deadline) VALUES ($1,$2,$3,$4)",[id,cases[sample].trip,expires,deadline]);
-  const response=await fetch(api,{method:"POST",headers:{"content-type":"application/json","x-api-key":key},signal:AbortSignal.timeout(8000),body:JSON.stringify({product_id:arrivalTestProduct,request_id:id,units:1,success_url:origin+"/shanghai-arrival-check",customer:{email:"goeast-arrival-qa@example.com"}})});
+  const response=await fetch(api,{method:"POST",headers:{"content-type":"application/json","x-api-key":key},signal:AbortSignal.timeout(8000),redirect:"error",body:JSON.stringify({product_id:arrivalTestProduct,request_id:id,units:1,success_url:origin+"/shanghai-arrival-check",customer:{email:"goeast-arrival-qa@example.com"}})});
   if(!response.ok) throw new Error("test checkout rejected");
   const data=await response.json() as {mode?:string;id?:string;checkout_url?:string;request_id?:string};
   const url=new URL(data.checkout_url??"");
@@ -61,19 +61,51 @@ export async function createArrivalCheckout(sample:number){
   return {id,url:url.href};
 }
 
-export async function acceptArrivalWebhook(raw:string,signature:string){
+export async function acceptArrivalWebhook(raw:string,signature:string):Promise<{status:number;body:Record<string,unknown>;queued?:string}>{
   const secret=process.env.ARRIVAL_CREEM_TEST_WEBHOOK_SECRET??"";
   if(!secret) return {status:503,body:{error:"preview unconfigured"}};
   const event=verifiedEvent(raw,signature,secret) as {object?:{request_id?:unknown}}|null;
   if(!event) return {status:401,body:{error:"invalid signature"}};
   const id=event.object?.request_id;
   if(typeof id!=="string"||!orderId.test(id)) return {status:200,body:{ignored:true}};
+  return recordPayment(id,order=>matchArrivalPayment(order,event));
+}
+
+const testKey=()=>process.env.ARRIVAL_CREEM_TEST_API_KEY??process.env.CREEM_API_KEY??"";
+export async function reconcileExactArrival(id:string){
+  if(!orderId.test(id)) return {status:400,body:{error:"invalid order ID"}};
+  const entry=await find(id);
+  if(!entry||!entry.checkout||!checkoutId.test(entry.checkout)) return {status:404,body:{error:"checkout not found"}};
+  if(entry.state!=="pending"&&entry.state!=="paid") return {status:409,body:{error:"order requires review"}};
+  const key=testKey();
+  if(!key.startsWith("creem_test_")) return {status:503,body:{error:"test checkout unconfigured"}};
+  const checkoutUrl=new URL(api);
+  checkoutUrl.searchParams.set("checkout_id",entry.checkout);
+  const request={headers:{"x-api-key":key},cache:"no-store" as const,redirect:"error" as const,signal:AbortSignal.timeout(8000)};
+  const checkoutResponse=await fetch(checkoutUrl,request);
+  if(!checkoutResponse.ok) throw new Error("test checkout lookup rejected");
+  const checkout=await checkoutResponse.json() as {mode?:string;id?:string;request_id?:string;status?:string;order?:{transaction?:string}};
+  if(checkout.mode!=="test"||checkout.id!==entry.checkout||checkout.request_id!==id) return {status:409,body:{error:"checkout did not match"}};
+  if(checkout.status!=="completed") return {status:200,body:{result:"pending",source:"creem_test_api"}};
+  const tx=checkout.order?.transaction;
+  if(typeof tx!=="string"||!/^tran_[A-Za-z0-9_]+$/.test(tx)) return {status:409,body:{error:"paid transaction not confirmed"}};
+  const url=new URL("/v1/transactions",api);
+  url.searchParams.set("transaction_id",tx);
+  const transactionResponse=await fetch(url,request);
+  if(!transactionResponse.ok) throw new Error("test transaction lookup rejected");
+  const transaction:unknown=await transactionResponse.json();
+  const result=await recordPayment(id,order=>matchRetrievedArrivalPayment(order,checkout,transaction));
+  const sent=result.queued ? await sendArrivalNotice(result.queued).catch(()=>false) : undefined;
+  return {status:sent===false?503:result.status,body:{...result.body,source:"creem_test_api",notification:sent===undefined?undefined:sent?"sent":"pending"}};
+}
+
+async function recordPayment(id:string,match:(order:ArrivalOrder)=>ReturnType<typeof matchArrivalPayment>){
   const c=await db().connect();
   try{
     await c.query("BEGIN");
     const order=(await c.query<Job>("SELECT * FROM arrival_preview.jobs WHERE id=$1 FOR UPDATE",[id])).rows[0];
     if(!order){await c.query("COMMIT");return {status:200,body:{ignored:true}};}
-    const result=matchArrivalPayment({...order,expires:order.expires.toISOString(),deadline:order.deadline.toISOString()},event);
+    const result=match({...order,expires:order.expires.toISOString(),deadline:order.deadline.toISOString()});
     if(result.kind==="paid") await c.query("UPDATE arrival_preview.jobs SET state='paid', \"providerOrder\"=$2,paid_at=$3 WHERE id=$1",[id,result.providerOrder,result.paidAt]);
     else if(result.kind==="review"&&order.state==="pending") await c.query("UPDATE arrival_preview.jobs SET state='held' WHERE id=$1",[id]);
     await c.query("COMMIT");
