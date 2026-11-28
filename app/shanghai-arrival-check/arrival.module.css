@@ -1,0 +1,9 @@
+/* Keep the standard GoEast shell intact elsewhere. The arrival flow has its own compact nav. */
+:global(body:has(#arrival-preview) > header),
+:global(body:has(#arrival-preview) > button[aria-label="Feedback"]) {
+  display: none;
+}
+
+.shell {
+  min-width: 0;
+}

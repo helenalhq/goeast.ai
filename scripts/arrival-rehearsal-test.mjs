@@ -1,5 +1,5 @@
-const { chromium } = require('playwright-core');
-const assert = require('node:assert/strict');
+import { chromium } from 'playwright-core';
+import assert from 'node:assert/strict';
 (async () => {
   const browser = await chromium.launch({executablePath: process.env.CHROMIUM_PATH ?? '/usr/bin/chromium', args: ['--no-sandbox']});
   try {
@@ -11,11 +11,12 @@ const assert = require('node:assert/strict');
     assert.match(await page.locator('meta[name=robots]').getAttribute('content'), /noindex/);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true);
     const click = text => page.getByRole('button', {name: text, exact: true}).click();
+    await page.getByText('Operator demo: simulated fulfillment',{exact:true}).click();
     const begin = async scenario => {
       await page.locator('#scenario').selectOption(scenario);
       for(const step of ['Submit test request','Simulate matching paid invoice','Prepare draft']) await click(step);
     };
-    const draft = page.getByRole('article');
+    const draft = page.locator('#rehearsal article');
     await begin('t1'); assert.match(await draft.innerText(), /Gate 12/);
     await click('Approve draft'); await click('Simulate itinerary update');
     assert.equal(await page.getByRole('button',{name:'Simulate sending'}).count(), 0);
