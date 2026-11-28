@@ -23,8 +23,8 @@ async function find(id:string){return (await db().query<Job>("SELECT * FROM arri
 
 export async function createArrivalCheckout(sample:number){
   if(!Number.isInteger(sample)||sample<0||sample>=cases.length) throw new Error("invalid case");
-  const key=process.env.ARRIVAL_CREEM_TEST_API_KEY??"";
-  const origin=process.env.ARRIVAL_PREVIEW_ORIGIN??"";
+  const key=process.env.ARRIVAL_CREEM_TEST_API_KEY??process.env.CREEM_API_KEY??"";
+  const origin=process.env.ARRIVAL_PREVIEW_ORIGIN??(process.env.VERCEL_URL?"https://"+process.env.VERCEL_URL:"");
   if(!key.startsWith("creem_test_")||!/^https:\/\/[a-z0-9-]+\.vercel\.app$/.test(origin)) throw new Error("test checkout unconfigured");
   const id="ar_"+randomUUID();
   const when=new Date();
@@ -85,4 +85,11 @@ export async function findPaidArrival(id:string){
 }
 export async function listUnnotifiedArrivals(){
   return (await db().query<{id:string}>("SELECT id FROM arrival_preview.jobs WHERE state='paid' AND notice_id IS NULL ORDER BY paid_at LIMIT 20")).rows;
+}
+
+export async function arrivalPreviewReady(){
+  const result=await db().query<{scoped:boolean}>("select current_user='goeast_arrival_preview' and has_table_privilege(current_user,'arrival_preview.jobs','SELECT') as scoped");
+  if(result.rows[0]?.scoped!==true) return false;
+  await db().query("SELECT id FROM arrival_preview.jobs LIMIT 0");
+  return true;
 }
