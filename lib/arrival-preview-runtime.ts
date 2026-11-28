@@ -1,5 +1,6 @@
 import { randomUUID, timingSafeEqual } from "node:crypto";
 import { Pool } from "pg";
+import { claimSql,listClaimableSql } from "./arrival-preview-claim";
 import { checkServerIdentity } from "node:tls";
 import { SUPABASE_PROD_ROOT_2021_CA } from "./decision-supabase-ca";
 import { Resend } from "resend";
@@ -101,8 +102,13 @@ export async function findPaidArrival(id:string){
   const entry=await find(id);
   return entry?.state==="paid"?{id,version:entry.itineraryVersion,deadline:entry.deadline,trip:entry.trip,noticeSent:!!entry.notice_id}:null;
 }
-export async function listUnnotifiedArrivals(){
-  return (await db().query<{id:string}>("SELECT id FROM arrival_preview.jobs WHERE state='paid' AND notice_id IS NULL ORDER BY paid_at LIMIT 20")).rows;
+export async function listClaimableArrivals(){
+  return (await db().query<{id:string;version:number;deadline:Date;noticeSent:boolean}>(listClaimableSql)).rows;
+}
+export async function claimArrival(id:string,version:number){
+  if(!orderId.test(id)||!Number.isSafeInteger(version)||version<1||version>2147483647) return null;
+  const result=await db().query<{id:string;version:number;trip:Job["trip"];deadline:Date;claimToken:string;claimUntil:Date}>(claimSql,[id,version]);
+  return result.rows[0]??null;
 }
 
 export async function arrivalPreviewReady(){
