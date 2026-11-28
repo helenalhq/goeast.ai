@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, expect, it, vi } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
-import { createHash, createHmac } from "node:crypto";
+import { createHash, createHmac, randomUUID } from "node:crypto";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
@@ -30,9 +30,11 @@ beforeAll(async()=>{
   state.db=new PGlite();
   await state.db.exec("CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role; CREATE ROLE goeast_arrival_orders_runtime NOINHERIT;");
   await state.db.exec(readFileSync("supabase/arrival-orders/install.sql","utf8"));
+  await state.db.exec(readFileSync("supabase/arrival-orders/notice-retry.sql","utf8"));
   for(const role of ["anon","authenticated","service_role"]){
     await state.db.exec("SET ROLE "+role);
     await expect(state.db.query("SELECT * FROM arrival_orders.orders")).rejects.toThrow(/permission denied/);
+    await expect(state.db.query("SELECT * FROM arrival_orders.notices")).rejects.toThrow(/permission denied/);
     await state.db.exec("RESET ROLE");
   }
   await state.db.exec("SET ROLE goeast_arrival_orders_runtime");
@@ -50,8 +52,22 @@ it("links real route code, local Postgres, signed payment models, rendered packe
   expect((await arrivalOperator(make("operator",undefined,auth))).status).toBe(404);
   vi.stubEnv("ARRIVAL_ORDERS_MODE","test");
   state.userId=owner;
+  vi.stubEnv("ARRIVAL_ORDERS_TEST_NOTICES","enabled");
+  vi.stubEnv("ARRIVAL_ORDERS_TEST_NOTICE_TO","internal@example.test");
+  vi.stubEnv("ARRIVAL_ORDERS_TEST_RESEND_KEY","re_fake_for_integration_test");
+  const mail:{subject:string;key:string}[]=[];
+  let quoteFailures=2;
   let payment:Record<string,unknown>={}, tx:Record<string,unknown>={}, creates=0;
   vi.stubGlobal("fetch",vi.fn(async (url:string,opts:RequestInit)=>{
+    if(url==="https://api.resend.com/emails"){
+      const req=JSON.parse(String(opts.body));
+      const key=new Headers(opts.headers).get("Idempotency-Key")??"";
+      expect(req.to).toEqual(["internal@example.test"]);
+      expect(JSON.stringify(req)).not.toMatch(/DX118|Park Hyatt|Grand Hyatt/);
+      mail.push({subject:req.subject,key});
+      if(req.subject.includes(" Quote ")&&quoteFailures>0){quoteFailures--;return Response.json({}, {status:503});}
+      return Response.json({id:randomUUID()});
+    }
     expect(url.startsWith("https://test-api.creem.io/v1/")).toBe(true);
     if(opts.method==="POST"){
       creates++;
@@ -66,16 +82,32 @@ it("links real route code, local Postgres, signed payment models, rendered packe
     throw new Error("Unexpected outgoing call");
   }));
   const trip={date:day(11),flight:"DX118",hotel:"Park Hyatt Shanghai",airport:"PVG",preferences:["no_mobile_data","no_mobile_payments"],termsAccepted:true};
-  const submit=async(hotel=trip.hotel)=>{
-    const r=await arrivalBuyer(make("orders",{...trip,hotel}));
+  const submit=async(hotel=trip.hotel,attempt=randomUUID())=>{
+    const r=await arrivalBuyer(make("orders",{...trip,hotel},{"idempotency-key":attempt}));
     expect(r.status).toBe(201);
     return (await r.json()).id as string;
   };
   expect((await arrivalBuyer(make("orders",trip,{origin:"https://unrelated.example"}))).status).toBe(403);
-  const id=await submit(), different=await submit("Grand Hyatt Shanghai");
+  const initialAttempt=randomUUID();
+  const id=await submit(trip.hotel,initialAttempt);
+  const repeat=await arrivalBuyer(make("orders",{...trip,flight:" dx 118 "},{"idempotency-key":initialAttempt}));
+  expect(repeat.status).toBe(200);
+  expect((await repeat.json()).id).toBe(id);
+  expect((await arrivalBuyer(make("orders",{...trip,hotel:"Grand Hyatt Shanghai"},{"idempotency-key":initialAttempt}))).status).toBe(409);
+  const different=await submit("Grand Hyatt Shanghai");
+  expect(different).not.toBe(id);
   await expect(state.db.query("UPDATE arrival_orders.orders SET trip='{}' WHERE id=$1",[id])).rejects.toThrow(/permission denied/);
   expect((await arrivalOperator(make("operator"))).status).toBe(404);
-  expect((await (await arrivalOperator(make("operator",undefined,auth))).json()).orders).toHaveLength(2);
+  const queue=await (await arrivalOperator(make("operator",undefined,auth))).json();
+  expect(queue.orders).toHaveLength(2);
+  expect(queue.orders).toContainEqual(expect.objectContaining({id,notice_status:"pending"}));
+  const retry=await arrivalOperator(make("operator", {action:"retryNotices"},auth));
+  expect(retry.status).toBe(200);
+  expect(await retry.json()).toEqual({attempted:1,accepted:1});
+  expect((await (await arrivalOperator(make("operator",undefined,auth))).json()).orders).toContainEqual(expect.objectContaining({id,notice_status:"provider_accepted"}));
+  const quotes=mail.filter(m=>m.subject==="[GoEast Arrival Orders Test] Quote "+id);
+  expect(quotes).toHaveLength(3);
+  expect(new Set(quotes.map(item=>item.key)).size).toBe(1);
   const checkout=()=>arrivalBuyer(make("orders?action=checkout",{id,acceptedQuote:true}));
   expect((await checkout()).status).toBe(409);
   const op=(payload:object,target=id)=>arrivalOperator(make("operator?id="+target,payload,auth));
@@ -92,6 +124,7 @@ it("links real route code, local Postgres, signed payment models, rendered packe
   expect((await webhook(event)).status).toBe(200);
   const info=await (await arrivalOperator(make("operator?id="+id,undefined,auth))).json();
   expect(info.row.state).toBe("paid");
+  expect(mail.filter(m=>m.subject==="[GoEast Arrival Orders Test] Paid "+id)).toHaveLength(1);
   expect((await arrivalBuyer(make("orders?id="+id+"&file=pdf"))).status).toBe(404);
 
   const directory=mkdtempSync(join(tmpdir(),"goeast-flow-"));
@@ -144,6 +177,7 @@ it("links real route code, local Postgres, signed payment models, rendered packe
   tx={...tx,id:"tran_second",order:"ord_second",created_at:iso(1000)};
   expect((await webhook({id:"evt_dispute",eventType:"dispute.created",object:{mode:"test",transaction:{id:"tran_second"}}})).status).toBe(200);
   expect((await webhook({id:"evt_otherpaid",eventType:"checkout.completed",object:payment})).status).toBe(200);
+  expect(mail.filter(m=>m.subject==="[GoEast Arrival Orders Test] Paid "+different)).toHaveLength(0);
   const disputed=await arrivalBuyer(make("orders?id="+different));
   expect((await disputed.json()).order.state).toBe("revoked");
   expect((await arrivalBuyer(make("orders?id="+different+"&file=pdf"))).status).toBe(404);

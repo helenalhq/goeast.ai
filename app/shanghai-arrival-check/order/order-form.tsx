@@ -1,8 +1,9 @@
 "use client";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 
 const api="/api/arrival-orders/orders";
 const base="/shanghai-arrival-check/order";
+const attemptSlot="goeast-arrival-intake-attempt-v1";
 const states:Record<string,string>={
   submitted:"Trip received. We’ll verify your flight terminal and hotel before you can pay. Return here to check your quote.",
   quoted:"Your trip is verified. Confirm the details and delivery time below before paying.",
@@ -26,6 +27,8 @@ export default function OrderForm({id}:{id:string}){
   const [failure,setFailure]=useState("");
   const [confirm,setConfirm]=useState(false);
   const [busy,setBusy]=useState(false);
+  const [intakeConflict,setIntakeConflict]=useState(false);
+  const attempt=useRef("");
   const [revision,setRevision]=useState(0);
   useEffect(()=>{
     const ctl=new AbortController();
@@ -36,14 +39,36 @@ export default function OrderForm({id}:{id:string}){
     }).catch(e=>{if(!ctl.signal.aborted)setFailure(e.message);});
     return ()=>ctl.abort();
   },[id,revision]);
+  function clearAttempt(){
+    attempt.current="";
+    try {sessionStorage.removeItem(attemptSlot);}catch{/* Storage is optional within this page. */}
+  }
   async function post(path:string,value:object){
-    setBusy(true);setFailure("");
+    const intake=path===api;
+    setBusy(true);setFailure("");setIntakeConflict(false);
     try {
-      const r=await fetch(path,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(value)});
+      const headers:Record<string,string>={"content-type":"application/json"};
+      if(intake){
+        try {attempt.current ||= sessionStorage.getItem(attemptSlot)??"";}catch{/* Use the in-memory attempt. */}
+        attempt.current ||= crypto.randomUUID();
+        headers["Idempotency-Key"]=attempt.current;
+        try {sessionStorage.setItem(attemptSlot,attempt.current);}catch{/* Use the in-memory attempt. */}
+      }
+      const r=await fetch(path,{method:"POST",headers,body:JSON.stringify(value)});
       const data=await r.json();
-      if(!r.ok) throw new Error(data.error);
+      if(!r.ok){
+        if(intake&&r.status===409){
+          setIntakeConflict(true);
+          throw new Error("This attempt is already linked to an earlier trip. Check My orders before starting a separate submission.");
+        }
+        throw new Error(data.error);
+      }
+      if(intake) clearAttempt();
       window.location.assign(data.url??(base+"?id="+encodeURIComponent(data.id)));
-    } catch(e){setFailure(e instanceof Error?e.message:"Something went wrong.");}
+    } catch(e){
+      setFailure(e instanceof Error?e.message:"Something went wrong.");
+      if(intake)setRevision(v=>v+1);
+    }
     finally{setBusy(false);}
   }
   function submit(e:FormEvent<HTMLFormElement>){
@@ -85,7 +110,10 @@ export default function OrderForm({id}:{id:string}){
             <label key={value} className="flex min-h-10 items-center gap-2"><input type="checkbox" name="preferences" value={value}/>{label}</label>)}
         </fieldset>
         <div className="my-5 flex items-start gap-2"><input id="arrival-terms" type="checkbox" name="terms" required/><div><label htmlFor="arrival-terms">I agree that GoEast may use these details to prepare my quote and report.</label>{" "}<a href="/privacy" className="underline">Privacy</a>{" · "}<a href="/terms" className="underline">Terms</a></div></div>
-        <button className={button} disabled={busy}>Submit trip for review</button>
+        <button className={button} disabled={busy||intakeConflict}>Submit trip for review</button>
+        {intakeConflict&&<button type="button" className="mt-3 block min-h-11 underline" onClick={()=>{
+          clearAttempt();setIntakeConflict(false);setFailure("Ready for a separate order. Review the new itinerary before submitting.");
+        }}>Start a separate submission</button>}
       </form>
       {history.length>0&&<section className={box}>
         <h2 className="text-xl font-bold">My orders</h2>

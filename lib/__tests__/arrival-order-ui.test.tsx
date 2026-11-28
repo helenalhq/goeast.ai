@@ -36,3 +36,29 @@ it("only renders both exact-order file links after the refreshed response is rea
     .toBe("/api/arrival-orders/orders?id="+id+"&file=pdf"));
   expect(screen.getByRole("link",{name:/save offline/i}).getAttribute("href")).toBe("/api/arrival-orders/orders?id="+id+"&file=png");
 });
+
+it("keeps the same opaque intake key through a failed response and page remount",async()=>{
+  sessionStorage.clear();
+  const keys:string[]=[];
+  const fetcher=vi.fn(async (_url:string,opts?:RequestInit)=>{
+    if(opts?.method!=="POST")return Response.json({orders:[]});
+    keys.push(new Headers(opts.headers).get("Idempotency-Key")??"");
+    return Response.json({error:"Network interrupted"}, {status:503});
+  });
+  vi.stubGlobal("fetch",fetcher);
+  for(let run=0;run<2;run++){
+    const ui=render(<OrderForm id=""/>);
+    fireEvent.change(screen.getByLabelText(/arrival date in shanghai/i),{target:{value:"2026-12-09"}});
+    fireEvent.change(screen.getByLabelText(/flight number/i),{target:{value:"DX118"}});
+    fireEvent.change(screen.getByLabelText(/full hotel name/i),{target:{value:"Park Hyatt Shanghai"}});
+    fireEvent.click(screen.getByRole("checkbox",{name:/I agree/}));
+    fireEvent.click(screen.getByRole("button",{name:/submit trip/i}));
+    await screen.findByRole("alert");
+    ui.unmount();
+  }
+  expect(keys).toHaveLength(2);
+  expect(keys[0]).toMatch(/^[a-f0-9-]{36}$/);
+  expect(keys[0]).toBe(keys[1]);
+  expect(Object.values(sessionStorage)).not.toContain("Park Hyatt Shanghai");
+  sessionStorage.clear();
+});
