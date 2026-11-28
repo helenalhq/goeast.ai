@@ -1,0 +1,118 @@
+[
+  {
+    "trip": {
+      "synthetic": true,
+      "flight": "DX246",
+      "terminal": "PVG T2",
+      "localArrival": "29 Nov 2026, 23:35",
+      "hotel": "Grand Hyatt Shanghai",
+      "preferences": [
+        "No mobile data",
+        "Late check-in"
+      ]
+    },
+    "preparedFor": [
+      "DX246",
+      "29 Nov 2026, 23:35",
+      "PVG T2",
+      "Grand Hyatt Shanghai"
+    ],
+    "coveredPreferences": [
+      "No mobile data",
+      "Late check-in"
+    ],
+    "decision": "Use the official T2 taxi rank. Do not count on the Airport Link.",
+    "steps": [
+      "Before boarding, tell Grand Hyatt you may reach the hotel after midnight. Ask the property to confirm it will hold the room; the hotel listing cannot prove this.",
+      "After baggage claim, follow the airport's taxi signs to the official T2 taxi area outside Arrivals Gate 25. Use the address panel below instead of needing a data connection.",
+      "Before accepting a ride, confirm how you can pay. Keep enough RMB cash for the ride if you already have it; do not assume foreign cards or QR payment will work."
+    ],
+    "backup": "If you cannot arrange a taxi, ask airport staff before leaving arrivals. The published late-night bus lists Century Avenue Metro Station. It is not a hotel drop-off: verify boarding, payment and how you will reach the hotel from the stop before using it.",
+    "boundary": "Transport can change. This rehearsal uses reported terminal and time from a fictional input; it does not verify a real flight, booking, fare or late check-in.",
+    "showChinese": "您好，请送我去上海金茂君悦大酒店。",
+    "cnAddress": "上海市浦东新区世纪大道88号，金茂大厦",
+    "hotelPhone": "+86 21 8024 1234",
+    "sources": [
+      {
+        "kind": "hotel",
+        "name": "Hyatt property",
+        "checked": "28 Nov 2026",
+        "finding": "Jin Mao Tower, 88 Century Avenue; hotel phone.",
+        "url": "https://www.hyatt.com/grand-hyatt/en-US/shagh-grand-hyatt-shanghai/hotel-info"
+      },
+      {
+        "kind": "transport",
+        "name": "Shanghai Airport taxi",
+        "checked": "28 Nov 2026",
+        "finding": "T2 official Arrivals Gate 25 taxi pickup.",
+        "url": "https://www.shairport.com/enpd/czc/index.html"
+      },
+      {
+        "kind": "transport",
+        "name": "Shanghai Airport bus",
+        "checked": "28 Nov 2026",
+        "finding": "T2 23:03 to 05:33; published stop is Century Avenue Metro Station.",
+        "url": "https://www.shairport.com/enpd/dmjt/index.html"
+      }
+    ],
+    "addressEnglish": "Jin Mao Tower · 88 Century Avenue · Pudong"
+  },
+  {
+    "trip": {
+      "synthetic": true,
+      "flight": "DX118",
+      "terminal": "PVG T1",
+      "localArrival": "30 Nov 2026, 13:10",
+      "hotel": "Park Hyatt Shanghai",
+      "preferences": [
+        "No mobile payments",
+        "Avoid a hotel mix-up"
+      ]
+    },
+    "preparedFor": [
+      "DX118",
+      "30 Nov 2026, 13:10",
+      "PVG T1",
+      "Park Hyatt Shanghai"
+    ],
+    "coveredPreferences": [
+      "No mobile payments",
+      "Avoid a hotel mix-up"
+    ],
+    "decision": "Take Metro Line 2 to Lujiazui if it is operating.",
+    "steps": [
+      "Follow the signs to the Pudong Airport Metro station, confirm Line 2 service to Lujiazui and ask a staffed counter which non-QR options it accepts before entering.",
+      "Use the Park Hyatt / Shanghai World Financial Center address, not Grand Hyatt / Jin Mao Tower. The properties have different entrances and street numbers.",
+      "If you cannot buy a ticket or service is disrupted, take the staffed official taxi route rather than relying on an app you cannot pay with."
+    ],
+    "backup": "The official T1 taxi rank is outside Arrivals Gate 12; the airport also lists access from Arrivals Gates 4 or 8. Confirm the driver's payment method before departure and show the bilingual address below.",
+    "boundary": "Recheck transport on the day. This rehearsal uses a fictional flight and does not verify a booking, fare or card acceptance.",
+    "showChinese": "您好，请送我去上海柏悦酒店。",
+    "cnAddress": "上海市浦东新区世纪大道100号，上海环球金融中心",
+    "hotelPhone": "+86 21 6888 1234",
+    "sources": [
+      {
+        "kind": "hotel",
+        "name": "Hyatt property",
+        "checked": "28 Nov 2026",
+        "finding": "Shanghai World Financial Center, 100 Century Avenue; hotel phone.",
+        "url": "https://www.hyatt.com/park-hyatt/en-US/shaph"
+      },
+      {
+        "kind": "transport",
+        "name": "Shanghai Airport Metro",
+        "checked": "28 Nov 2026",
+        "finding": "Pudong Airport is connected by Metro Line 2.",
+        "url": "https://www.shairport.com/gdjt/"
+      },
+      {
+        "kind": "transport",
+        "name": "Shanghai Airport taxi",
+        "checked": "28 Nov 2026",
+        "finding": "T1 official Arrivals Gate 12 taxi pickup.",
+        "url": "https://www.shairport.com/enpd/czc/index.html"
+      }
+    ],
+    "addressEnglish": "Shanghai World Financial Center · 100 Century Avenue · Pudong"
+  }
+]
