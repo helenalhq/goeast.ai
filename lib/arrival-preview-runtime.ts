@@ -1,5 +1,7 @@
 import { randomUUID, timingSafeEqual } from "node:crypto";
 import { Pool } from "pg";
+import { checkServerIdentity } from "node:tls";
+import { SUPABASE_PROD_ROOT_2021_CA } from "./decision-supabase-ca";
 import { Resend } from "resend";
 import { arrivalTestProduct, matchArrivalPayment, noticeSubject, verifiedEvent, type ArrivalOrder } from "./arrival-fulfillment";
 import cases from "../scripts/fixtures/arrival-reports.qa.json";
@@ -11,7 +13,23 @@ const checkoutId = /^ch_[A-Za-z0-9_]+$/;
 let pool:Pool | undefined;
 export const previewEnabled=()=>process.env.VERCEL_ENV==="preview"&&process.env.ARRIVAL_E2E==="enabled"&&
   !!process.env.ARRIVAL_PREVIEW_DATABASE_URL&&!!process.env.ARRIVAL_PREVIEW_TOKEN;
-function db(){return pool??=new Pool({connectionString:process.env.ARRIVAL_PREVIEW_DATABASE_URL,max:2,connectionTimeoutMillis:5000,query_timeout:5000});}
+function db(){
+  if(pool) return pool;
+  const url=new URL(process.env.ARRIVAL_PREVIEW_DATABASE_URL??"");
+  if(url.protocol!=="postgresql:" || url.username!=="goeast_arrival_preview.vdmpcrgpvjeuozbalbpt" ||
+    !/^aws-[01]-ap-southeast-1\.pooler\.supabase\.com$/.test(url.hostname) ||
+    !["5432","6543"].includes(url.port) || url.pathname!=="/postgres" || !url.password) throw new Error("unapproved preview database");
+  const next=new Pool({host:url.hostname,port:Number(url.port),user:url.username,password:decodeURIComponent(url.password),database:"postgres",
+    ssl:{rejectUnauthorized:true,ca:SUPABASE_PROD_ROOT_2021_CA,checkServerIdentity},max:2,connectionTimeoutMillis:5000,query_timeout:5000});
+  next.on("error",()=>console.warn("[arrival-preview] idle pool error"));
+  return pool=next;
+}
+export function logArrivalReadinessError(error:unknown){
+  const codes=new Set(["28P01","28000","42501","42P01","ENOTFOUND","EAI_AGAIN","ETIMEDOUT","ECONNREFUSED","UNABLE_TO_VERIFY_LEAF_SIGNATURE","ERR_TLS_CERT_ALTNAME_INVALID","UNABLE_TO_GET_ISSUER_CERT_LOCALLY","SELF_SIGNED_CERT_IN_CHAIN"]);
+  const code=error&&typeof error==="object"&&"code" in error?String(error.code):"";
+  console.warn("[arrival-preview] readiness",codes.has(code)?code:"unclassified");
+  return false;
+}
 export function operator(request:Request){
   const configured=process.env.ARRIVAL_PREVIEW_TOKEN??"";
   const seen=request.headers.get("authorization")?.slice(7)??"";
