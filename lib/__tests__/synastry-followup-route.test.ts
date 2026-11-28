@@ -107,7 +107,7 @@ function sseChunks(text: string) {
   };
 }
 
-let lastState: Record<string, unknown> = {};
+let lastState: Parameters<typeof tableMock>[0] = {};
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -262,7 +262,7 @@ describe("POST turnKey idempotency", () => {
     expect(res.status).toBe(200);
     await readSse(res);
     expect(lastState.upsertCalls).toHaveLength(1);
-    expect(lastState.upsertCalls[0].row).toMatchObject({ id: KEY, session_id: "s1", turn_index: 1 });
+    expect(lastState.upsertCalls?.[0]?.row).toMatchObject({ id: KEY, session_id: "s1", turn_index: 1 });
     expect(refund).not.toHaveBeenCalled();
   });
 
