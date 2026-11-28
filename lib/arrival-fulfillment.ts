@@ -60,7 +60,8 @@ export function matchArrivalPayment(order:ArrivalOrder,input:unknown):Payment {
 export function matchRetrievedArrivalPayment(order:ArrivalOrder,input:unknown,transaction:unknown):Payment {
   const checkout=bag(input), paid=bag(checkout.order), tx=bag(transaction);
   if(typeof paid.transaction!=="string"||!/^tran_[A-Za-z0-9_]+$/.test(paid.transaction)
-    || tx.id!==paid.transaction || (typeof tx.order==="string"?tx.order:bag(tx.order).id)!==paid.id || (typeof tx.product==="string"?tx.product:bag(tx.product).id)!==arrivalTestProduct
+    || tx.id!==paid.transaction || (typeof tx.order==="string"?tx.order:bag(tx.order).id)!==paid.id
+    || (tx.product!=null&&(typeof tx.product==="string"?tx.product:bag(tx.product).id)!==arrivalTestProduct)
     || tx.mode!=="test" || tx.type!=="payment" || tx.status!=="paid" || tx.currency!=="USD"
     || tx.amount!==1290 || tx.amount_paid!==1290) return {kind:"ignore"};
   return paymentForCheckout(order,checkout,tx.created_at);

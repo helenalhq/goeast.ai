@@ -101,7 +101,18 @@ export async function reconcileExactArrival(id:string){
   const transactionResponse=await fetch(url,request);
   if(!transactionResponse.ok) throw new Error("test transaction lookup rejected");
   const transaction:unknown=await transactionResponse.json();
+  const txRecord=transaction&&typeof transaction==="object"?transaction as Record<string,unknown>:{};
+  const paidRecord=checkout.order as Record<string,unknown>|undefined;
+  const ref=(value:unknown)=>typeof value==="string"?value:(value&&typeof value==="object"&&"id" in value?value.id:null);
+  const summary={
+    id:txRecord.id===tx, mode:txRecord.mode==="test", payment:txRecord.type==="payment", paid:txRecord.status==="paid",
+    order:ref(txRecord.order)===paidRecord?.id, product:txRecord.product==null||ref(txRecord.product)===arrivalTestProduct,
+    amount:txRecord.amount===1290, gross:txRecord.amount_paid===1290, currency:txRecord.currency==="USD",
+    orderProduct:ref(paidRecord?.product)===arrivalTestProduct, orderPaid:paidRecord?.status==="paid",
+    orderType:paidRecord?.type==="onetime", orderAmount:paidRecord?.amount===1290, orderCurrency:paidRecord?.currency==="USD",
+  };
   const result=await recordPayment(id,order=>matchRetrievedArrivalPayment(order,checkout,transaction));
+  if(result.body.result==="ignore") console.warn("[arrival-preview] readback mismatch",Object.keys(summary).filter(key=>!summary[key as keyof typeof summary]));
   const sent=result.queued ? await sendArrivalNotice(result.queued).catch(()=>false) : undefined;
   return {status:sent===false?503:result.status,body:{...result.body,source:"creem_test_api",notification:sent===undefined?undefined:sent?"sent":"pending"}};
 }

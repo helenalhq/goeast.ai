@@ -41,6 +41,7 @@ describe("Arrival Test fulfillment contract",()=>{
     const checkout={...event.object,order:{...event.object.order,transaction:"tran_a"}};
     const transaction={id:"tran_a",mode:"test",type:"payment",status:"paid",created_at:Date.parse(now),order:"ord_test",product,amount:1290,amount_paid:1290,currency:"USD"};
     expect(matchRetrievedArrivalPayment(order,checkout,transaction)).toEqual({kind:"paid",providerOrder:"ord_test",paidAt:now});
+    expect(matchRetrievedArrivalPayment(order,checkout,{...transaction,product:undefined}).kind).toBe("paid");
     expect(matchRetrievedArrivalPayment({...order,state:"paid",providerOrder:"ord_test"},checkout,transaction)).toEqual({kind:"duplicate"});
     for(const invalid of [{mode:"prod"},{status:"refunded"},{status:"chargeback"},{amount_paid:0},{order:"ord_other"},{id:"tran_other"},{product:"prod_other"}]){
       expect(matchRetrievedArrivalPayment(order,checkout,{...transaction,...invalid}).kind).toBe("ignore");
