@@ -49,7 +49,8 @@ import assert from 'node:assert/strict';
     await load('day'); await section.getByLabel('Hotel name').fill('Unlisted property'); await check(); await visible(/No sample property matched/); await noQuote();
 
     await page.setViewportSize({width:1366,height:900}); await noScroll();
-    for(const [name,ext] of [['See sample PDF','pdf'],['Save the sample driver card','png']]){
+    await page.getByRole('button',{name:'See a sample',exact:true}).click();
+    for(const [name,ext] of [['Download sample PDF','pdf'],['Download address card','png']]){
       const [dl] = await Promise.all([page.waitForEvent('download'),page.getByRole('link',{name,exact:true}).click()]);
       assert.ok(dl.suggestedFilename().endsWith('.'+ext)); assert.equal(await dl.failure(),null);
     }

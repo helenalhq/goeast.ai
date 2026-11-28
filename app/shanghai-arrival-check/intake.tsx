@@ -63,7 +63,7 @@ export default function Intake() {
   const explicitlyBlocked = checked && (flight.kind === "outside-scope" || flight.kind === "unverified-terminal");
 
   return (
-    <section id="trip-check" className="scroll-mt-6 rounded-3xl border border-[#d9e4dc] bg-white p-5 shadow-sm sm:p-8" aria-labelledby="intake-title">
+    <section id="trip-check" tabIndex={-1} className="scroll-mt-6 rounded-3xl border border-[#d9e4dc] bg-white p-5 shadow-sm sm:p-8" aria-labelledby="intake-title">
       <p className="text-xs font-bold tracking-[.17em] text-[#086457]">INTERACTIVE PREVIEW · FICTIONAL DATA ONLY</p>
       <h2 id="intake-title" className="mt-2 text-3xl font-bold tracking-tight">Check my trip</h2>
       <p className="mt-2 max-w-xl text-[#36584e]">Try a sample trip. The preview does not look up, submit or store personal details, take payment or send email.</p>
@@ -73,8 +73,12 @@ export default function Intake() {
       </ol>
 
       <div hidden={step !== "trip"}>
-        <aside className="my-5 rounded-xl bg-[#f0f5ee] p-4">
-          <label htmlFor="arrival-sample" className="text-sm font-bold">Load a fictional itinerary</label>
+        <aside className="my-5 rounded-xl border border-[#dce6e4] bg-[#eef5f3] p-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm font-bold">Start with fictional data</p>
+            <button type="button" className={secondary} onClick={() => fillSample("late")}>Use the late-arrival example</button>
+          </div>
+          <label htmlFor="arrival-sample" className="mt-3 block text-sm font-bold">Load a fictional itinerary</label>
           <select id="arrival-sample" className={input} value="" onChange={e => fillSample(e.currentTarget.value as keyof typeof examples)}>
             <option value="" disabled>Choose a sample…</option>
             {pickList.map(([k,label]) => <option key={k} value={k}>{label}</option>)}
@@ -145,12 +149,12 @@ export default function Intake() {
           <label htmlFor="arrival-email" className="font-bold">Delivery email</label>
           <input id="arrival-email" className={input} type="email" readOnly placeholder="Use a sample email below" value={email} aria-describedby="arrival-email-help" />
           <p id="arrival-email-help" className="mt-1 text-sm text-[#36584e]">A real order would need only an email for delivery. This demo never asks for your actual address.</p>
-          {!email && <button type="button" className={`${secondary} mt-3`} onClick={() => setEmail(DEMO_EMAIL)}>Use sample email</button>}
+          {!email && <button type="button" className={`${secondary} mt-3`} onClick={() => {setEmail(DEMO_EMAIL);focus("arrival-demo-confirm");}}>Use sample email</button>}
         </div>
         {quote && <div aria-live="polite" className="mt-5 rounded-xl border border-[#d9e4dc] p-4">
           <p className="text-lg font-bold">Demo quote · {quote.price} one time</p>
           <p className="mt-1 text-sm">Example quote expires {quote.expires}. Example delivery by {quote.latestDelivery}, Shanghai time (UTC+8).</p>
-          <button type="button" className={`${button} mt-3`} onClick={() => {setStep("done");focus("arrival-done-heading");}}>Preview order confirmation</button>
+          <button id="arrival-demo-confirm" type="button" className={`${button} mt-3`} onClick={() => {setStep("done");focus("arrival-done-heading");}}>Preview order confirmation</button>
         </div>}
         {email && !quote && <p role="status" className="mt-4">This sample does not have a safe delivery window. Checkout is unavailable.</p>}
       </div>}

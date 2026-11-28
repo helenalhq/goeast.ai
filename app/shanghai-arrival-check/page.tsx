@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import Intake from "./intake";
 import Rehearsal from "./rehearsal";
+import SampleDialog from "./sample-dialog";
 import styles from "./arrival.module.css";
 
 export const metadata: Metadata = {
@@ -13,73 +13,79 @@ export const metadata: Metadata = {
 };
 export const dynamic = "force-dynamic";
 
+const deliverables = [
+  ["01", "A short email", "Your route at a glance, plus a fallback if the first option doesn’t work."],
+  ["02", "An offline PDF", "Save your route, fallback steps and verified details before you fly."],
+  ["03", "A Chinese address card", "A hotel address image you can open in Photos and show your driver."],
+];
+
 export default function ArrivalPage() {
   const environment = process.env.VERCEL_ENV;
   if (environment !== "preview" && (environment || (process.env.NODE_ENV !== "development" && process.env.ARRIVAL_LOCAL_REHEARSAL !== "1"))) notFound();
+
   return (
-    <div id="arrival-preview" className={`${styles.shell} bg-[#f3f5ee] text-[#142f33]`}>
-      <nav aria-label="GoEast arrival navigation" className="border-b border-[#d9e4dc] bg-white">
+    <div id="arrival-preview" className={styles.shell}>
+      <nav aria-label="GoEast arrival navigation" className="border-b border-[#dae6e4] bg-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
-          <Link className="inline-flex min-h-12 items-center text-lg font-bold" href="/">GoEast</Link>
-          <Link className="inline-flex min-h-12 items-center text-right text-sm font-bold underline" href="/china-travel-guide">Free China travel guide</Link>
+          <Link className="inline-flex min-h-14 items-center text-lg font-bold tracking-tight text-[#102e35]" href="/">GoEast<span className="ml-0.5 text-[#006557]" aria-hidden="true">.</span></Link>
+          <Link className="inline-flex min-h-14 items-center text-right text-sm font-bold text-[#006557] underline-offset-4 hover:underline" href="/china-travel-guide">Free China travel guide <svg aria-hidden="true" className="ml-1 shrink-0" width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 12 12 4m-6 0h6v6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg></Link>
         </div>
       </nav>
-      <div className="mx-auto max-w-6xl space-y-8 px-4 py-6 sm:px-6 sm:py-12">
-        <header className="overflow-hidden rounded-3xl bg-[#142f33] text-white">
-          <div className="grid gap-7 p-6 sm:p-9 lg:grid-cols-[1.1fr_.9fr] lg:p-11">
-            <div className="self-center">
-              <p className="text-xs font-bold tracking-[.17em] text-[#b7e7d0]">GOEAST · SHANGHAI ARRIVAL CHECK</p>
-              <h1 className="mt-4 text-4xl font-bold leading-[1.09] tracking-tight sm:text-5xl">Know how you’ll get from Pudong Airport to your hotel.</h1>
-              <p className="mt-4 max-w-xl text-base leading-relaxed text-[#deeee8] sm:text-lg">A checked arrival plan for your flight and hotel, with an offline backup and a Chinese address card.</p>
-              <p className="mt-5 font-bold">US$12.90 <span className="text-sm font-normal text-[#deeee8]">one time · proposed pilot price</span></p>
-              <p className="mt-1 text-sm text-[#deeee8]">For first-time travelers with a Pudong flight and Shanghai hotel booked.</p>
-              <div className="mt-5 flex flex-wrap gap-3">
-                <a className="inline-flex min-h-12 items-center rounded-xl bg-[#b7e7d0] px-4 py-2 font-bold text-[#142f33]" href="#trip-check">Try a sample trip</a>
-                <a className="inline-flex min-h-12 items-center rounded-xl border border-[#b7e7d0] px-4 py-2 font-bold" href="#arrival-sample-plan">See a sample</a>
+      <div className="mx-auto max-w-6xl space-y-6 px-4 py-5 sm:space-y-8 sm:px-6 sm:py-9">
+        <header className={`${styles.hero} rounded-3xl p-5 sm:p-9 lg:p-12`}>
+          <div className="grid items-center gap-7 lg:grid-cols-[1.2fr_.8fr] lg:gap-10">
+            <div>
+              <p className="text-[0.7rem] font-bold tracking-[.14em] text-[#c0f0df]">SHANGHAI ARRIVAL CHECK</p>
+              <h1 className="mt-3 max-w-[18ch] text-balance text-[2.1rem] font-bold leading-[1.1] tracking-[-.038em] sm:text-5xl lg:text-[3.35rem]">Land in Shanghai with a plan.</h1>
+              <p className="mt-3 max-w-md text-base leading-relaxed text-[#e0eeec] sm:text-lg">Know how to get from Pudong Airport to your hotel, even if your phone can’t get online.</p>
+              <p className="mt-4 text-sm text-[#e0eeec]"><strong className="mr-1 text-lg text-white">US$12.90</strong> proposed one-time price</p>
+              <div className="mt-4 flex flex-wrap gap-2.5">
+                <a className={styles.heroPrimary} href="#trip-check">Try a sample trip <span aria-hidden="true">→</span></a>
+                <SampleDialog />
               </div>
-              <p className="mt-4 text-xs text-[#deeee8]">Preview only. No real orders, payment or email.</p>
+              <p className="mt-3 text-xs text-[#d1e4e0]">Preview only · No real orders, payments or emails.</p>
             </div>
-            <aside id="arrival-sample-plan" className="scroll-mt-6 self-center rounded-2xl bg-[#e7f3e8] p-5 text-[#142f33] sm:p-6" aria-labelledby="sample-title">
-              <p className="text-xs font-bold tracking-widest text-[#086457]">DEMO · ILLUSTRATIVE ONLY</p>
-              <h2 id="sample-title" className="mt-2 text-2xl font-bold">Late arrival · Pudong T2</h2>
-              <p className="mt-1 text-sm">23:35 scheduled arrival · Sample plan, not live advice</p>
-              <ol className="mt-4 space-y-3 border-l-2 border-[#84aa9e] pl-4 text-sm">
-                <li><strong className="block">After baggage claim</strong> Head to the official taxi stand outside Arrival Gate 25.</li>
-                <li><strong className="block">If your phone doesn’t work</strong> Ask at the international arrivals service desk. Confirm how to pay before boarding.</li>
-                <li><strong className="block">Show your driver</strong> Open the saved Chinese address card offline.</li>
-              </ol>
-              <Image className="mx-auto mt-4 h-auto max-h-64 w-auto max-w-full rounded-xl border border-[#9cbbb0]" src="/samples/shanghai-driver-card.png" alt="Example Chinese address card for the Grand Hyatt Shanghai" width={1170} height={2160} unoptimized />
-              <div className="mt-3 flex flex-wrap gap-x-4 text-sm font-bold text-[#07584c]">
-                <a className="inline-flex min-h-11 items-center underline" href="/samples/shanghai-arrival-check.pdf" download>See sample PDF</a>
-                <a className="inline-flex min-h-11 items-center underline" href="/samples/shanghai-driver-card.png" download>Save the sample driver card</a>
+            <aside className="rounded-2xl border border-[#c8e7de] bg-[#f4faf8] p-4 text-[#102e35] shadow-sm sm:p-6" aria-labelledby="sample-title">
+              <div className="flex items-start justify-between gap-3">
+                <div><p className={styles.kicker}>TWO SAMPLE ARRIVALS</p><h2 id="sample-title" className="mt-1 text-xl font-bold tracking-tight">Same hotel, different plan</h2></div>
+                
               </div>
+              <div className="my-3 border-y border-[#d3e6e2] py-3">
+                <div className="grid grid-cols-[auto_1fr_auto] items-center gap-2">
+                  <span className="text-sm font-bold">Pudong Airport</span>
+                  <span className="h-px bg-[#8faeaa]" aria-hidden="true" />
+                  <span className="text-sm font-bold">Your hotel</span>
+                </div>
+              </div>
+              <ul className="grid gap-2 text-sm text-[#345459]">
+                <li><strong className="text-[#102e35]">23:35 landing:</strong> skip the Airport Link; use the T2 taxi stand.</li>
+                <li><strong className="text-[#102e35]">13:10 landing:</strong> try Metro Line 2; keep a T1 taxi backup.</li>
+              </ul>
             </aside>
           </div>
         </header>
 
-        <section aria-label="What you receive" className="grid gap-3 sm:grid-cols-3">
-          {[
-            ["01", "A short email", "Your airport-to-hotel plan, plus what to do if the first option doesn’t work."],
-            ["02", "An offline PDF", "Two phone-friendly pages you can save before you fly."],
-            ["03", "A Chinese address card", "A hotel address image you can keep in Photos and show to your driver."],
-          ].map(([n,title,copy]) => <article key={n} className="rounded-2xl border border-[#d9e4dc] bg-white p-5">
-            <p className="text-xs font-bold text-[#086457]">{n}</p><h2 className="mt-2 font-bold">{title}</h2><p className="mt-1 text-sm leading-relaxed text-[#36584e]">{copy}</p>
+        <section aria-label="What you receive" className="grid gap-2.5 sm:grid-cols-3">
+          {deliverables.map(([n,title,copy]) => <article key={n} className="flex gap-3 rounded-xl border border-[#dce6e4] bg-white p-3.5 sm:p-5">
+            <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-lg bg-[#e2f1ed] text-xs font-bold text-[#006557]">{n}</span>
+            <div><h2 className="font-bold">{title}</h2><p className="mt-0.5 text-sm leading-relaxed text-[#425d63]">{copy}</p></div>
           </article>)}
         </section>
 
         <Intake />
 
-        <section aria-labelledby="faq-title" className="rounded-2xl border border-[#d9e4dc] bg-white p-5 sm:p-8">
-          <h2 id="faq-title" className="mb-3 text-2xl font-bold">How it works</h2>
-          <p className="mb-3">Check your trip, then review the price and delivery time before paying. No account required. This preview only demonstrates those steps.</p>
-          <details className="border-t border-[#d9e4dc] py-3"><summary className="cursor-pointer font-bold">Does this book a ride?</summary><p className="pt-2">No. This is written planning. It doesn’t book transport, monitor flights live, provide live support or guarantee a payment method will work.</p></details>
-          <details className="border-t border-[#d9e4dc] py-3"><summary className="cursor-pointer font-bold">How quickly would I get it?</summary><p className="pt-2">Pilot target: two hours, with a maximum of 12 hours for accepted orders once payment and trip details are verified. A real quote would show the exact deadline before checkout.</p></details>
-          <details className="border-t border-[#d9e4dc] py-3"><summary className="cursor-pointer font-bold">Already arranged airport pickup?</summary><p className="pt-2">The <Link className="font-bold underline" href="/china-travel-guide">free China travel guide</Link> may be all you need.</p></details>
+        <section aria-labelledby="faq-title" className="rounded-2xl border border-[#dce6e4] bg-white p-5 sm:p-8">
+          <p className={styles.kicker}>GOOD TO KNOW</p>
+          <h2 id="faq-title" className="mb-3 mt-1 text-2xl font-bold tracking-tight">How it works</h2>
+          <p className="mb-3 text-[#425d63]">For first-time travelers with a Pudong flight and a Shanghai hotel booked. Confirm your itinerary, price and delivery time before paying. No account required.</p>
+          <details className="border-t border-[#dce6e4]"><summary className="cursor-pointer py-3 font-bold">Does this book a ride?</summary><p className="pb-3 text-[#425d63]">No. It doesn’t book transport, monitor flights live, provide live support or guarantee a payment method will work.</p></details>
+          <details className="border-t border-[#dce6e4]"><summary className="cursor-pointer py-3 font-bold">How quickly would I get it?</summary><p className="pb-3 text-[#425d63]">Pilot target: two hours, with a maximum of 12 hours for accepted orders once payment and trip details are verified. A real quote would show the exact deadline before checkout.</p></details>
+          <details className="border-t border-[#dce6e4]"><summary className="cursor-pointer py-3 font-bold">Already arranged airport pickup?</summary><p className="pb-3 text-[#425d63]">The <Link className="font-bold text-[#006557] underline" href="/china-travel-guide">free China travel guide</Link> may be all you need.</p></details>
         </section>
 
-        <details className="rounded-2xl border border-[#d9e4dc] bg-white p-4">
-          <summary className="cursor-pointer p-2 font-bold">Operator demo: simulated fulfillment</summary>
-          <div className="mt-3"><Rehearsal /></div>
+        <details className="rounded-xl border border-[#dce6e4] bg-[#eef3f2] px-4 py-1">
+          <summary className="cursor-pointer py-3 text-sm font-semibold text-[#425d63]">Operator demo: simulated fulfillment</summary>
+          <div className="mb-3"><Rehearsal /></div>
         </details>
       </div>
     </div>

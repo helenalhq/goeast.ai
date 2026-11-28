@@ -1,9 +1,100 @@
-/* Keep the standard GoEast shell intact elsewhere. The arrival flow has its own compact nav. */
+/* The one-page preview uses compact travel chrome without changing the main site. */
 :global(body:has(#arrival-preview) > header),
 :global(body:has(#arrival-preview) > button[aria-label="Feedback"]) {
   display: none;
 }
 
+:global(body:has(#arrival-sample-dialog[open])) { overflow: hidden; }
+
 .shell {
   min-width: 0;
+  background: #f4f7f6;
+  color: #102b32;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+.shell :is(h1, h2, h3) { font-family: inherit; }
+
+.shell :is(a, button, summary, input, select):focus-visible {
+  outline: 2px solid #007466;
+  outline-offset: 3px;
+}
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  background: #102e35;
+  background-image: radial-gradient(ellipse at right top, #1d5251, transparent 67%);
+  color: white;
+}
+
+.hero :is(a, button):focus-visible { outline-color: #a9e8d7; }
+
+.kicker {
+  color: #006557;
+  font-size: .72rem;
+  line-height: 1.45;
+  font-weight: 700;
+  letter-spacing: .13em;
+}
+
+.primary, .secondary, .heroPrimary {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  gap: .55rem;
+  padding: .65rem .95rem;
+  border-radius: .75rem;
+  border: 1px solid transparent;
+  font-size: .875rem;
+  line-height: 1.2;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.primary { color: white; background: #065f54; }
+.primary:hover { background: #094b44; color: white; }
+.secondary { background: white; color: #173b3d; border-color: #a8c0bd; }
+.secondary:hover { background: #e9f5f0; color: #173b3d; }
+.heroPrimary { color: #102e35; background: #b7efda; }
+.heroPrimary:hover { background: #d9faeb; color: #102e35; }
+
+.dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(calc(100% - 1.5rem), 48rem);
+  max-width: none;
+  max-height: none;
+  padding: 0;
+  border: 1px solid #ccdadb;
+  border-radius: 1.25rem;
+  color: #102b32;
+  background: #fff;
+  box-shadow: 0 24px 85px #102e3566;
+}
+.dialog::backdrop { background: #10232ed9; }
+.dialogPanel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  max-height: calc(100dvh - 1.5rem);
+}
+.close {
+  display: grid;
+  min-width: 44px;
+  min-height: 44px;
+  place-items: center;
+  cursor: pointer;
+  border-radius: 50%;
+  background: #eef4f3;
+  color: #102b32;
+  font-size: 1.55rem;
+  line-height: 1;
+}
+.close:hover { background: #dcece7; }
+@media (max-width: 410px) {
+  .dialogPanel > footer > a { flex: 1; }
 }

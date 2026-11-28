@@ -1,0 +1,68 @@
+{
+  "checked": "28 Nov 2026",
+  "hotel": {
+    "name": "Grand Hyatt Shanghai",
+    "chinese": "上海金茂君悦大酒店",
+    "address": "Jin Mao Tower, 88 Century Avenue, Pudong, Shanghai",
+    "addressChinese": ["上海市浦东新区世纪大道88号", "金茂大厦"],
+    "phone": "+86 21 8024 1234"
+  },
+  "sources": {
+    "airport": {"name":"Shanghai Airport Authority / Shanghai.gov","url":"https://english.shanghai.gov.cn/en-Individuals-Transportation-PublicTransport/20260813/7366238930024ac8b22e5adf82217bd8.html","scope":"Official taxi pickup at T1 Gate 12 and T2 Gate 25; Line 2 at Pudong."},
+    "desk": {"name":"Shanghai.gov / International Services Shanghai","url":"https://english.shanghai.gov.cn/en-ServicesandGuides-FAQs-Visas/20261106/7954fc3d767d455a9c2efc20cf14e883.html","scope":"24-hour help desks near international arrivals exits in T1 and T2."},
+    "airportLink": {"name":"Shanghai.gov / Airport Link timetable","url":"https://english.shanghai.gov.cn/en-Latest-WhatsNew/20261104/718a3d2ae3b1440985dc1692d453c6e2.html","scope":"Published regular last Airport Link departure at 22:15."},
+    "metro": {"name":"Shanghai Metro / Metro ticketing guidance","url":"https://english.shanghai.gov.cn/en-TravelYourWay/20251010/6f1beb560360472b8edaffd6187f4988.html","scope":"Single-journey tickets and service-counter card payments; a specific card may still be declined."},
+    "route": {"name":"Amap / Shanghai Metro line map","url":"https://amap-pc-ssr.amap.com/ssr/subway/shanghai-3100","scope":"Line 2 connects Pudong Airport Terminal 1&2 station and Lujiazui."},
+    "hyatt": {"name":"Hyatt / Grand Hyatt Shanghai","url":"https://www.hyatt.com/grand-hyatt/zh-CN/shagh-grand-hyatt-shanghai","scope":"Exact property, Chinese address and published phone; not a reservation or late-arrival confirmation."}
+  },
+  "cases": {
+    "late": {
+      "label": "Late night · T2",
+      "terminal": "T2",
+      "time": "23:35",
+      "file": "shanghai-arrival-check",
+      "context": "First visit · No mobile data on arrival · Hotel already booked",
+      "verdict": "Take an official taxi from Arrival Gate 25.",
+      "finding": "Do not plan around the Airport Link. Its published regular last departure is 22:15, earlier than your scheduled landing.",
+      "switch": "If the queue or payment falls through, ask the 24-hour airport service desk for help before leaving arrivals.",
+      "route": [
+        {"title":"Before boarding","body":"Save the address card and airport plan offline. Ask the hotel to hold your room if check-in slips past midnight."},
+        {"title":"After baggage claim","body":"Follow official taxi signs to the stand outside T2 Arrival Gate 25. Show the Chinese card and ask about payment before boarding."},
+        {"title":"At the hotel","body":"Match Grand Hyatt Shanghai and Jin Mao Tower on the card. Keep your booking confirmation offline for the front desk."}
+      ],
+      "fallback": [
+        {"title":"No data or dead phone","body":"Use the saved image or printed card. In international arrivals, look for International Services Shanghai; the desk is advertised as open 24 hours."},
+        {"title":"QR payment or card declined","body":"Ask whether the driver accepts RMB cash before boarding; carry a cash backup if possible. If you have no accepted way to pay, ask the airport desk for help."},
+        {"title":"No room-hold confirmation","body":"Contact the hotel before departure. If your arrival slips into the next date, use the number on the card when you have a connection. Do not assume the room is held."}
+      ],
+      "hotelTask": "Confirm the property and ask whether it will keep your room if you arrive after midnight.",
+      "message": "Hello, I have a booking for [date] at Grand Hyatt Shanghai. My flight lands at Pudong late and I may reach the hotel after midnight. Could you confirm the correct entrance and that my room will be held? Thank you.",
+      "recheck": "Operating flight, terminal, taxi pickup and late hotel check-in. Do not assume availability or a quoted fare.",
+      "sourceIds": ["airport","airportLink","desk","hyatt"]
+    },
+    "day": {
+      "label": "Daytime · T1",
+      "terminal": "T1",
+      "time": "13:10",
+      "file": "shanghai-arrival-daytime",
+      "context": "First visit · Light luggage · No mobile payments set up",
+      "verdict": "Take Metro Line 2 to Lujiazui if it is running normally.",
+      "finding": "A daytime arrival with light luggage makes Line 2 practical. You do not have to rely on a phone-based metro QR code.",
+      "switch": "If Line 2 is disrupted, ticket payment fails or carrying bags becomes impractical, use the official T1 taxi stand outside Arrival Gate 12.",
+      "route": [
+        {"title":"Before boarding","body":"Save the Chinese address card and the Metro Line 2 destination name. Keep a physical payment backup accessible."},
+        {"title":"After baggage claim","body":"Follow Metro signs to Pudong Airport Terminal 1&2 station. Ask the service counter for a single-journey ticket to Lujiazui."},
+        {"title":"After leaving the Metro","body":"At Lujiazui, show the card if you need directions to Jin Mao Tower. Follow current station signs; the sample does not assume a specific lift or exit is open."}
+      ],
+      "fallback": [
+        {"title":"No app or working QR code","body":"Ask the service counter for a single-journey ticket. The city lists international bank cards as a counter payment option; your card is not guaranteed to work."},
+        {"title":"Metro disrupted or bags too heavy","body":"Go back to the official T1 taxi pickup outside Arrival Gate 12. Confirm an accepted way to pay before boarding and show the hotel card."},
+        {"title":"At the wrong end of Century Avenue","body":"Check that the destination says Grand Hyatt Shanghai, Jin Mao Tower, 88 Century Avenue. Show the Chinese address rather than the brand name alone."}
+      ],
+      "hotelTask": "Verify the exact property and ask where to leave luggage if you reach the hotel before your room is ready.",
+      "message": "Hello, I have a booking for [date] at Grand Hyatt Shanghai in Jin Mao Tower. I may arrive before my room is ready. Could you tell me which entrance to use and whether I can leave my luggage first? Thank you.",
+      "recheck": "Operating flight, terminal, Line 2 service, the hotel entrance and luggage storage policy.",
+      "sourceIds": ["airport","metro","route","desk","hyatt"]
+    }
+  }
+}

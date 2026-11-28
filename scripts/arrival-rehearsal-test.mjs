@@ -28,7 +28,8 @@ import assert from 'node:assert/strict';
     await begin('t2'); assert.match(await draft.innerText(), /Gate 25/);
     await click('Approve draft'); await click('Simulate sending');
     assert.match(await page.getByText('Simulated delivery recorded', {exact:false}).innerText(), /no email was sent/);
-    for(const [name,ext] of [['See sample PDF','pdf'],['Save the sample driver card','png']]){
+    await page.getByRole('button',{name:'See a sample',exact:true}).click();
+    for(const [name,ext] of [['Download sample PDF','pdf'],['Download address card','png']]){
       const [dl] = await Promise.all([page.waitForEvent('download'),page.getByRole('link',{name,exact:true}).click()]);
       assert.ok(dl.suggestedFilename().endsWith('.'+ext));
       assert.equal(await dl.failure(),null);
