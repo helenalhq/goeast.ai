@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from "react";
 import Image from "next/image";
 import packs from "@/lib/arrival-sample-packs.json";
 import styles from "./arrival.module.css";
@@ -8,25 +8,39 @@ import styles from "./arrival.module.css";
 const options = ["late", "day"] as const;
 type Pack = typeof options[number];
 
-export default function SampleDialog() {
+const OpenSample = createContext<((scenario: Pack, trigger: HTMLButtonElement) => void) | null>(null);
+
+export function SampleTrigger({children, scenario = "late", className = styles.secondary, label}: {
+  children: ReactNode; scenario?: Pack; className?: string; label?: string;
+}) {
+  const show = useContext(OpenSample);
+  return (
+    <button type="button" aria-label={label} aria-haspopup="dialog" aria-controls="arrival-sample-dialog" className={className}
+      onClick={event => show?.(scenario, event.currentTarget)}>
+      {children}
+    </button>
+  );
+}
+
+export default function SampleExperience({children}: { children: ReactNode }) {
   const panel = useRef<HTMLDialogElement>(null);
-  const open = useRef<HTMLButtonElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
   const close = useRef<HTMLButtonElement>(null);
   const [selected, setSelected] = useState<Pack>("late");
   const current = packs.cases[selected];
 
-  function show() {
+  const show = useCallback((scenario: Pack, button: HTMLButtonElement) => {
     if (!panel.current || panel.current.open) return;
+    trigger.current = button;
+    setSelected(scenario);
     panel.current.showModal();
     close.current?.focus();
-  }
+  }, []);
 
   return (
-    <>
-      <button ref={open} type="button" aria-haspopup="dialog" aria-controls="arrival-sample-dialog" className={styles.secondary} onClick={show}>
-        See a sample <svg aria-hidden="true" className="shrink-0" width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 12 12 4m-6 0h6v6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
-      </button>
-      <dialog ref={panel} id="arrival-sample-dialog" className={styles.dialog} aria-labelledby="arrival-sample-heading" onClose={() => open.current?.focus()}>
+    <OpenSample.Provider value={show}>
+      {children}
+      <dialog ref={panel} id="arrival-sample-dialog" className={styles.dialog} aria-labelledby="arrival-sample-heading" onClose={() => trigger.current?.focus()}>
         <div className={styles.dialogPanel}>
           <header className="border-b border-[#dce5e7] px-5 pb-3 pt-4 sm:px-7">
             <div className="flex items-start justify-between gap-3">
@@ -59,6 +73,12 @@ export default function SampleDialog() {
               <details className="rounded-xl border border-[#dce5e7] bg-white px-3">
                 <summary className="cursor-pointer py-3 text-sm font-bold">Offline and payment backups</summary>
                 <ul className="space-y-2 pb-3 text-sm text-[#425d63]">{current.fallback.map(step => <li key={step.title}><strong className="block text-[#102b32]">{step.title}</strong>{step.body}</li>)}</ul>
+                {"deskPhrase" in current && <div className="mb-3 rounded-lg bg-[#eef5f3] p-2.5 text-sm">
+                  <strong className="block">{current.deskPhrase.heading}</strong>
+                  <p className="mt-1 text-[#425d63]">{current.deskPhrase.english}</p>
+                  <p lang="zh-CN" className="mt-2">{current.deskPhrase.chinese.join("")}</p>
+                </div>}
+
               </details>
               <details className="rounded-xl border border-[#dce5e7] bg-white px-3">
                 <summary className="cursor-pointer py-3 text-sm font-bold">Message to send your hotel</summary>
@@ -86,6 +106,6 @@ export default function SampleDialog() {
           </footer>
         </div>
       </dialog>
-    </>
+    </OpenSample.Provider>
   );
 }

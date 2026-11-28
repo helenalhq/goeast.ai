@@ -153,6 +153,7 @@ export default function Intake() {
         </div>
         {quote && <div aria-live="polite" className="mt-5 rounded-xl border border-[#d9e4dc] p-4">
           <p className="text-lg font-bold">Demo quote · {quote.price} one time</p>
+          <p className="mt-1 text-sm text-[#36584e]">Included: route and backup plan, offline PDF and Chinese address card.</p>
           <p className="mt-1 text-sm">Example quote expires {quote.expires}. Example delivery by {quote.latestDelivery}, Shanghai time (UTC+8).</p>
           <button id="arrival-demo-confirm" type="button" className={`${button} mt-3`} onClick={() => {setStep("done");focus("arrival-done-heading");}}>Preview order confirmation</button>
         </div>}

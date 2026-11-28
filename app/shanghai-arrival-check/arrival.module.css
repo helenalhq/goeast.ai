@@ -98,3 +98,44 @@
 @media (max-width: 410px) {
   .dialogPanel > footer > a { flex: 1; }
 }
+
+.proofItem {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: .62rem;
+  width: 100%;
+  min-height: 70px;
+  padding: .62rem;
+  text-align: start;
+  background: #fff;
+  color: #102b32;
+  border: 1px solid #cbdeda;
+  border-radius: .8rem;
+  cursor: pointer;
+}
+.proofItem:hover { background: #e8f5f0; border-color: #8eb8ad; }
+.hero .proofItem:focus-visible { outline-color: #007466; }
+.proofItem > svg { color: #006557; }
+.proofTime {
+  display: grid;
+  place-items: center;
+  align-self: stretch;
+  align-content: center;
+  min-width: 3.25rem;
+  position: relative;
+  padding-inline: .3rem;
+  border-radius: .55rem;
+  background: #e3f3ee;
+  color: #0a544d;
+  font-size: .85rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.proofTime small { font-size: .66rem; font-weight: 700; color: #35655e; }
+
+@media (max-width: 480px) {
+  .heroActions { gap: .5rem; }
+  .heroActions > :is(a, button) { padding-inline: .75rem; }
+  .heroActions > :is(a, button) > svg { display: none; }
+}

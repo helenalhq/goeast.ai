@@ -20,7 +20,7 @@ hotel = packs["hotel"]
 out = root / "public/samples"
 out.mkdir(parents=True, exist_ok=True)
 ink, deep, teal, calm, mist, muted = map(HexColor, ["#102B32", "#103237", "#07695B", "#D9F2EB", "#EEF5F3", "#435E65"])
-W, H, M = 390, 776, 25
+W, H, M = 390, 800, 25
 latin_dir = Path(os.environ.get("GOEAST_LATIN_FONTS", "/usr/share/fonts/truetype/dejavu"))
 for name, file in (("GoEastSans", "DejaVuSans.ttf"), ("GoEastSansBold", "DejaVuSans-Bold.ttf")):
     pdfmetrics.registerFont(TTFont(name, str(latin_dir / file)))
@@ -83,6 +83,13 @@ def block(c, title, body, y, i=None):
 def check(y):
     if y < 47: raise ValueError(f"Content overlaps footer: {y}")
 
+def hotel_message(c, case, y):
+    y=para(c,"BEFORE YOU FLY: ONE MESSAGE TO SEND",y-7,size=9,bold=True,color=teal)-10
+    y=para(c,case["hotelTask"],y,size=13,bold=True)-7
+    y=para(c,case["message"],y,size=12,color=muted)-13
+    y=para(c,"Send through your booking channel. This sample does not contact the hotel for you.",y,size=10,color=muted)-9
+    return y
+
 def build(case, cardpath):
     c=Canvas(str(out/(case["file"]+".pdf")),pagesize=(W,H),pageCompression=1,invariant=1)
     c.setTitle("GoEast Shanghai Arrival Check · "+case["label"])
@@ -99,10 +106,17 @@ def build(case, cardpath):
 
     y=shell(c,case,2,"If your first plan breaks")
     for i, row in enumerate(case["fallback"],1): y=block(c,row["title"],row["body"],y,i)
-    y=para(c,"BEFORE YOU FLY: ONE MESSAGE TO SEND",y-7,size=9,bold=True,color=teal)-10
-    y=para(c,case["hotelTask"],y,size=13,bold=True)-7
-    y=para(c,case["message"],y,size=12,color=muted)-13
-    y=para(c,"Send through your booking channel. This sample does not contact the hotel for you.",y,size=10,color=muted)-9
+    if phrase := case.get("deskPhrase"):
+        y=para(c,phrase["heading"],y,size=11,bold=True,color=teal)-4
+        y=para(c,phrase["english"],y,size=10,color=muted)-4
+        strip=Image.new("RGB",(1020,108),"#eef5f3")
+        font=ImageFont.truetype(os.environ.get("GOEAST_CJK_FONT","/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc"),36,index=2)
+        draw=ImageDraw.Draw(strip)
+        for i,line in enumerate(phrase["chinese"]): draw.text((0,i*47),line,font=font,fill="#102b32")
+        c.drawImage(ImageReader(strip),M,y-36,width=W-2*M,height=36)
+        y-=43
+    else:
+        y=hotel_message(c,case,y)
     check(y); c.showPage()
 
     y=shell(c,case,3,"What we checked")
@@ -114,6 +128,7 @@ def build(case, cardpath):
         y=para(c,source["name"],y,size=11,bold=True,color=teal)-3
         c.linkURL(source["url"],(M,y,W-M,top+1),relative=0)
         y=para(c,source["scope"],y,size=10,color=muted)-9
+    if case.get("deskPhrase"): y=hotel_message(c,case,y)
     y=block(c,"Recheck before departure",case["recheck"],y-3)
     y=para(c,"The itinerary is fictional. Sources describe public services, not your specific booking, live disruptions, card authorization or hotel policy.",y,size=9.5,color=muted)-7
     check(y); c.showPage()
