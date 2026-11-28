@@ -19,7 +19,6 @@ describe("CastView — free result display", () => {
     // 恒 32, changing line 1 → transformed 46 (011100 flip line1 → 111100 = 46 升? check)
     render(ui({ mode: "cast", hexagramNumber: 32, changingLines: [1], transformedNumber: 46 }));
     expect(screen.getByText(/Hexagram 32 · Heng/)).toBeTruthy();
-    expect(screen.getByText(/changing 变/i, { exact: false }).toBeTruthy ? true : true).toBe(true);
     expect(screen.getAllByText(/changing 变/).length).toBeGreaterThan(0);
     expect(screen.getByText(/Changing line: 1/)).toBeTruthy();
     expect(screen.getByText(/transforming into/i)).toBeTruthy();

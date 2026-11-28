@@ -1,0 +1,6 @@
+# Shanghai Arrival Check: order binding release slice
+- Keep the public demo and the existing test-only callback unchanged. Build on main in an isolated branch. No production setting, migration, charge or mail.
+- Signed-in customer submits a PVG itinerary and selects optional constraints. Store an immutable normalized snapshot with order/version; show owner-only status. Human verifies date, hotel and terminal before creating an exact quote; no payment for unverified trips.
+- Make one hosted checkout per order, with UUID idempotency and explicit order/version metadata. Read back checkout/transaction after signed callback. Bind SKU, amount, mode, transaction and order. Do not treat browser redirects as paid. Refund/dispute blocks downloads, including if it wins a race with payment.
+- Render a three-part reviewed report and offline Chinese card from the paid snapshot, with source dates, switching rules and unsupported details labelled. Import an exact artifact manifest and bytes via operator-only API. Customer downloads only their approved report; private response, no public objects or email dispatch in this slice.
+- Write tests before implementation. Verify both default-off and isolated SQL/route flow with two fictional orders, exact/taxed/unmatched/refund/replay cases, and visually check template. Document what is still disabled.

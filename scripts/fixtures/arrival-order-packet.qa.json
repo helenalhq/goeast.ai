@@ -1,0 +1,82 @@
+{
+  "orderId": "a3797201-764b-4fae-902e-0267d22cd96c",
+  "version": 1,
+  "purpose": "qa",
+  "trip": {
+    "date": "2026-12-09",
+    "flight": "DX118",
+    "hotel": "Park Hyatt Shanghai",
+    "terminal": "T1",
+    "localTime": "13:10",
+    "preferences": [
+      "no_mobile_data",
+      "no_mobile_payments"
+    ]
+  },
+  "decision": "Take Metro Line 2 to Lujiazui if it is operating.",
+  "steps": [
+    "Follow the signs to the Pudong Airport Metro station, confirm Line 2 service to Lujiazui and ask a staffed counter which non-QR options it accepts before entering.",
+    "Follow signs to Metro Line 2. The SWFC access map shows Lujiazui Exit 6 and about 600 m along Century Avenue to No. 100. Use current station signs.",
+    "Use the Park Hyatt / Shanghai World Financial Center address, not Grand Hyatt / Jin Mao Tower. The properties have different entrances and street numbers."
+  ],
+  "fallbacks": [
+    {
+      "when": "Rail or payment at the gate fails",
+      "action": "Ask the staffed counter about a physical ticket and acceptable payment. If rail is unsuitable, use the official T1 taxi rank near Arrivals Gate 12."
+    },
+    {
+      "when": "Your flight arrives at T2 instead",
+      "action": "Follow the signs for your actual terminal. At T2 the official arrivals taxi rank is at Gate 25, not the T1 gate."
+    },
+    {
+      "when": "No payment method works",
+      "action": "Ask the airport's staffed service desk about transport options before boarding. Don't assume an overseas card is accepted."
+    }
+  ],
+  "preferencePlans": {
+    "no_mobile_data": "Save this PDF and the Chinese card to your phone before boarding.",
+    "no_mobile_payments": "Ask the staffed counter or taxi dispatcher about cash and physical cards. Carry a cash fallback if possible."
+  },
+  "checklist": [
+    "Save the Chinese address and check the hotel name against your reservation.",
+    "Recheck the operating flight, terminal and rail service before you leave."
+  ],
+  "boundary": "This QA example uses a fictional flight. Transport can change; fares, card acceptance and accessible exits are not guaranteed.",
+  "addressEnglish": "Shanghai World Financial Center · 100 Century Avenue · Pudong",
+  "cnAddress": "上海市浦东新区世纪大道100号，上海环球金融中心",
+  "cnPrompt": "请送我去上海柏悦酒店，谢谢。",
+  "hotelPhone": "+86 21 6888 1234",
+  "phrases": [
+    {
+      "en": "Where can I buy a physical single ticket?",
+      "zh": "请问在哪里可以买实体单程票？"
+    },
+    {
+      "en": "Can I pay in cash or with this card?",
+      "zh": "请问可以付现金或刷这张卡吗？"
+    }
+  ],
+  "sources": [
+    {
+      "kind": "hotel",
+      "name": "Hyatt property",
+      "checked": "2026-11-28",
+      "finding": "Shanghai World Financial Center, 100 Century Avenue; hotel phone.",
+      "url": "https://www.hyatt.com/park-hyatt/en-US/shaph"
+    },
+    {
+      "kind": "transport",
+      "name": "Shanghai Airport taxi",
+      "checked": "2026-11-28",
+      "finding": "T1 official Arrivals Gate 12 taxi pickup.",
+      "url": "https://www.shairport.com/enpd/czc/index.html"
+    },
+    {
+      "kind": "transport",
+      "name": "Shanghai World Financial Center access map",
+      "checked": "2026-11-28",
+      "finding": "Lujiazui Line 2 Exit 6 and pedestrian approach.",
+      "url": "https://www.swfc-shanghai.com/pdf/swfc_access_en.pdf"
+    }
+  ]
+}

@@ -90,7 +90,7 @@ function sseChunks(text: string) {
   };
 }
 
-let lastState: { insertCalls?: unknown[] } = {};
+let lastState: Parameters<typeof tableMock>[0] = {};
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -98,7 +98,7 @@ beforeEach(() => {
   checkUsage.mockResolvedValue({ allowed: true, remaining: 2, currentCount: 1 });
   refund.mockResolvedValue({ refunded: true });
   createCompletion.mockResolvedValue(sseChunks("a thoughtful answer"));
-  const state = {
+  const state: Parameters<typeof tableMock>[0] = {
     report: { session_id: "s1", user_id: "u1", question: "orig q", cast_data: GOOD_CAST, ai_response: "orig reading" },
   };
   lastState = state;
@@ -188,7 +188,7 @@ describe("POST validation matrix (model never called)", () => {
 
 describe("POST happy path + grounding", () => {
   it("streams the answer, grounds in the DB report, inserts the turn", async () => {
-    const state = {
+    const state: Parameters<typeof tableMock>[0] = {
       report: { session_id: "s1", user_id: "u1", question: "orig q", cast_data: GOOD_CAST, ai_response: "orig reading" },
       turns: [{ id: "t1", question: "q1", answer: "a1", turn_index: 1, created_at: "2026-01-01" }],
     };
@@ -313,7 +313,7 @@ describe("POST turnKey idempotency", () => {
   });
 
   it("fresh key happy path → upsert carries the client id, no refund, no saveFailed", async () => {
-    const state = {
+    const state: Parameters<typeof tableMock>[0] = {
       report: { session_id: "s1", user_id: "u1", question: "q", cast_data: GOOD_CAST, ai_response: "r" },
       upsertResult: { id: KEY }, // insert won — row returned
     };
@@ -325,15 +325,15 @@ describe("POST turnKey idempotency", () => {
     expect(full).toBe("a thoughtful answer");
     expect(saveFailed).toBe(false);
     expect(lastState.upsertCalls).toHaveLength(1);
-    expect(lastState.upsertCalls[0].row).toMatchObject({ id: KEY, session_id: "s1", turn_index: 1, question: "why?" });
-    expect(lastState.upsertCalls[0].opts).toMatchObject({ onConflict: "id", ignoreDuplicates: true });
+    expect(lastState.upsertCalls?.[0]?.row).toMatchObject({ id: KEY, session_id: "s1", turn_index: 1, question: "why?" });
+    expect(lastState.upsertCalls?.[0]?.opts).toMatchObject({ onConflict: "id", ignoreDuplicates: true });
     expect(refund).not.toHaveBeenCalled();
     // legacy insert must not run when a key is present
     expect(lastState.insertCalls).toHaveLength(0);
   });
 
   it("concurrent twin wins the insert (conflict no-op) → refund this attempt, no saveFailed", async () => {
-    const state = {
+    const state: Parameters<typeof tableMock>[0] = {
       report: { session_id: "s1", user_id: "u1", question: "q", cast_data: GOOD_CAST, ai_response: "r" },
       upsertResult: null, // ON CONFLICT DO NOTHING → no row returned
     };
@@ -348,7 +348,7 @@ describe("POST turnKey idempotency", () => {
   });
 
   it("upsert error → saveFailed marker, no refund (content delivered)", async () => {
-    const state = {
+    const state: Parameters<typeof tableMock>[0] = {
       report: { session_id: "s1", user_id: "u1", question: "q", cast_data: GOOD_CAST, ai_response: "r" },
       upsertError: { message: "rls denied" },
     };
