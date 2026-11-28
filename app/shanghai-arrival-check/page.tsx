@@ -21,6 +21,7 @@ export default function ArrivalPage() {
           <h1 className="max-w-3xl text-4xl font-bold leading-tight sm:text-5xl">Know how you’ll get from Pudong to your hotel.</h1>
           <p className="mt-5 max-w-2xl text-lg text-[#d3e7df]">A personal arrival plan, a backup if your phone doesn’t work, and a Chinese address card you can save before you fly.</p>
           <p className="mt-6 font-bold">Proposed pilot price: US$12.90 per itinerary</p>
+          <p className="mt-2 text-sm text-[#d3e7df]">Pilot timing goal: 2 hours, with a 12-hour maximum for accepted orders. Timing is not yet live.</p>
           <p className="mt-2 text-sm text-[#d3e7df]">Preview only. No real orders, payment, or email. Please don’t enter personal information.</p>
           <div className="mt-6 flex flex-wrap gap-3">
             <a className="rounded-lg bg-[#b7e7d0] px-4 py-3 font-bold text-[#142f33]" href="#rehearsal">Try a sample order</a>
